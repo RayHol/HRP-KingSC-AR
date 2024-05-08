@@ -105,7 +105,7 @@
     display: none; /* initially hide the text */
 }
 
-#audioPrompt {
+/* #audioPrompt {
     display: none;
     top: 80%;
 }
@@ -131,10 +131,44 @@
     text-transform: uppercase;
     cursor: pointer;
     gap: 8px; 
+} */
+
+#audioPrompt {
+    position: fixed;
+    top: 20px; 
+    right: 10px; 
+    display: none; 
+    z-index: 1000; 
+    margin: 0;
+    transform: none; 
+}
+
+#audioPrompt button {
+    height: 44px;  
+    padding: 10px 20px;
+    background-color: #EEF0F3;
+    color: #1B1B1B;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    letter-spacing: 1.25px;
+    text-transform: uppercase;
+    gap: 8px; 
+}
+
+#audioPrompt img {
+/*     vertical-align: middle; */
+    margin-right: 5px; 
+    width: 16px; 
+    height: 16px;
 }
 
 
-#background {
+/* #background {
     position: fixed;
     top: 50%;
     left: 50%;
@@ -148,13 +182,13 @@
     border: none;
     border-radius: 8px;
     overflow: hidden; 
-    display: none; /* initially hide the background */
-}
+    display: none; 
+} */
 
 /* New styles for the back button */
 #backButton {
     position: fixed;
-  top: 20px;
+    top: 20px;
     left: 20px;
     width: 93px;  
     height: 44px;  
@@ -170,7 +204,7 @@
 
 .text-panel {
     position: fixed;
-    bottom: 20px;
+    bottom: 10px;
     left: 50%;
     transform: translateX(-50%);
     width: 80%;
@@ -180,8 +214,39 @@
     text-align: center;
     border-radius: 10px;
     font-size: 16px;
-    z-index: 1000; /* Make sure it's above AR content */
+    z-index: 1000; 
 }
 
 
+/* scrolling text */
+/* .text-panel {
+    position: fixed;
+    bottom: 20px; 
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80%; 
+    height: 24px; 
+    padding: 5px 10px; 
+    background-color: rgba(0, 0, 0, 0.7);
+    color: white;
+    text-align: left;
+    border-radius: 10px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis; 
+    z-index: 1000; 
+}
 
+#textPanelContent {
+    animation: scroll-text 10s linear infinite; 
+}
+
+@keyframes scroll-text {
+    0% {
+        transform: translateX(100%);
+    }
+    100% {
+        transform: translateX(-100%); 
+    }
+}
+ */

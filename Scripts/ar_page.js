@@ -104,16 +104,20 @@ document.addEventListener('DOMContentLoaded', function () {
 
 // Timed text element
 document.addEventListener('DOMContentLoaded', function () {
-    const videoElement = document.getElementById('videoElement');
+    const videoElement = document.getElementById('video1');
     const textPanelContent = document.getElementById('textPanelContent');
     const textUpdates = [
-        { time: 5, text: "Introduction to the artefact." },
+        { time: 5, text: "The King's Staircase at Kensington Palace was enlarged and decorated by William Kent in 1725-27, including a trompe ľoeil balcony depicting members of the court of George I" },
         { time: 15, text: "Details about the historical context." },
-        { time: 30, text: "Explanation of its significance." },
-        { time: 45, text: "Closing remarks." }
+        { time: 23, text: "Explanation of its significance." },
+        { time: 35, text: "Closing remarks." }
     ];
 
     let lastTriggerTime = -1;
+  
+      // Ensure the video is ready before adding timeupdate listener
+    // videoElement.oncanplaythrough = function() {
+    //     console.log('Video is ready to play, adding timeupdate listener.');
 
     videoElement.addEventListener('timeupdate', function () {
         const currentTime = Math.floor(videoElement.currentTime);
