@@ -46,11 +46,12 @@ document.addEventListener('DOMContentLoaded', function () {
                     }
                 });
 
-            // Event listener for first target found event
+        // Event listener for first target found event
         target1.addEventListener("targetFound", () => {
             console.log("target 1 found");
             this.found = true;
             audioPrompt.style.display = "block";
+            document.getElementById('textPanel').style.display = "block";  // Show the text panel
             if (!played) {
                 startText.style.display = "none";
                 // backgroundImage.style.display = "none";
@@ -68,6 +69,7 @@ document.addEventListener('DOMContentLoaded', function () {
         target1.addEventListener("targetLost", () => {
             console.log("target 1 lost");
             audioPrompt.style.display = "block";
+            document.getElementById('textPanel').style.display = "none";  // Hide the text panel
             this.found = false;
             if (!played) {
                 video1.pause();
@@ -107,7 +109,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const videoElement = document.getElementById('video1');
     const textPanelContent = document.getElementById('textPanelContent');
     const textUpdates = [
-        { time: 5, text: "The King's Staircase at Kensington Palace was enlarged and decorated by William Kent in 1725-27, including a trompe ľoeil balcony depicting members of the court of George I" },
+        { time: 0, text: "The King's Staircase at Kensington Palace was enlarged and decorated by William Kent in 1725-27, including a trompe ľoeil balcony depicting members of the court of George I" },
         { time: 15, text: "Details about the historical context." },
         { time: 23, text: "Explanation of its significance." },
         { time: 35, text: "Closing remarks." }
