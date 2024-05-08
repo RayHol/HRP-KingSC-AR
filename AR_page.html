@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta charset="UTF-8" />
+
+    <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.1/dist/mindar-image-aframe.prod.js"></script>
+    <script src=".\Scripts\ar_page.js"></script>
+
+    <title>Smartify - Vincent van Gogh | A Wheatfield, with Cypresses</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700&display=swap">
+    <link rel="stylesheet" href=".\Scripts\ar_page.css">
+</head>
+
+<body>
+    <div id="background"></div>
+    <div id="startText">Point your camera at the painting</div>
+    <div id="audioPrompt">
+        <button id="audioButton">
+           <img id="audioPromptIcon" src=".\Assets\mute-icon.svg" alt="Audio Icon">
+    Enable Audio
+</button>
+    </div>
+
+    <!-- New back button -->
+    <button id="backButton"></button>
+
+    <a-scene ar-controller
+    mindar-image="imageTargetSrc: .\Assets\VGtargets.mind; warmupTolerance: 10; missTolerance: 1; filterMinCF: 0.0001; filterBeta: 0.001"
+    color-space="sRGB"
+    renderer="colorManagement: true, physicallyCorrectLights"
+    vr-mode-ui="enabled: false"
+    device-orientation-permission-ui="enabled: false"
+    loading-screen="enabled: false"
+>
+        <a-assets>
+            <video id="videoElement" src=".\Assets\VG_Wip2.mp4" preload="auto" response-type="arraybuffer" loop
+                crossorigin="anonymous" webkit-playsinline autoplay muted playsinline></video>
+           
+            <audio id="backgroundAudio" src="./Assets/background_v2.mp3" preload="auto" loop crossorigin="anonymous"></audio>
+        </a-assets>
+
+        <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
+        <a-light type="ambient" color="#FFF"></a-light>
+        <a-entity id="target" mindar-image-target="targetIndex: 0" ar-controller
+                  smooth-position="target: #videooverlay; factor: 0.1">
+            <a-box id="dummyObject" visible="false"></a-box>  <!-- New dummy object -->
+            <a-video id="videooverlay" position="0 0 0" height="1" visible="false"></a-video>
+        </a-entity>
+    </a-scene>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
