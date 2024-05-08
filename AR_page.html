@@ -1,56 +1,100 @@
 <!DOCTYPE html>
+<!DOCTYPE html>
 <html>
 
 <head>
+    <!-- Set the viewport and initial scale for mobile devices -->
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <!-- Enable full-screen mode on Apple devices -->
     <meta name="apple-mobile-web-app-capable" content="yes">
+    
+    <!-- Set the character encoding -->
     <meta charset="UTF-8" />
 
+    <!-- Include the A-Frame library for WebVR development -->
     <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
+    
+    <!-- Include the MIND AR library for augmented reality features -->
     <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.1/dist/mindar-image-aframe.prod.js"></script>
+    
+    <!-- Include the custom JavaScript file for AR functionality -->
     <script src=".\Scripts\ar_page.js"></script>
-
+  
+  <!-- Set the title of the webpage -->
     <title>Smartify - HRP | The Kings Staircases</title>
+   <!-- Include the Poppins font from Google Fonts -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700&display=swap">
+    
+    <!-- Include the custom CSS file for styling -->
     <link rel="stylesheet" href=".\Scripts\ar_page.css">
+    
+  
 </head>
 
 <body>
-    <div id="background"></div>
-    <div id="startText">Point your camera at the painting</div>
-    <div id="audioPrompt">
-        <button id="audioButton">
-           <img id="audioPromptIcon" src=".\Assets\mute-icon.svg" alt="Audio Icon">
-    Enable Audio
-</button>
+    <div id="new-scanning-overlay" class="hidden">
+        <div id="icon-wrapper">
+          <img src="./Assets/Scanning-icon.svg" alt="Scanning Icon">
+          <div id="moving-line"></div>
+          <div id="background-in-icon-wrapper"></div>
+        </div>
     </div>
 
+    <!-- Background container -->
+<!--     <div id="background"></div> -->
+    
+    <!-- Text to prompt the user to point the camera at the painting -->
+    <div id="startText">Point your camera at the painting</div>
+    
+    <!-- Audio prompt container -->
+    <div id="audioPrompt">
+        <button id="audioButton">
+            <img id="audioPromptIcon" src="./Assets/mute-icon.svg" alt="Audio Icon">
+            Enable Audio
+        </button>
+    </div>
+    
     <!-- New back button -->
     <button id="backButton"></button>
 
-    <a-scene ar-controller
-    mindar-image="imageTargetSrc: .\Assets\VGtargets.mind; warmupTolerance: 10; missTolerance: 1; filterMinCF: 0.0001; filterBeta: 0.001"
-    color-space="sRGB"
-    renderer="colorManagement: true, physicallyCorrectLights"
-    vr-mode-ui="enabled: false"
-    device-orientation-permission-ui="enabled: false"
-    loading-screen="enabled: false"
->
+    <!-- A-Frame scene container -->
+    <a-scene
+        loading-screen="enabled: false"
+        mindar-image="imageTargetSrc: .\Assets\VGtargets.mind; uiLoading:no; uiScanning: #new-scanning-overlay; warmupTolerance: 10; missTolerance: 1; filterMinCF: 0.0001; filterBeta: 0.001"
+        color-space="sRGB"
+        renderer="colorManagement: true, physicallyCorrectLights"
+        vr-mode-ui="enabled: false"
+        device-orientation-permission-ui="enabled: false"
+        
+    >
+        <!-- Asset container -->
         <a-assets>
-            <video id="videoElement" src=".\Assets\VG_Wip2.mp4" preload="auto" response-type="arraybuffer" loop
-                crossorigin="anonymous" webkit-playsinline autoplay muted playsinline></video>
-           
-            <audio id="backgroundAudio" src="./Assets/background_v2.mp3" preload="auto" loop crossorigin="anonymous"></audio>
-        </a-assets>
+            <!-- Video 1 asset for the AR experience -->
+            <video id="video1" src=".\Assets\Videos\VID_1.mp4" preload="auto" response-type="arraybuffer" loop
+                crossorigin="anonymous" webkit-playsinline autoplay muted playsinline>
+            </video>
+       </a-assets>
 
+        <!-- Camera entity -->
         <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
+        
+        <!-- Ambient light entity -->
         <a-light type="ambient" color="#FFF"></a-light>
-        <a-entity id="target" mindar-image-target="targetIndex: 0" ar-controller
-                  smooth-position="target: #videooverlay; factor: 0.1">
-            <a-box id="dummyObject" visible="false"></a-box>  <!-- New dummy object -->
-            <a-video id="videooverlay" position="0 0 0" height="1" visible="false"></a-video>
-        </a-entity>
-    </a-scene>
+        
+        <!-- AR target 1 entity -->
+        <a-entity id="target1" mindar-image-target="targetIndex: 0" ar-controller
+            smooth-position="target: #videooverlay; factor: 0.1">
+            <a-plane id="videooverlay" 
+                material="src: #video1; opacity: 0; transparent: false; alphaTest: 0.5"
+                animation__fadein="startEvents: fadein; property: material.opacity; from: 0; to: 1; dur: 500;" height="1" width="1.26"
+                animation__fadeout="startEvents: fadeout; property: material.opacity; from: 1; to: 0; dur: 500;"></a-plane>
+        </a-entity>    
+      </a-scene>
+  <div id="textPanel" class="text-panel">
+    <p id="textPanelContent">Text will appear here during video.</p>
+</div>
+
 </body>
   <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-XT4SMTQCY2"></script>
