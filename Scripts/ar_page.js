@@ -119,12 +119,10 @@ document.addEventListener('DOMContentLoaded', function () {
         
         if (isPlaying) {
             currentAudio.pause();
-            playIcon.classList.remove('playing');
-            playIcon.classList.add('paused');
+            // For now, keep the same image since we only have one play button image
+            // You can add a pause button image later if needed
         } else {
             currentAudio.play();
-            playIcon.classList.remove('paused');
-            playIcon.classList.add('playing');
         }
         isPlaying = !isPlaying;
     }
@@ -173,8 +171,7 @@ document.addEventListener('DOMContentLoaded', function () {
         
         // Reset player state
         isPlaying = false;
-        playIcon.classList.remove('playing');
-        playIcon.classList.add('paused');
+        // Reset play icon (using the same image for now)
         progressFill.style.width = '0%';
         progressHandle.style.left = '0%';
         timeDisplay.textContent = '- 0:00';
@@ -184,8 +181,7 @@ document.addEventListener('DOMContentLoaded', function () {
             currentAudio.addEventListener('timeupdate', updateProgress);
             currentAudio.addEventListener('ended', () => {
                 isPlaying = false;
-                playIcon.classList.remove('playing');
-                playIcon.classList.add('paused');
+                // Reset to play state (same image for now)
             });
         }
     };

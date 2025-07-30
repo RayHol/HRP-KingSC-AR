@@ -295,15 +295,11 @@
 }
 
 .transcription-btn {
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.3);
+    background: transparent;
+    border: none;
     border-radius: 6px;
-    color: white;
-    font-size: 12px;
-    padding: 4px 8px;
+    padding: 4px;
     cursor: pointer;
-    min-width: 32px;
-    height: 24px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -311,7 +307,13 @@
 }
 
 .transcription-btn:hover {
-    background: rgba(255, 255, 255, 0.2);
+    opacity: 0.8;
+}
+
+.transcript-icon {
+    width: 24px;
+    height: 24px;
+    object-fit: contain;
 }
 
 .player-controls {
@@ -324,7 +326,7 @@
     width: 48px;
     height: 48px;
     border-radius: 50%;
-    background: rgba(255, 255, 255, 0.1);
+    background: transparent;
     border: none;
     cursor: pointer;
     display: flex;
@@ -334,31 +336,13 @@
 }
 
 .play-pause-btn:hover {
-    background: rgba(255, 255, 255, 0.2);
+    opacity: 0.8;
 }
 
 .play-icon {
-    width: 0;
-    height: 0;
-    border-left: 12px solid white;
-    border-top: 8px solid transparent;
-    border-bottom: 8px solid transparent;
-    margin-left: 2px;
-}
-
-.play-icon.paused {
-    border-left: 12px solid white;
-    border-top: 8px solid transparent;
-    border-bottom: 8px solid transparent;
-}
-
-.play-icon.playing {
-    width: 16px;
-    height: 16px;
-    border: 2px solid white;
-    border-left: none;
-    border-right: none;
-    background: transparent;
+    width: 48px;
+    height: 48px;
+    object-fit: contain;
 }
 
 .progress-container {
