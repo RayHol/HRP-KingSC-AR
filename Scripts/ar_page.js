@@ -1,3 +1,234 @@
+// Media Player Functionality - Define first
+let showMediaPlayer, hideMediaPlayer;
+
+// Define functions immediately so they're available for AR controller
+showMediaPlayer = function(audio, title) {
+    console.log('showMediaPlayer called with:', title);
+    const mediaPlayer = document.getElementById('mediaPlayer');
+    const trackTitle = document.getElementById('trackTitle');
+    const playIcon = document.querySelector('.play-icon');
+    const progressFill = document.getElementById('progressFill');
+    const progressHandle = document.getElementById('progressHandle');
+    const timeDisplay = document.getElementById('timeDisplay');
+    
+    console.log('Media player element:', mediaPlayer);
+    console.log('Track title element:', trackTitle);
+    
+    if (mediaPlayer && trackTitle) {
+        trackTitle.textContent = title;
+        mediaPlayer.classList.remove('hidden');
+        console.log('Media player should now be visible');
+        console.log('Media player classes:', mediaPlayer.className);
+        
+        // Reset player state
+        if (playIcon) {
+            playIcon.classList.remove('playing');
+            playIcon.classList.add('paused');
+        }
+        if (progressFill) progressFill.style.width = '0%';
+        if (progressHandle) progressHandle.style.left = '0%';
+        if (timeDisplay) timeDisplay.textContent = '- 0:00';
+    } else {
+        console.log('Media player elements not found');
+    }
+};
+
+hideMediaPlayer = function() {
+    const mediaPlayer = document.getElementById('mediaPlayer');
+    if (mediaPlayer) {
+        mediaPlayer.classList.add('hidden');
+    }
+};
+
+    // Make functions globally available immediately
+    window.showMediaPlayer = showMediaPlayer;
+    window.hideMediaPlayer = hideMediaPlayer;
+
+document.addEventListener('DOMContentLoaded', function () {
+    const mediaPlayer = document.getElementById('mediaPlayer');
+    const trackTitle = document.getElementById('trackTitle');
+    const playPauseBtn = document.getElementById('playPauseBtn');
+    const playIcon = playPauseBtn ? playPauseBtn.querySelector('.play-icon') : null;
+    const progressFill = document.getElementById('progressFill');
+    const progressHandle = document.getElementById('progressHandle');
+    const progressBar = document.querySelector('.progress-bar');
+    const timeDisplay = document.getElementById('timeDisplay');
+    const speedBtn = document.getElementById('speedBtn');
+    const transcriptionBtn = document.getElementById('transcriptionBtn');
+    const transcriptionPanel = document.getElementById('transcriptionPanel');
+    const closeTranscriptionBtn = document.getElementById('closeTranscriptionBtn');
+    const transcriptionText = document.getElementById('transcriptionText');
+    
+    // Debug: Check if elements exist
+    console.log('Media player elements check:');
+    console.log('mediaPlayer:', mediaPlayer);
+    console.log('trackTitle:', trackTitle);
+    console.log('playPauseBtn:', playPauseBtn);
+    console.log('playIcon:', playIcon);
+
+    // Audio elements for each video - Define globally so they're accessible to target events
+    window.audio1 = new Audio('./Assets/Audio/Tromp L\'oeil.mp3');
+    window.audio2 = new Audio('./Assets/Audio/Peacock.mp3');
+    window.audio3 = new Audio('./Assets/Audio/Banquet of the Gods.mp3');
+    
+    // Handle audio loading errors
+    window.audio1.addEventListener('error', () => {
+        console.log('Audio1 failed to load');
+    });
+    window.audio2.addEventListener('error', () => {
+        console.log('Audio2 failed to load');
+    });
+    window.audio3.addEventListener('error', () => {
+        console.log('Audio3 failed to load');
+    });
+    
+    let currentAudio = null;
+    let isPlaying = false;
+    let currentSpeed = 1;
+    const speeds = [0.5, 0.75, 1, 1.25, 1.5, 2];
+
+    // Transcription texts for each audio
+    const transcriptions = {
+        'audio1': "This is the transcription for the first audio track. It contains the full text of what is being spoken in the audio file.",
+        'audio2': "This is the transcription for the second audio track. It contains the full text of what is being spoken in the audio file.",
+        'audio3': "This is the transcription for the third audio track. It contains the full text of what is being spoken in the audio file."
+    };
+
+    // Function to format time
+    function formatTime(seconds) {
+        const mins = Math.floor(seconds / 60);
+        const secs = Math.floor(seconds % 60);
+        return `${mins}:${secs.toString().padStart(2, '0')}`;
+    }
+
+    // Function to update progress bar
+    function updateProgress() {
+        if (currentAudio && !isNaN(currentAudio.duration)) {
+            const progress = (currentAudio.currentTime / currentAudio.duration) * 100;
+            progressFill.style.width = progress + '%';
+            progressHandle.style.left = progress + '%';
+            
+            const remaining = currentAudio.duration - currentAudio.currentTime;
+            timeDisplay.textContent = `- ${formatTime(remaining)}`;
+        }
+    }
+
+    // Function to play/pause audio
+    function togglePlayPause() {
+        if (!currentAudio) return;
+        
+        if (isPlaying) {
+            currentAudio.pause();
+            playIcon.classList.remove('playing');
+            playIcon.classList.add('paused');
+        } else {
+            currentAudio.play();
+            playIcon.classList.remove('paused');
+            playIcon.classList.add('playing');
+        }
+        isPlaying = !isPlaying;
+    }
+
+    // Function to change playback speed
+    function changeSpeed() {
+        const currentIndex = speeds.indexOf(currentSpeed);
+        const nextIndex = (currentIndex + 1) % speeds.length;
+        currentSpeed = speeds[nextIndex];
+        speedBtn.textContent = currentSpeed + 'x';
+        
+        if (currentAudio) {
+            currentAudio.playbackRate = currentSpeed;
+        }
+    }
+
+    // Function to show transcription
+    function showTranscription() {
+        const currentAudioKey = getCurrentAudioKey();
+        if (currentAudioKey && transcriptions[currentAudioKey]) {
+            transcriptionText.textContent = transcriptions[currentAudioKey];
+            transcriptionPanel.classList.remove('hidden');
+        }
+    }
+
+    // Function to hide transcription
+    function hideTranscription() {
+        transcriptionPanel.classList.add('hidden');
+    }
+
+    // Function to get current audio key
+    function getCurrentAudioKey() {
+        if (currentAudio === audio1) return 'audio1';
+        if (currentAudio === audio2) return 'audio2';
+        if (currentAudio === audio3) return 'audio3';
+        return null;
+    }
+
+    // Function to show media player with specific audio
+    showMediaPlayer = function(audio, title) {
+        console.log('showMediaPlayer called with:', title);
+        currentAudio = audio;
+        trackTitle.textContent = title;
+        mediaPlayer.classList.remove('hidden');
+        console.log('Media player should now be visible');
+        
+        // Reset player state
+        isPlaying = false;
+        playIcon.classList.remove('playing');
+        playIcon.classList.add('paused');
+        progressFill.style.width = '0%';
+        progressHandle.style.left = '0%';
+        timeDisplay.textContent = '- 0:00';
+        
+        // Set up audio event listeners (only if audio exists)
+        if (currentAudio && currentAudio.src) {
+            currentAudio.addEventListener('timeupdate', updateProgress);
+            currentAudio.addEventListener('ended', () => {
+                isPlaying = false;
+                playIcon.classList.remove('playing');
+                playIcon.classList.add('paused');
+            });
+        }
+    };
+
+    // Function to hide media player
+    hideMediaPlayer = function() {
+        if (currentAudio) {
+            currentAudio.pause();
+            currentAudio = null;
+        }
+        mediaPlayer.classList.add('hidden');
+        hideTranscription();
+    };
+
+    // Event listeners
+    playPauseBtn.addEventListener('click', togglePlayPause);
+    speedBtn.addEventListener('click', changeSpeed);
+    transcriptionBtn.addEventListener('click', showTranscription);
+    closeTranscriptionBtn.addEventListener('click', hideTranscription);
+
+    // Progress bar click handling
+    progressBar.addEventListener('click', (e) => {
+        if (!currentAudio) return;
+        
+        const rect = progressBar.getBoundingClientRect();
+        const clickX = e.clientX - rect.left;
+        const progress = (clickX / rect.width) * 100;
+        const newTime = (progress / 100) * currentAudio.duration;
+        
+        currentAudio.currentTime = newTime;
+        updateProgress();
+    });
+
+    // Make functions globally available for AR controller
+    window.showMediaPlayer = showMediaPlayer;
+    window.hideMediaPlayer = hideMediaPlayer;
+    
+
+    
+
+});
+
+// AR Controller
 document.addEventListener('DOMContentLoaded', function () {
   AFRAME.registerComponent("ar-controller", {
     init: function () {
@@ -76,6 +307,15 @@ document.addEventListener('DOMContentLoaded', function () {
                 }, false);
                 plane1.object3D.position.copy(plane1.object3D.position);
             }
+            
+            // Show media player for target 1 (always show when target is found)
+            console.log('Target 1 found, attempting to show media player');
+            if (window.showMediaPlayer) {
+                console.log('showMediaPlayer function exists, calling it');
+                window.showMediaPlayer(window.audio1, "Tromp L'oeil");
+            } else {
+                console.log('showMediaPlayer function does not exist');
+            }
         });
 
         // Event listener for first target lost event
@@ -87,6 +327,12 @@ document.addEventListener('DOMContentLoaded', function () {
             if (!played1) {
                 video1.pause();
                 startText.style.display = "block";
+            }
+            
+            // Hide media player (always hide when target is lost)
+            console.log('Target 1 lost, hiding media player');
+            if (window.hideMediaPlayer) {
+                window.hideMediaPlayer();
             }
         });
 
@@ -105,6 +351,11 @@ document.addEventListener('DOMContentLoaded', function () {
                 }, false);
                 plane2.object3D.position.copy(plane2.object3D.position);
             }
+            
+            // Show media player for target 2 (always show when target is found)
+            if (window.showMediaPlayer) {
+                window.showMediaPlayer(window.audio2, "Peacock");
+            }
         });
 
         // Event listener for second target lost event
@@ -116,6 +367,12 @@ document.addEventListener('DOMContentLoaded', function () {
             if (!played2) {
                 video2.pause();
                 startText.style.display = "block";
+            }
+            
+            // Hide media player (always hide when target is lost)
+            console.log('Target 2 lost, hiding media player');
+            if (window.hideMediaPlayer) {
+                window.hideMediaPlayer();
             }
         });
 
@@ -134,17 +391,28 @@ document.addEventListener('DOMContentLoaded', function () {
                 }, false);
                 plane3.object3D.position.copy(plane3.object3D.position);
             }
+            
+            // Show media player for target 3 (always show when target is found)
+            if (window.showMediaPlayer) {
+                window.showMediaPlayer(window.audio3, "Banquet of the Gods");
+            }
         });
 
         // Event listener for third target lost event
         target3.addEventListener("targetLost", () => {
             console.log("target 3 lost");
             audioPrompt.style.display = "block";
-            // document.getElementById('textPanel').style.display = "none";  // Hide the text panel
+            // document.getElementById('textPanel').style.display = "block";  // Hide the text panel
             this.found3 = false;
             if (!played3) {
                 video3.pause();
                 startText.style.display = "block";
+            }
+            
+            // Hide media player (always hide when target is lost)
+            console.log('Target 3 lost, hiding media player');
+            if (window.hideMediaPlayer) {
+                window.hideMediaPlayer();
             }
         });
 
@@ -175,6 +443,8 @@ document.addEventListener('DOMContentLoaded', function () {
         },
     });
 });
+
+
 
 // Timed text element - COMMENTED OUT
 /*

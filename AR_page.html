@@ -45,7 +45,7 @@
 <!--     <div id="background"></div> -->
     
     <!-- Text to prompt the user to point the camera at the painting -->
-    <div id="startText">Point your camera at the fresco's</div>
+    <div id="startText">Point your camera at the murals</div>
     
     <!-- Audio prompt container -->
     <div id="audioPrompt">
@@ -117,9 +117,43 @@
                 animation__fadeout="startEvents: fadeout3; property: material.opacity; from: 1; to: 0; dur: 500;"></a-plane>
         </a-entity>
       </a-scene>
-  <!-- <div id="textPanel" class="text-panel">
-    <p id="textPanelContent">                                                 </p>
-</div> -->
+  <!-- Media Player -->
+  <div id="mediaPlayer" class="media-player hidden">
+    <div class="player-content">
+      <div class="player-header">
+        <h3 id="trackTitle" class="track-title">Track Title</h3>
+        <button id="transcriptionBtn" class="transcription-btn">66</button>
+      </div>
+      <div class="player-controls">
+        <button id="playPauseBtn" class="play-pause-btn">
+          <div class="play-icon"></div>
+        </button>
+        <div class="progress-container">
+          <div class="progress-bar">
+            <div id="progressFill" class="progress-fill"></div>
+            <div id="progressHandle" class="progress-handle"></div>
+          </div>
+          <span id="timeDisplay" class="time-display">- 0:00</span>
+        </div>
+      </div>
+      <div class="player-footer">
+        <button id="speedBtn" class="speed-btn">1x</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Transcription Panel -->
+  <div id="transcriptionPanel" class="transcription-panel hidden">
+    <div class="transcription-content">
+      <div class="transcription-header">
+        <h3>Transcription</h3>
+        <button id="closeTranscriptionBtn" class="close-btn">×</button>
+      </div>
+      <div id="transcriptionText" class="transcription-text">
+        <!-- Transcription text will be loaded here -->
+      </div>
+    </div>
+  </div>
 
 </body>
   <!-- Google tag (gtag.js) -->
