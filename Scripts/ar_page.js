@@ -70,6 +70,7 @@ document.addEventListener('DOMContentLoaded', function () {
     window.audio1 = new Audio('./Assets/Audio/Tromp L\'oeil.mp3');
     window.audio2 = new Audio('./Assets/Audio/Peacock.mp3');
     window.audio3 = new Audio('./Assets/Audio/Banquet of the Gods.mp3');
+    window.audio4 = new Audio('./Assets/Audio/Peacock.mp3');
     
     // Handle audio loading errors
     window.audio1.addEventListener('error', () => {
@@ -81,6 +82,9 @@ document.addEventListener('DOMContentLoaded', function () {
     window.audio3.addEventListener('error', () => {
         console.log('Audio3 failed to load');
     });
+    window.audio4.addEventListener('error', () => {
+        console.log('Audio4 failed to load');
+    });
     
     let currentAudio = null;
     let isPlaying = false;
@@ -91,7 +95,8 @@ document.addEventListener('DOMContentLoaded', function () {
     const transcriptions = {
         'audio1': "This is the transcription for the first audio track. It contains the full text of what is being spoken in the audio file.",
         'audio2': "This is the transcription for the second audio track. It contains the full text of what is being spoken in the audio file.",
-        'audio3': "This is the transcription for the third audio track. It contains the full text of what is being spoken in the audio file."
+        'audio3': "This is the transcription for the third audio track. It contains the full text of what is being spoken in the audio file.",
+        'audio4': "This is the transcription for the fourth audio track. It contains the full text of what is being spoken in the audio file."
     };
 
     // Function to format time
@@ -158,6 +163,7 @@ document.addEventListener('DOMContentLoaded', function () {
         if (currentAudio === audio1) return 'audio1';
         if (currentAudio === audio2) return 'audio2';
         if (currentAudio === audio3) return 'audio3';
+        if (currentAudio === audio4) return 'audio4';
         return null;
     }
 
@@ -234,15 +240,18 @@ document.addEventListener('DOMContentLoaded', function () {
         const target1 = document.getElementById("target1");
         const target2 = document.getElementById("target2");
         const target3 = document.getElementById("target3");
+        const target4 = document.getElementById("target4");
         const video1 = document.getElementById("video1");
         const video2 = document.getElementById("video2");
         const video3 = document.getElementById("video3");
+        const video4 = document.getElementById("video4");
         const audioButton = document.getElementById("audioButton");
         const audioPrompt = document.getElementById("audioPrompt");
         const audioPromptIcon = document.getElementById("audioPromptIcon");
         const plane1 = document.getElementById("videooverlay1");
         const plane2 = document.getElementById("videooverlay2");
         const plane3 = document.getElementById("videooverlay3");
+        const plane4 = document.getElementById("videooverlay4");
         const startText = document.getElementById("startText");
         const backgroundImage = document.getElementById("background");
         const backButton = document.getElementById("backButton");
@@ -251,6 +260,7 @@ document.addEventListener('DOMContentLoaded', function () {
         var played1 = false;
         var played2 = false;
         var played3 = false;
+        var played4 = false;
         var userInteracted = false;
         var isMuted = true;
         
@@ -272,14 +282,17 @@ document.addEventListener('DOMContentLoaded', function () {
                     let wasVideo1Playing = !video1.paused;
                     let wasVideo2Playing = !video2.paused;
                     let wasVideo3Playing = !video3.paused;
+                    let wasVideo4Playing = !video4.paused;
                     
                     video1.muted = isMuted;
                     video2.muted = isMuted;
                     video3.muted = isMuted;
+                    video4.muted = isMuted;
                     
                     if (wasVideo1Playing) video1.play();
                     if (wasVideo2Playing) video2.play();
                     if (wasVideo3Playing) video3.play();
+                    if (wasVideo4Playing) video4.play();
 
                     if (isMuted) {
                         audioButton.innerHTML = '<img id="audioPromptIcon" src="./Assets/mute-icon.svg" alt="Audio Icon"> Enable Audio';
@@ -412,12 +425,53 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
 
+        // Event listener for fourth target found event
+        target4.addEventListener("targetFound", () => {
+            console.log("target 4 found");
+            this.found4 = true;
+            audioPrompt.style.display = "block";
+            // document.getElementById('textPanel').style.display = "block";  // Show the text panel
+            if (!played4) {
+                startText.style.display = "none";
+                plane4.emit("fadein4");
+                video4.play();
+                video4.addEventListener("ended", function videoend(e) {
+                    played4 = true;
+                }, false);
+                plane4.object3D.position.copy(plane4.object3D.position);
+            }
+            
+            // Show media player for target 4 (always show when target is found)
+            if (window.showMediaPlayer) {
+                window.showMediaPlayer(window.audio4, "Peacock");
+            }
+        });
+
+        // Event listener for fourth target lost event
+        target4.addEventListener("targetLost", () => {
+            console.log("target 4 lost");
+            audioPrompt.style.display = "block";
+            // document.getElementById('textPanel').style.display = "none";  // Hide the text panel
+            this.found4 = false;
+            if (!played4) {
+                video4.pause();
+                startText.style.display = "block";
+            }
+            
+            // Hide media player (always hide when target is lost)
+            console.log('Target 4 lost, hiding media player');
+            if (window.hideMediaPlayer) {
+                window.hideMediaPlayer();
+            }
+        });
+
         // Event listener for arframe event
         this.el.addEventListener("arframe", () => {
-            if (!this.found1 && !this.found2 && !this.found3 && (played1 || played2 || played3)) {
+            if (!this.found1 && !this.found2 && !this.found3 && !this.found4 && (played1 || played2 || played3 || played4)) {
                 if (played1) plane1.object3D.position.copy(plane1.object3D.position);
                 if (played2) plane2.object3D.position.copy(plane2.object3D.position);
                 if (played3) plane3.object3D.position.copy(plane3.object3D.position);
+                if (played4) plane4.object3D.position.copy(plane4.object3D.position);
             }
         });
       
