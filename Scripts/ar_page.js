@@ -319,13 +319,12 @@ document.addEventListener('DOMContentLoaded', function () {
             
             // Show media player for target 1 (always show when target is found)
             console.log('Target 1 found, attempting to show media player');
-            // Temporarily disabled media player display for testing
-            // if (window.showMediaPlayer) {
-            //     console.log('showMediaPlayer function exists, calling it');
-            //     window.showMediaPlayer(window.audio1, "Tromp L'oeil");
-            // } else {
-            //     console.log('showMediaPlayer function does not exist');
-            // }
+            if (window.showMediaPlayer) {
+                console.log('showMediaPlayer function exists, calling it');
+                window.showMediaPlayer(window.audio1, "Tromp L'oeil");
+            } else {
+                console.log('showMediaPlayer function does not exist');
+            }
         });
 
         // Event listener for first target lost event
@@ -341,10 +340,9 @@ document.addEventListener('DOMContentLoaded', function () {
             
             // Hide media player (always hide when target is lost)
             console.log('Target 1 lost, hiding media player');
-            // Temporarily disabled media player hiding for testing
-            // if (window.hideMediaPlayer) {
-            //     window.hideMediaPlayer();
-            // }
+            if (window.hideMediaPlayer) {
+                window.hideMediaPlayer();
+            }
         });
 
         // Event listener for second target found event
@@ -364,10 +362,9 @@ document.addEventListener('DOMContentLoaded', function () {
             }
             
             // Show media player for target 2 (always show when target is found)
-            // Temporarily disabled media player display for testing
-            // if (window.showMediaPlayer) {
-            //     window.showMediaPlayer(window.audio2, "Peacock");
-            // }
+            if (window.showMediaPlayer) {
+                window.showMediaPlayer(window.audio2, "Peacock");
+            }
         });
 
         // Event listener for second target lost event
@@ -383,10 +380,9 @@ document.addEventListener('DOMContentLoaded', function () {
             
             // Hide media player (always hide when target is lost)
             console.log('Target 2 lost, hiding media player');
-            // Temporarily disabled media player hiding for testing
-            // if (window.hideMediaPlayer) {
-            //     window.hideMediaPlayer();
-            // }
+            if (window.hideMediaPlayer) {
+                window.hideMediaPlayer();
+            }
         });
 
         // Event listener for third target found event
@@ -406,10 +402,9 @@ document.addEventListener('DOMContentLoaded', function () {
             }
             
             // Show media player for target 3 (always show when target is found)
-            // Temporarily disabled media player display for testing
-            // if (window.showMediaPlayer) {
-            //     window.showMediaPlayer(window.audio3, "Banquet of the Gods");
-            // }
+            if (window.showMediaPlayer) {
+                window.showMediaPlayer(window.audio3, "Banquet of the Gods");
+            }
         });
 
         // Event listener for third target lost event
@@ -425,10 +420,9 @@ document.addEventListener('DOMContentLoaded', function () {
             
             // Hide media player (always hide when target is lost)
             console.log('Target 3 lost, hiding media player');
-            // Temporarily disabled media player hiding for testing
-            // if (window.hideMediaPlayer) {
-            //     window.hideMediaPlayer();
-            // }
+            if (window.hideMediaPlayer) {
+                window.hideMediaPlayer();
+            }
         });
 
         // Event listener for fourth target found event
@@ -448,10 +442,9 @@ document.addEventListener('DOMContentLoaded', function () {
             }
             
             // Show media player for target 4 (always show when target is found)
-            // Temporarily disabled media player display for testing
-            // if (window.showMediaPlayer) {
-            //     window.showMediaPlayer(window.audio4, "Peacock");
-            // }
+            if (window.showMediaPlayer) {
+                window.showMediaPlayer(window.audio4, "Peacock");
+            }
         });
 
         // Event listener for fourth target lost event
@@ -467,10 +460,9 @@ document.addEventListener('DOMContentLoaded', function () {
             
             // Hide media player (always hide when target is lost)
             console.log('Target 4 lost, hiding media player');
-            // Temporarily disabled media player hiding for testing
-            // if (window.hideMediaPlayer) {
-            //     window.hideMediaPlayer();
-            // }
+            if (window.hideMediaPlayer) {
+                window.hideMediaPlayer();
+            }
         });
 
         // Event listener for arframe event
