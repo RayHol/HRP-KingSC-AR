@@ -71,15 +71,19 @@
         <!-- Asset container -->
         <a-assets>
             <!-- Video 1 asset for target 1 -->
-            <video id="video1" src=".\Assets\Videos\cw_guitar.mp4" preload="auto" response-type="arraybuffer" loop
+            <video id="video1" src=".\Assets\Videos\c7. Central Wall - Romulus.mp4" preload="auto" response-type="arraybuffer" loop
                 crossorigin="anonymous" webkit-playsinline autoplay muted playsinline>
             </video>
             <!-- Video 2 asset for target 2 -->
-            <video id="video2" src=".\Assets\Videos\ceiling1.mp4" preload="auto" response-type="arraybuffer" loop
+            <video id="video2" src=".\Assets\Videos\3. Ceiling - Banquet of the Gods.mp4" preload="auto" response-type="arraybuffer" loop
                 crossorigin="anonymous" webkit-playsinline autoplay muted playsinline>
             </video>
             <!-- Video 3 asset for target 3 -->
-            <video id="video3" src=".\Assets\Videos\cw_all.mp4" preload="auto" response-type="arraybuffer" loop
+            <video id="video3" src=".\Assets\Videos\2. Central Wall - Clouds.mp4" preload="auto" response-type="arraybuffer" loop
+                crossorigin="anonymous" webkit-playsinline autoplay muted playsinline>
+            </video>
+            <!-- Video 4 asset for target 4 -->
+            <video id="video4" src=".\Assets\Videos\5. Ceiling - Peacock.mp4" preload="auto" response-type="arraybuffer" loop
                 crossorigin="anonymous" webkit-playsinline autoplay muted playsinline>
             </video>
        </a-assets>
@@ -95,7 +99,7 @@
             smooth-position="target: #videooverlay1; factor: 0.1">
             <a-plane id="videooverlay1" 
                 material="src: #video1; opacity: 0; transparent: false; alphaTest: 0.5"
-                animation__fadein="startEvents: fadein1; property: material.opacity; from: 0; to: 1; dur: 500;" height="1.2" width="2"
+                animation__fadein="startEvents: fadein1; property: material.opacity; from: 0; to: 1; dur: 500;" height="2" width="1.2"
                 animation__fadeout="startEvents: fadeout1; property: material.opacity; from: 1; to: 0; dur: 500;"></a-plane>
         </a-entity>
 
@@ -104,7 +108,7 @@
             smooth-position="target: #videooverlay2; factor: 0.1">
             <a-plane id="videooverlay2" 
                 material="src: #video2; opacity: 0; transparent: false; alphaTest: 0.5"
-                animation__fadein="startEvents: fadein2; property: material.opacity; from: 0; to: 1; dur: 500;" height="1.5" width="2"
+                animation__fadein="startEvents: fadein2; property: material.opacity; from: 0; to: 1; dur: 500;" height="2" width="1.2"
                 animation__fadeout="startEvents: fadeout2; property: material.opacity; from: 1; to: 0; dur: 500;"></a-plane>
         </a-entity>
 
@@ -113,9 +117,16 @@
             smooth-position="target: #videooverlay3; factor: 0.1">
             <a-plane id="videooverlay3" 
                 material="src: #video3; opacity: 0; transparent: false; alphaTest: 0.5"
-                animation__fadein="startEvents: fadein3; property: material.opacity; from: 0; to: 1; dur: 500;" height="1.2" width="2
+                animation__fadein="startEvents: fadein3; property: material.opacity; from: 0; to: 1; dur: 500;" height="2" width="1.2
                 animation__fadeout="startEvents: fadeout3; property: material.opacity; from: 1; to: 0; dur: 500;"></a-plane>
         </a-entity>
+
+        <!-- AR target 4 entity -->
+        <a-entity id="target4" mindar-image-target="targetIndex: 3" ar-controller
+            smooth-position="target: #videooverlay4; factor: 0.1">
+            <a-plane id="videooverlay4" 
+                material="src: #video4; opacity: 0; transparent: false; alphaTest: 0.5"
+                animation__fadein="startEvents: fadein4; property: material.opacity; from: 0; to: 1; dur: 500;" height="2" width="1.2"
       </a-scene>
   <!-- Media Player -->
   <div id="mediaPlayer" class="media-player hidden">
