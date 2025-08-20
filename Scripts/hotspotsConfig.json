@@ -1,0 +1,342 @@
+{
+    "clouds": {
+        "common": {
+            "scale": "7.5 4 1",
+            "rotation": "0 0 0",
+            "fixedAngleDegrees": 32,
+            "initialY": 36.8,
+            "initialZ": -42
+        },
+        "media": [
+            {
+                "type": "image",
+                "url": "./Assets/hotspot-icons/hotspot.png",
+                "frameUrl": "./Assets/hotspot-icons/hotspot.png",
+                "info": "Clouds",
+                "audioUrl": "",
+                "link": "",
+                "description": ""
+            }
+        ]
+    },
+    "banquet_of_the_gods": {
+        "common": {
+            "scale": "7.5 4 1",
+            "rotation": "0 0 0",
+            "fixedAngleDegrees": 59.22,
+            "initialY": 146.94,
+            "initialZ": -39.88
+        },
+        "media": [
+            {
+                "type": "image",
+                "url": "./Assets/hotspot-icons/hotspot.png",
+                "frameUrl": "./Assets/hotspot-icons/hotspot.png",
+                "info": "Banquet of the Gods",
+                "audioUrl": "",
+                "link": "",
+                "description": ""
+            }
+        ]
+    },
+    "peacock": {
+        "common": {
+            "scale": "7.5 4 1",
+            "rotation": "0 0 0",
+            "fixedAngleDegrees": 58.94,
+            "initialY": 133.95,
+            "initialZ": -40.22
+        },
+        "media": [
+            {
+                "type": "image",
+                "url": "./Assets/hotspot-icons/hotspot.png",
+                "frameUrl": "./Assets/hotspot-icons/hotspot.png",
+                "info": "Peacock",
+                "audioUrl": "",
+                "link": "",
+                "description": ""
+            }
+        ]
+    },
+    "three_graces": {
+        "common": {
+            "scale": "7.5 4 1",
+            "rotation": "0 0 0",
+            "fixedAngleDegrees": 96.81,
+            "initialY": 62.73,
+            "initialZ": 5.06
+        },
+        "media": [
+            {
+                "type": "image",
+                "url": "./Assets/hotspot-icons/hotspot.png",
+                "frameUrl": "./Assets/hotspot-icons/hotspot.png",
+                "info": "Three Graces",
+                "audioUrl": "",
+                "link": "",
+                "description": ""
+            }
+        ]
+    },
+    "trumpeter": {
+        "common": {
+            "scale": "7.5 4 1",
+            "rotation": "0 0 0",
+            "fixedAngleDegrees": -90,
+            "initialY": 180,
+            "initialZ": -0.86
+        },
+        "media": [
+            {
+                "type": "image",
+                "url": "./Assets/hotspot-icons/hotspot.png",
+                "frameUrl": "./Assets/hotspot-icons/hotspot.png",
+                "info": "Trumpeter",
+                "audioUrl": "",
+                "link": "",
+                "description": ""
+            }
+        ]
+    },
+    "romulus": {
+        "common": {
+            "scale": "7.5 4 1",
+            "rotation": "0 0 0",
+            "fixedAngleDegrees": 7.28,
+            "initialY": 28.87,
+            "initialZ": -49.60
+        },
+        "media": [
+            {
+                "type": "image",
+                "url": "./Assets/hotspot-icons/hotspot.png",
+                "frameUrl": "./Assets/hotspot-icons/hotspot.png",
+                "info": "Romulus",
+                "audioUrl": "",
+                "link": "",
+                "description": ""
+            }
+        ]
+    },
+    "caesar": {
+        "common": {
+            "scale": "7.5 4 1",
+            "rotation": "0 0 0",
+            "fixedAngleDegrees": 4.55,
+            "initialY": 15.94,
+            "initialZ": -49.11
+        },
+        "media": [
+            {
+                "type": "image",
+                "url": "./Assets/hotspot-icons/hotspot.png",
+                "frameUrl": "./Assets/hotspot-icons/hotspot.png",
+                "info": "Caesar",
+                "audioUrl": "",
+                "link": "",
+                "description": ""
+            }
+        ]
+    },
+    "nero": {
+        "common": {
+            "scale": "7.5 4 1",
+            "rotation": "0 0 0",
+            "fixedAngleDegrees": -10.85,
+            "initialY": 15.36,
+            "initialZ": -49.11
+        },
+        "media": [
+            {
+                "type": "image",
+                "url": "./Assets/hotspot-icons/hotspot.png",
+                "frameUrl": "./Assets/hotspot-icons/hotspot.png",
+                "info": "Nero",
+                "audioUrl": "",
+                "link": "",
+                "description": ""
+            }
+        ]
+    },
+    "silenus": {
+        "common": {
+            "scale": "7.5 4 1",
+            "rotation": "0 0 0",
+            "fixedAngleDegrees": 29.12,
+            "initialY": 27.95,
+            "initialZ": -43.68
+        },
+        "media": [
+            {
+                "type": "image",
+                "url": "./Assets/hotspot-icons/hotspot.png",
+                "frameUrl": "./Assets/hotspot-icons/hotspot.png",
+                "info": "Silenus",
+                "audioUrl": "",
+                "link": "",
+                "description": ""
+            }
+        ]
+    },
+    "furie": {
+        "common": {
+            "scale": "7.5 4 1",
+            "rotation": "0 0 0",
+            "fixedAngleDegrees": 21.21,
+            "initialY": 22.25,
+            "initialZ": -46.61
+        },
+        "media": [
+            {
+                "type": "image",
+                "url": "./Assets/hotspot-icons/hotspot.png",
+                "frameUrl": "./Assets/hotspot-icons/hotspot.png",
+                "info": "Furie",
+                "audioUrl": "",
+                "link": "",
+                "description": ""
+            }
+        ]
+    },
+    "herakles": {
+        "common": {
+            "scale": "7.5 4 1",
+            "rotation": "0 0 0",
+            "fixedAngleDegrees": 34.02,
+            "initialY": 22.25,
+            "initialZ": -41.44
+        },
+        "media": [
+            {
+                "type": "image",
+                "url": "./Assets/hotspot-icons/hotspot.png",
+                "frameUrl": "./Assets/hotspot-icons/hotspot.png",
+                "info": "Herakles",
+                "audioUrl": "",
+                "link": "",
+                "description": ""
+            }
+        ]
+    },
+    "alexander": {
+        "common": {
+            "scale": "7.5 4 1",
+            "rotation": "0 0 0",
+            "fixedAngleDegrees": 35.85,
+            "initialY": -10.14,
+            "initialZ": -38.94
+        },
+        "media": [
+            {
+                "type": "image",
+                "url": "./Assets/hotspot-icons/hotspot.png",
+                "frameUrl": "./Assets/hotspot-icons/hotspot.png",
+                "info": "Alexander",
+                "audioUrl": "",
+                "link": "",
+                "description": ""
+            }
+        ]
+    },
+    "diana": {
+        "common": {
+            "scale": "7.5 4 1",
+            "rotation": "0 0 0",
+            "fixedAngleDegrees": 19.18,
+            "initialY": 42.38,
+            "initialZ": -47.22
+        },
+        "media": [
+            {
+                "type": "image",
+                "url": "./Assets/hotspot-icons/hotspot.png",
+                "frameUrl": "./Assets/hotspot-icons/hotspot.png",
+                "info": "Diana",
+                "audioUrl": "",
+                "link": "",
+                "description": ""
+            }
+        ]
+    },
+    "harvest": {
+        "common": {
+            "scale": "7.5 4 1",
+            "rotation": "0 0 0",
+            "fixedAngleDegrees": 85.61,
+            "initialY": -18.24,
+            "initialZ": -3.83
+        },
+        "media": [
+            {
+                "type": "image",
+                "url": "./Assets/hotspot-icons/hotspot.png",
+                "frameUrl": "./Assets/hotspot-icons/hotspot.png",
+                "info": "Harvest",
+                "audioUrl": "",
+                "link": "",
+                "description": ""
+            }
+        ]
+    },
+    "cherub": {
+        "common": {
+            "scale": "7.5 4 1",
+            "rotation": "0 0 0",
+            "fixedAngleDegrees": 91.77,
+            "initialY": 18.24,
+            "initialZ": 1.54
+        },
+        "media": [
+            {
+                "type": "image",
+                "url": "./Assets/hotspot-icons/hotspot.png",
+                "frameUrl": "./Assets/hotspot-icons/hotspot.png",
+                "info": "Cherub",
+                "audioUrl": "",
+                "link": "",
+                "description": ""
+            }
+        ]
+    },
+    "musicians": {
+        "common": {
+            "scale": "7.5 4 1",
+            "rotation": "0 0 0",
+            "fixedAngleDegrees": 87.99,
+            "initialY": -37.26,
+            "initialZ": -1.75
+        },
+        "media": [
+            {
+                "type": "image",
+                "url": "./Assets/hotspot-icons/hotspot.png",
+                "frameUrl": "./Assets/hotspot-icons/hotspot.png",
+                "info": "Musicians",
+                "audioUrl": "",
+                "link": "",
+                "description": ""
+            }
+        ]
+    },
+    "signature": {
+        "common": {
+            "scale": "7.5 4 1",
+            "rotation": "0 0 0",
+            "fixedAngleDegrees": 57.47,
+            "initialY": 28.28,
+            "initialZ": -26.89
+        },
+        "media": [
+            {
+                "type": "image",
+                "url": "./Assets/hotspot-icons/hotspot.png",
+                "frameUrl": "./Assets/hotspot-icons/hotspot.png",
+                "info": "Signature",
+                "audioUrl": "",
+                "link": "",
+                "description": ""
+            }
+        ]
+    }
+}

@@ -1,0 +1,412 @@
+/* Reset and base styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    height: 100vh;
+    overflow: hidden;
+    position: relative;
+}
+
+/* Overlay styles */
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1000;
+    display: none;
+    justify-content: center;
+    align-items: center;
+}
+
+.overlay-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+}
+
+.overlay-content {
+    position: relative;
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    max-width: 90%;
+    max-height: 90%;
+    overflow: auto;
+    z-index: 1001;
+}
+
+/* Map overlay specific styles */
+.map-image {
+    max-width: 100%;
+    height: auto;
+    border-radius: 4px;
+}
+
+.overlay-button {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: #FBD86F;
+    border: none;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    cursor: pointer;
+    font-size: 18px;
+    color: #000;
+}
+
+/* Modal styles for hotspot info */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    bottom: 10%;
+    width: 100%;
+    justify-content: center;
+    align-items: flex-end;
+}
+
+.modal-content {
+    background-color: #ffffff;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+    text-align: center;
+    border-radius: 8px;
+    margin: 0 10%;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.close:hover,
+.close:focus {
+    color: black;
+    text-decoration: none;
+}
+
+.hotspot-link {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #FBD86F;
+    color: #000;
+    text-decoration: none;
+    border-radius: 5px;
+    margin-top: 10px;
+    font-weight: 500;
+    transition: background-color 0.2s ease;
+}
+
+.hotspot-link:hover {
+    background-color: #F4C84F;
+}
+
+/* UI Controls */
+#controls {
+    position: fixed;
+    top: 10px;
+    left: 10px;
+    background: rgba(255, 255, 255, 0.9);
+    padding: 10px;
+    border-radius: 5px;
+    z-index: 100;
+    font-size: 12px;
+}
+
+#controls label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 500;
+}
+
+#controls input {
+    width: 60px;
+    margin-bottom: 10px;
+}
+
+#controls button {
+    background: #FBD86F;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 3px;
+    cursor: pointer;
+    margin-bottom: 10px;
+}
+
+/* Icon buttons */
+.icon-buttons {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.icon-button {
+    background: rgba(255, 255, 255, 0.9);
+    border: none;
+    border-radius: 8px;
+    padding: 10px 15px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'Poppins', sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    transition: background-color 0.2s ease;
+}
+
+.icon-button:hover {
+    background: rgba(255, 255, 255, 1);
+}
+
+.button-icon {
+    width: 20px;
+    height: 20px;
+}
+
+/* Centered button */
+.centered {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 100;
+}
+
+.centered button {
+    background: rgba(255, 255, 255, 0.9);
+    border: none;
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s ease;
+}
+
+.centered button:hover {
+    background: rgba(255, 255, 255, 1);
+}
+
+.change-media-icon {
+    width: 30px;
+    height: 30px;
+}
+
+/* Button text */
+.button-text {
+    position: fixed;
+    bottom: 100px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: white;
+    font-size: 14px;
+    font-weight: 500;
+    text-align: center;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+    z-index: 100;
+}
+
+/* Instructions */
+.instructions {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    font-size: 16px;
+    text-align: center;
+    z-index: 50;
+    pointer-events: none;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.7);
+}
+
+/* Unselectable text */
+.unselectable {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+/* A-Frame scene */
+#ar-scene {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .icon-buttons {
+        top: 10px;
+        right: 10px;
+    }
+    
+    .icon-button {
+        padding: 8px 12px;
+        font-size: 11px;
+    }
+    
+    .button-icon {
+        width: 18px;
+        height: 18px;
+    }
+    
+    .centered button {
+        width: 50px;
+        height: 50px;
+    }
+    
+    .change-media-icon {
+        width: 25px;
+        height: 25px;
+    }
+    
+    .modal-content {
+        width: 90%;
+        margin: 0 5%;
+        padding: 15px;
+    }
+    
+    .overlay-content {
+        padding: 15px;
+        max-width: 95%;
+    }
+}
+
+@media (max-width: 480px) {
+    .icon-buttons {
+        top: 5px;
+        right: 5px;
+    }
+    
+    .icon-button {
+        padding: 6px 10px;
+        font-size: 10px;
+    }
+    
+    .button-icon {
+        width: 16px;
+        height: 16px;
+    }
+    
+    .centered {
+        bottom: 20px;
+    }
+    
+    .centered button {
+        width: 45px;
+        height: 45px;
+    }
+    
+    .change-media-icon {
+        width: 22px;
+        height: 22px;
+    }
+    
+    .button-text {
+        font-size: 12px;
+        bottom: 80px;
+    }
+    
+    .instructions {
+        font-size: 14px;
+    }
+}
+
+/* Landscape orientation */
+@media (orientation: landscape) and (max-height: 500px) {
+    .icon-buttons {
+        top: 5px;
+        right: 5px;
+    }
+    
+    .centered {
+        bottom: 15px;
+    }
+    
+    .button-text {
+        bottom: 70px;
+        font-size: 12px;
+    }
+    
+    .instructions {
+        font-size: 12px;
+    }
+}
+
+/* Hotspot specific styles */
+#hotspot-title {
+    color: #000;
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 10px;
+    text-align: left;
+}
+
+#hotspot-description {
+    color: #333;
+    font-size: 14px;
+    line-height: 1.4;
+    margin-bottom: 15px;
+    text-align: left;
+}
+
+#hotspot-media {
+    margin: 15px 0;
+}
+
+/* HRP branding colors */
+.hrp-yellow {
+    color: #FBD86F;
+}
+
+.hrp-yellow-bg {
+    background-color: #FBD86F;
+}
+
+/* Animation for hotspot interaction */
+@keyframes hotspotPulse {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+.hotspot-active {
+    animation: hotspotPulse 0.3s ease-in-out;
+} 

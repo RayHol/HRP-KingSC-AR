@@ -12,13 +12,23 @@
     <link rel="stylesheet" href="./Scripts/index.css">
 </head>
 <body>
-    <img id="logo" src=".\Assets\Smartify-logo.svg" alt="Smartify Logo" width="101" height="48">
-    <img id="image" src=".\Assets\HRP_1.jpg" alt="HRP1">
-  <div id="description">
-        <p>Welcome to the Kings Staircase AR experience, watch the characters come to life!</p><p>
-      Tap below, then point your camera at the panel</p>
+    <!-- Background Image -->
+    <div class="background-image"></div>
+    
+
+    
+    <!-- HRP Logo -->
+    <div class="logo-container">
+        <img id="hrp-logo" src=".\Assets\HRP Logo.png" alt="Historic Royal Palaces Logo">
     </div>
-    <button id="startButton" onclick="location.href='AR_page.html';">GET STARTED</button>
+    
+    <!-- Main Content -->
+    <div class="main-content">
+        <h1 class="main-title">THE KING'S STAIRCASE</h1>
+        <p class="subtitle">Unlock the story behind one of the palace's great paintings.</p>
+        <button id="startButton" onclick="location.href='AR_page.html';">START EXPERIENCE</button>
+        <div class="test-build">TEST BUILD</div>
+    </div>
 </body>
   <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-XT4SMTQCY2"></script>

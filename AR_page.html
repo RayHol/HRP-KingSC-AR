@@ -45,7 +45,7 @@
 <!--     <div id="background"></div> -->
     
     <!-- Text to prompt the user to point the camera at the painting -->
-    <div id="startText">Point your camera at the painting</div>
+    <div id="startText">Point your camera at the murals</div>
     
     <!-- Audio prompt container -->
     <div id="audioPrompt">
@@ -61,7 +61,7 @@
     <!-- A-Frame scene container -->
     <a-scene
         loading-screen="enabled: false"
-        mindar-image="imageTargetSrc: .\Assets\targetsHRP.mind; uiLoading:no; uiScanning: #new-scanning-overlay; warmupTolerance: 10; missTolerance: 1; filterMinCF: 0.0001; filterBeta: 0.001"
+        mindar-image="imageTargetSrc: .\Assets\targets.mind; uiLoading:no; uiScanning: #new-scanning-overlay; warmupTolerance: 10; missTolerance: 1; filterMinCF: 0.0001; filterBeta: 0.001"
         color-space="sRGB"
         renderer="colorManagement: true, physicallyCorrectLights"
         vr-mode-ui="enabled: false"
@@ -70,8 +70,16 @@
     >
         <!-- Asset container -->
         <a-assets>
-            <!-- Video 1 asset for the AR experience -->
-            <video id="video1" src=".\Assets\Videos\VID_1.mp4" preload="auto" response-type="arraybuffer" loop
+            <!-- Video 1 asset for target 1 -->
+            <video id="video1" src=".\Assets\Videos\cw_guitar.mp4" preload="auto" response-type="arraybuffer" loop
+                crossorigin="anonymous" webkit-playsinline autoplay muted playsinline>
+            </video>
+            <!-- Video 2 asset for target 2 -->
+            <video id="video2" src=".\Assets\Videos\ceiling1.mp4" preload="auto" response-type="arraybuffer" loop
+                crossorigin="anonymous" webkit-playsinline autoplay muted playsinline>
+            </video>
+            <!-- Video 3 asset for target 3 -->
+            <video id="video3" src=".\Assets\Videos\cw_all.mp4" preload="auto" response-type="arraybuffer" loop
                 crossorigin="anonymous" webkit-playsinline autoplay muted playsinline>
             </video>
        </a-assets>
@@ -84,16 +92,70 @@
         
         <!-- AR target 1 entity -->
         <a-entity id="target1" mindar-image-target="targetIndex: 0" ar-controller
-            smooth-position="target: #videooverlay; factor: 0.1">
-            <a-plane id="videooverlay" 
+            smooth-position="target: #videooverlay1; factor: 0.1">
+            <a-plane id="videooverlay1" 
                 material="src: #video1; opacity: 0; transparent: false; alphaTest: 0.5"
-                animation__fadein="startEvents: fadein; property: material.opacity; from: 0; to: 1; dur: 500;" height="0.6" width="1"
-                animation__fadeout="startEvents: fadeout; property: material.opacity; from: 1; to: 0; dur: 500;"></a-plane>
-        </a-entity>    
+                animation__fadein="startEvents: fadein1; property: material.opacity; from: 0; to: 1; dur: 500;" height="1.2" width="2"
+                animation__fadeout="startEvents: fadeout1; property: material.opacity; from: 1; to: 0; dur: 500;"></a-plane>
+        </a-entity>
+
+        <!-- AR target 2 entity -->
+        <a-entity id="target2" mindar-image-target="targetIndex: 1" ar-controller
+            smooth-position="target: #videooverlay2; factor: 0.1">
+            <a-plane id="videooverlay2" 
+                material="src: #video2; opacity: 0; transparent: false; alphaTest: 0.5"
+                animation__fadein="startEvents: fadein2; property: material.opacity; from: 0; to: 1; dur: 500;" height="1.5" width="2"
+                animation__fadeout="startEvents: fadeout2; property: material.opacity; from: 1; to: 0; dur: 500;"></a-plane>
+        </a-entity>
+
+        <!-- AR target 3 entity -->
+        <a-entity id="target3" mindar-image-target="targetIndex: 2" ar-controller
+            smooth-position="target: #videooverlay3; factor: 0.1">
+            <a-plane id="videooverlay3" 
+                material="src: #video3; opacity: 0; transparent: false; alphaTest: 0.5"
+                animation__fadein="startEvents: fadein3; property: material.opacity; from: 0; to: 1; dur: 500;" height="1.2" width="2
+                animation__fadeout="startEvents: fadeout3; property: material.opacity; from: 1; to: 0; dur: 500;"></a-plane>
+        </a-entity>
       </a-scene>
-  <div id="textPanel" class="text-panel">
-    <p id="textPanelContent">                                                 </p>
-</div>
+  <!-- Media Player -->
+  <div id="mediaPlayer" class="media-player hidden">
+    <div class="player-content">
+      <div class="player-header">
+        <h3 id="trackTitle" class="track-title">Track Title</h3>
+        <button id="transcriptionBtn" class="transcription-btn">
+          <img src="./Assets/Transcript Button.png" alt="Transcript" class="transcript-icon">
+        </button>
+      </div>
+      <div class="player-controls">
+        <button id="playPauseBtn" class="play-pause-btn">
+          <img src="./Assets/Play Button.png" alt="Play" class="play-icon" id="playIcon">
+        </button>
+        <div class="progress-container">
+          <div class="progress-bar">
+            <div id="progressFill" class="progress-fill"></div>
+            <div id="progressHandle" class="progress-handle"></div>
+          </div>
+          <span id="timeDisplay" class="time-display">- 0:00</span>
+        </div>
+      </div>
+      <div class="player-footer">
+        <button id="speedBtn" class="speed-btn">1x</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Transcription Panel -->
+  <div id="transcriptionPanel" class="transcription-panel hidden">
+    <div class="transcription-content">
+      <div class="transcription-header">
+        <h3>Transcription</h3>
+        <button id="closeTranscriptionBtn" class="close-btn">×</button>
+      </div>
+      <div id="transcriptionText" class="transcription-text">
+        <!-- Transcription text will be loaded here -->
+      </div>
+    </div>
+  </div>
 
 </body>
   <!-- Google tag (gtag.js) -->
