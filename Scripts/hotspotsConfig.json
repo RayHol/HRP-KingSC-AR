@@ -1,241 +1,341 @@
 {
-    "hotspot1": {
+    "clouds": {
         "common": {
             "scale": "15 8 1",
             "rotation": "0 0 0",
-            "fixedAngleDegrees": 45,
-            "initialY": 15,
-            "initialZ": -35
+            "fixedAngleDegrees": 32,
+            "initialY": 36.8,
+            "initialZ": -42
         },
         "media": [
             {
                 "type": "image",
                 "url": "./Assets/hotspot-icons/hotspot.png",
                 "frameUrl": "./Assets/hotspot-icons/hotspot.png",
-                "info": "East Wall - Full View",
+                "info": "Clouds",
                 "audioUrl": "",
-                "link": "https://www.hrp.org.uk/hampton-court-palace/explore/the-kings-staircase/",
-                "description": "The grand East Wall of the King's Staircase, featuring elaborate murals and architectural details."
+                "link": "",
+                "description": ""
             }
         ]
     },
-    "hotspot2": {
+    "banquet_of_the_gods": {
         "common": {
             "scale": "12 6 1",
             "rotation": "0 0 0",
-            "fixedAngleDegrees": 120,
-            "initialY": -8,
-            "initialZ": -25
+            "fixedAngleDegrees": 59.22,
+            "initialY": 146.94,
+            "initialZ": -39.88
         },
         "media": [
             {
                 "type": "image",
                 "url": "./Assets/hotspot-icons/hotspot.png",
                 "frameUrl": "./Assets/hotspot-icons/hotspot.png",
-                "info": "Guitar Player Detail",
+                "info": "Banquet of the Gods",
                 "audioUrl": "",
-                "link": "https://www.hrp.org.uk/hampton-court-palace/explore/the-kings-staircase/",
-                "description": "Focus on the guitar player in the bottom right of the painting - a detailed view of this musical figure."
+                "link": "",
+                "description": ""
             }
         ]
     },
-    "hotspot3": {
+    "peacock": {
         "common": {
             "scale": "10 6 1",
             "rotation": "0 0 0",
-            "fixedAngleDegrees": 200,
-            "initialY": 25,
-            "initialZ": -45
+            "fixedAngleDegrees": 58.94,
+            "initialY": 133.95,
+            "initialZ": -40.22
         },
         "media": [
             {
                 "type": "image",
                 "url": "./Assets/hotspot-icons/hotspot.png",
                 "frameUrl": "./Assets/hotspot-icons/hotspot.png",
-                "info": "Ceiling Detail",
+                "info": "Peacock",
                 "audioUrl": "",
-                "link": "https://www.hrp.org.uk/hampton-court-palace/explore/the-kings-staircase/",
-                "description": "Ornate ceiling details and architectural elements above the staircase."
+                "link": "",
+                "description": ""
             }
         ]
     },
-    "hotspot4": {
+    "three_graces": {
         "common": {
             "scale": "12 7 1",
             "rotation": "0 0 0",
-            "fixedAngleDegrees": 280,
-            "initialY": -15,
-            "initialZ": -20
+            "fixedAngleDegrees": 96.81,
+            "initialY": 62.73,
+            "initialZ": 5.06
         },
         "media": [
             {
                 "type": "image",
                 "url": "./Assets/hotspot-icons/hotspot.png",
                 "frameUrl": "./Assets/hotspot-icons/hotspot.png",
-                "info": "North Wall Section",
+                "info": "Three Graces",
                 "audioUrl": "",
-                "link": "https://www.hrp.org.uk/hampton-court-palace/explore/the-kings-staircase/",
-                "description": "The northern section of the staircase walls with its unique decorative elements."
+                "link": "",
+                "description": ""
             }
         ]
     },
-    "hotspot5": {
+    "trumpeter": {
         "common": {
             "scale": "10 5 1",
             "rotation": "0 0 0",
-            "fixedAngleDegrees": 320,
-            "initialY": 30,
-            "initialZ": -55
+            "fixedAngleDegrees": -90,
+            "initialY": 180,
+            "initialZ": 0.86
         },
         "media": [
             {
                 "type": "image",
                 "url": "./Assets/hotspot-icons/hotspot.png",
                 "frameUrl": "./Assets/hotspot-icons/hotspot.png",
-                "info": "West Wall Detail",
+                "info": "Trumpeter",
                 "audioUrl": "",
-                "link": "https://www.hrp.org.uk/hampton-court-palace/explore/the-kings-staircase/",
-                "description": "Western wall section featuring distinctive architectural and artistic elements."
+                "link": "",
+                "description": ""
             }
         ]
     },
-    "hotspot6": {
+    "romulus": {
         "common": {
             "scale": "14 8 1",
             "rotation": "0 0 0",
-            "fixedAngleDegrees": 80,
-            "initialY": -5,
-            "initialZ": -30
+            "fixedAngleDegrees": 7.28,
+            "initialY": 28.87,
+            "initialZ": -49.60
         },
         "media": [
             {
                 "type": "image",
                 "url": "./Assets/hotspot-icons/hotspot.png",
                 "frameUrl": "./Assets/hotspot-icons/hotspot.png",
-                "info": "South Wall Overview",
+                "info": "Romulus",
                 "audioUrl": "",
-                "link": "https://www.hrp.org.uk/hampton-court-palace/explore/the-kings-staircase/",
-                "description": "The southern wall of the staircase with its comprehensive mural coverage."
+                "link": "",
+                "description": ""
             }
         ]
     },
-    "hotspot7": {
+    "caesar": {
         "common": {
             "scale": "8 4 1",
             "rotation": "0 0 0",
-            "fixedAngleDegrees": 160,
-            "initialY": 35,
-            "initialZ": -40
+            "fixedAngleDegrees": 4.55,
+            "initialY": 15.94,
+            "initialZ": -49.11
         },
         "media": [
             {
                 "type": "image",
                 "url": "./Assets/hotspot-icons/hotspot.png",
                 "frameUrl": "./Assets/hotspot-icons/hotspot.png",
-                "info": "Staircase Detail",
+                "info": "Caesar",
                 "audioUrl": "",
-                "link": "https://www.hrp.org.uk/hampton-court-palace/explore/the-kings-staircase/",
-                "description": "Close-up view of the staircase structure and its decorative elements."
+                "link": "",
+                "description": ""
             }
         ]
     },
-    "hotspot8": {
+    "nero": {
         "common": {
             "scale": "11 6 1",
             "rotation": "0 0 0",
-            "fixedAngleDegrees": 240,
-            "initialY": -12,
-            "initialZ": -15
+            "fixedAngleDegrees": -10.85,
+            "initialY": 15.36,
+            "initialZ": -49.11
         },
         "media": [
             {
                 "type": "image",
                 "url": "./Assets/hotspot-icons/hotspot.png",
                 "frameUrl": "./Assets/hotspot-icons/hotspot.png",
-                "info": "Architectural Detail",
+                "info": "Nero",
                 "audioUrl": "",
-                "link": "https://www.hrp.org.uk/hampton-court-palace/explore/the-kings-staircase/",
-                "description": "Detailed architectural features and structural elements of the staircase."
+                "link": "",
+                "description": ""
             }
         ]
     },
-    "hotspot9": {
+    "silenus": {
         "common": {
             "scale": "9 5 1",
             "rotation": "0 0 0",
-            "fixedAngleDegrees": 180,
-            "initialY": 20,
-            "initialZ": -50
+            "fixedAngleDegrees": 29.12,
+            "initialY": 27.95,
+            "initialZ": -43.68
         },
         "media": [
             {
                 "type": "image",
                 "url": "./Assets/hotspot-icons/hotspot.png",
                 "frameUrl": "./Assets/hotspot-icons/hotspot.png",
-                "info": "Decorative Element",
+                "info": "Silenus",
                 "audioUrl": "",
-                "link": "https://www.hrp.org.uk/hampton-court-palace/explore/the-kings-staircase/",
-                "description": "Ornate decorative elements and artistic details throughout the staircase."
+                "link": "",
+                "description": ""
             }
         ]
     },
-    "hotspot10": {
+    "furie": {
         "common": {
             "scale": "13 7 1",
             "rotation": "0 0 0",
-            "fixedAngleDegrees": 60,
-            "initialY": -18,
-            "initialZ": -25
+            "fixedAngleDegrees": 21.21,
+            "initialY": 22.25,
+            "initialZ": -46.61
         },
         "media": [
             {
                 "type": "image",
                 "url": "./Assets/hotspot-icons/hotspot.png",
                 "frameUrl": "./Assets/hotspot-icons/hotspot.png",
-                "info": "Upper Level View",
+                "info": "Furie",
                 "audioUrl": "",
-                "link": "https://www.hrp.org.uk/hampton-court-palace/explore/the-kings-staircase/",
-                "description": "View from the upper levels of the staircase showing the full scope of the murals."
+                "link": "",
+                "description": ""
             }
         ]
     },
-    "hotspot11": {
+    "herakles": {
         "common": {
             "scale": "10 6 1",
             "rotation": "0 0 0",
-            "fixedAngleDegrees": 300,
-            "initialY": 28,
-            "initialZ": -35
+            "fixedAngleDegrees": 34.02,
+            "initialY": 22.25,
+            "initialZ": -41.44
         },
         "media": [
             {
                 "type": "image",
                 "url": "./Assets/hotspot-icons/hotspot.png",
                 "frameUrl": "./Assets/hotspot-icons/hotspot.png",
-                "info": "Lower Level Detail",
+                "info": "Herakles",
                 "audioUrl": "",
-                "link": "https://www.hrp.org.uk/hampton-court-palace/explore/the-kings-staircase/",
-                "description": "Lower level details and ground-level architectural features."
+                "link": "",
+                "description": ""
             }
         ]
     },
-    "hotspot12": {
+    "alexander": {
         "common": {
             "scale": "12 8 1",
             "rotation": "0 0 0",
-            "fixedAngleDegrees": 140,
-            "initialY": -22,
-            "initialZ": -45
+            "fixedAngleDegrees": 35.85,
+            "initialY": -10.14,
+            "initialZ": -38.94
         },
         "media": [
             {
                 "type": "image",
                 "url": "./Assets/hotspot-icons/hotspot.png",
                 "frameUrl": "./Assets/hotspot-icons/hotspot.png",
-                "info": "Central Perspective",
+                "info": "Alexander",
                 "audioUrl": "",
-                "link": "https://www.hrp.org.uk/hampton-court-palace/explore/the-kings-staircase/",
-                "description": "Central perspective view of the entire King's Staircase experience."
+                "link": "",
+                "description": ""
+            }
+        ]
+    },
+    "diana": {
+        "common": {
+            "scale": "11 7 1",
+            "rotation": "0 0 0",
+            "fixedAngleDegrees": 19.18,
+            "initialY": 42.38,
+            "initialZ": -47.22
+        },
+        "media": [
+            {
+                "type": "image",
+                "url": "./Assets/hotspot-icons/hotspot.png",
+                "frameUrl": "./Assets/hotspot-icons/hotspot.png",
+                "info": "Diana",
+                "audioUrl": "",
+                "link": "",
+                "description": ""
+            }
+        ]
+    },
+    "harvest": {
+        "common": {
+            "scale": "10 5 1",
+            "rotation": "0 0 0",
+            "fixedAngleDegrees": 85.61,
+            "initialY": -18.24,
+            "initialZ": -3.83
+        },
+        "media": [
+            {
+                "type": "image",
+                "url": "./Assets/hotspot-icons/hotspot.png",
+                "frameUrl": "./Assets/hotspot-icons/hotspot.png",
+                "info": "Harvest",
+                "audioUrl": "",
+                "link": "",
+                "description": ""
+            }
+        ]
+    },
+    "cherub": {
+        "common": {
+            "scale": "8 4 1",
+            "rotation": "0 0 0",
+            "fixedAngleDegrees": 91.77,
+            "initialY": 18.24,
+            "initialZ": 1.54
+        },
+        "media": [
+            {
+                "type": "image",
+                "url": "./Assets/hotspot-icons/hotspot.png",
+                "frameUrl": "./Assets/hotspot-icons/hotspot.png",
+                "info": "Cherub",
+                "audioUrl": "",
+                "link": "",
+                "description": ""
+            }
+        ]
+    },
+    "musicians": {
+        "common": {
+            "scale": "13 6 1",
+            "rotation": "0 0 0",
+            "fixedAngleDegrees": 87.99
+            "initialY": -37.26
+            "initialZ": -1.75
+        },
+        "media": [
+            {
+                "type": "image",
+                "url": "./Assets/hotspot-icons/hotspot.png",
+                "frameUrl": "./Assets/hotspot-icons/hotspot.png",
+                "info": "Musicians",
+                "audioUrl": "",
+                "link": "",
+                "description": ""
+            }
+        ]
+    },
+    "signature": {
+        "common": {
+            "scale": "9 5 1",
+            "rotation": "0 0 0",
+            "fixedAngleDegrees": 57.47
+            "initialY": 28.28
+            "initialZ": -26.89
+        },
+        "media": [
+            {
+                "type": "image",
+                "url": "./Assets/hotspot-icons/hotspot.png",
+                "frameUrl": "./Assets/hotspot-icons/hotspot.png",
+                "info": "Signature",
+                "audioUrl": "",
+                "link": "",
+                "description": ""
             }
         ]
     }
