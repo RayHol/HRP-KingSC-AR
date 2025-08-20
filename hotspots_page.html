@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta charset="UTF-8" />
+    <title>King's Staircase - Hotspots | HRP</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700&display=swap">
+    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/donmccurdy/aframe-extras@v6.1.1/dist/aframe-extras.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js@3.4.2/aframe/build/aframe-ar.min.js"></script>
+    
+    <link rel="stylesheet" href="./Scripts/hotspots.css">
+</head>
+<body style="margin: 0; overflow: hidden;">
+    
+    <!-- UI Controls -->
+    <div id="controls" style="display:none;">
+        <label for="fixed-angle">Jump to:</label>
+        <input type="number" id="fixed-angle" name="fixed-angle" value="0" step="1">
+        <button id="update-angle">Update Angle</button>
+        <div>
+            <label>Current Degree:</label>
+            <span id="current-fixed-angle">0</span>
+        </div>
+        <div>
+            <label>Current Height:</label>
+            <span id="current-y-position">0</span>
+        </div>
+        <div>
+            <label>Current Depth:</label>
+            <span id="current-z-depth">0</span>
+        </div>
+    </div>
+
+    <!-- Map overlay -->
+    <div class="overlay" id="map-overlay" style="display: none;">
+        <div class="overlay-background"></div>
+        <div class="overlay-content">
+            <img src="./Assets/kings-staircase-map.jpg" alt="King's Staircase Map" class="map-image">
+            <button id="close-map-overlay" class="overlay-button"></button>
+        </div>
+    </div>
+
+    <!-- Modal for Hotspot Info -->
+    <div id="hotspot-modal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <span id="close-hotspot-modal" class="close">&times;</span>
+            <h3 id="hotspot-title">Hotspot Title</h3>
+            <p id="hotspot-description">Hotspot description will appear here.</p>
+            <div id="hotspot-media"></div>
+            <a id="hotspot-link" href="#" target="_blank" class="hotspot-link">Learn More</a>
+        </div>
+    </div>
+
+    <!-- A-Frame Scene -->
+    <div class="centered instructions"></div>
+    
+    <a-scene id="ar-scene" vr-mode-ui="enabled: false" arjs="debugUIEnabled: false;" style="display:block;">
+        <a-light type="ambient" color="#ffffff"></a-light>
+        <a-light type="directional" color="#ffffff" position="-2 4 5"></a-light>
+        <a-entity camera rotation-reader look-controls="touchEnabled: false" raycaster="objects: .clickable" position="0 1.6 0"></a-entity>
+    </a-scene>
+
+    <!-- UI Buttons -->
+    <div class="icon-buttons">
+        <button id="view-map" class="icon-button">
+            <img src="./Assets/map-icon.svg" alt="Map button" class="button-icon"> Map
+        </button>
+        <button id="refresh" class="icon-button">
+            <img src="./Assets/refresh-icon.svg" alt="Refresh button" class="button-icon"> Refresh
+        </button>
+        <button id="help" class="icon-button">
+            <img src="./Assets/help-icon.svg" alt="help button" class="button-icon"> Help
+        </button>
+    </div>
+    
+    <div class="centered">
+        <button data-action="change">
+            <img src="./Assets/Button.svg" alt="Change Media Button" class="change-media-icon">
+        </button>
+    </div>
+
+    <script src="./Scripts/hotspots.js"></script>
+    <script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const arScene = document.getElementById('ar-scene');
+        
+        // Automatically display the AR scene
+        arScene.style.display = 'block';
+        
+        // Initialize hotspots immediately
+        if (typeof initializeHotspots === "function") {
+            initializeHotspots();
+        }
+    });
+    </script>
+</body>
+</html> 

@@ -1,0 +1,242 @@
+{
+    "hotspot1": {
+        "common": {
+            "scale": "15 8 1",
+            "rotation": "0 0 0",
+            "fixedAngleDegrees": 45,
+            "initialY": 15,
+            "initialZ": -35
+        },
+        "media": [
+            {
+                "type": "image",
+                "url": "./Assets/hotspot-icons/hotspot.png",
+                "frameUrl": "./Assets/hotspot-icons/hotspot.png",
+                "info": "East Wall - Full View",
+                "audioUrl": "",
+                "link": "https://www.hrp.org.uk/hampton-court-palace/explore/the-kings-staircase/",
+                "description": "The grand East Wall of the King's Staircase, featuring elaborate murals and architectural details."
+            }
+        ]
+    },
+    "hotspot2": {
+        "common": {
+            "scale": "12 6 1",
+            "rotation": "0 0 0",
+            "fixedAngleDegrees": 120,
+            "initialY": -8,
+            "initialZ": -25
+        },
+        "media": [
+            {
+                "type": "image",
+                "url": "./Assets/hotspot-icons/hotspot.png",
+                "frameUrl": "./Assets/hotspot-icons/hotspot.png",
+                "info": "Guitar Player Detail",
+                "audioUrl": "",
+                "link": "https://www.hrp.org.uk/hampton-court-palace/explore/the-kings-staircase/",
+                "description": "Focus on the guitar player in the bottom right of the painting - a detailed view of this musical figure."
+            }
+        ]
+    },
+    "hotspot3": {
+        "common": {
+            "scale": "10 6 1",
+            "rotation": "0 0 0",
+            "fixedAngleDegrees": 200,
+            "initialY": 25,
+            "initialZ": -45
+        },
+        "media": [
+            {
+                "type": "image",
+                "url": "./Assets/hotspot-icons/hotspot.png",
+                "frameUrl": "./Assets/hotspot-icons/hotspot.png",
+                "info": "Ceiling Detail",
+                "audioUrl": "",
+                "link": "https://www.hrp.org.uk/hampton-court-palace/explore/the-kings-staircase/",
+                "description": "Ornate ceiling details and architectural elements above the staircase."
+            }
+        ]
+    },
+    "hotspot4": {
+        "common": {
+            "scale": "12 7 1",
+            "rotation": "0 0 0",
+            "fixedAngleDegrees": 280,
+            "initialY": -15,
+            "initialZ": -20
+        },
+        "media": [
+            {
+                "type": "image",
+                "url": "./Assets/hotspot-icons/hotspot.png",
+                "frameUrl": "./Assets/hotspot-icons/hotspot.png",
+                "info": "North Wall Section",
+                "audioUrl": "",
+                "link": "https://www.hrp.org.uk/hampton-court-palace/explore/the-kings-staircase/",
+                "description": "The northern section of the staircase walls with its unique decorative elements."
+            }
+        ]
+    },
+    "hotspot5": {
+        "common": {
+            "scale": "10 5 1",
+            "rotation": "0 0 0",
+            "fixedAngleDegrees": 320,
+            "initialY": 30,
+            "initialZ": -55
+        },
+        "media": [
+            {
+                "type": "image",
+                "url": "./Assets/hotspot-icons/hotspot.png",
+                "frameUrl": "./Assets/hotspot-icons/hotspot.png",
+                "info": "West Wall Detail",
+                "audioUrl": "",
+                "link": "https://www.hrp.org.uk/hampton-court-palace/explore/the-kings-staircase/",
+                "description": "Western wall section featuring distinctive architectural and artistic elements."
+            }
+        ]
+    },
+    "hotspot6": {
+        "common": {
+            "scale": "14 8 1",
+            "rotation": "0 0 0",
+            "fixedAngleDegrees": 80,
+            "initialY": -5,
+            "initialZ": -30
+        },
+        "media": [
+            {
+                "type": "image",
+                "url": "./Assets/hotspot-icons/hotspot.png",
+                "frameUrl": "./Assets/hotspot-icons/hotspot.png",
+                "info": "South Wall Overview",
+                "audioUrl": "",
+                "link": "https://www.hrp.org.uk/hampton-court-palace/explore/the-kings-staircase/",
+                "description": "The southern wall of the staircase with its comprehensive mural coverage."
+            }
+        ]
+    },
+    "hotspot7": {
+        "common": {
+            "scale": "8 4 1",
+            "rotation": "0 0 0",
+            "fixedAngleDegrees": 160,
+            "initialY": 35,
+            "initialZ": -40
+        },
+        "media": [
+            {
+                "type": "image",
+                "url": "./Assets/hotspot-icons/hotspot.png",
+                "frameUrl": "./Assets/hotspot-icons/hotspot.png",
+                "info": "Staircase Detail",
+                "audioUrl": "",
+                "link": "https://www.hrp.org.uk/hampton-court-palace/explore/the-kings-staircase/",
+                "description": "Close-up view of the staircase structure and its decorative elements."
+            }
+        ]
+    },
+    "hotspot8": {
+        "common": {
+            "scale": "11 6 1",
+            "rotation": "0 0 0",
+            "fixedAngleDegrees": 240,
+            "initialY": -12,
+            "initialZ": -15
+        },
+        "media": [
+            {
+                "type": "image",
+                "url": "./Assets/hotspot-icons/hotspot.png",
+                "frameUrl": "./Assets/hotspot-icons/hotspot.png",
+                "info": "Architectural Detail",
+                "audioUrl": "",
+                "link": "https://www.hrp.org.uk/hampton-court-palace/explore/the-kings-staircase/",
+                "description": "Detailed architectural features and structural elements of the staircase."
+            }
+        ]
+    },
+    "hotspot9": {
+        "common": {
+            "scale": "9 5 1",
+            "rotation": "0 0 0",
+            "fixedAngleDegrees": 180,
+            "initialY": 20,
+            "initialZ": -50
+        },
+        "media": [
+            {
+                "type": "image",
+                "url": "./Assets/hotspot-icons/hotspot.png",
+                "frameUrl": "./Assets/hotspot-icons/hotspot.png",
+                "info": "Decorative Element",
+                "audioUrl": "",
+                "link": "https://www.hrp.org.uk/hampton-court-palace/explore/the-kings-staircase/",
+                "description": "Ornate decorative elements and artistic details throughout the staircase."
+            }
+        ]
+    },
+    "hotspot10": {
+        "common": {
+            "scale": "13 7 1",
+            "rotation": "0 0 0",
+            "fixedAngleDegrees": 60,
+            "initialY": -18,
+            "initialZ": -25
+        },
+        "media": [
+            {
+                "type": "image",
+                "url": "./Assets/hotspot-icons/hotspot.png",
+                "frameUrl": "./Assets/hotspot-icons/hotspot.png",
+                "info": "Upper Level View",
+                "audioUrl": "",
+                "link": "https://www.hrp.org.uk/hampton-court-palace/explore/the-kings-staircase/",
+                "description": "View from the upper levels of the staircase showing the full scope of the murals."
+            }
+        ]
+    },
+    "hotspot11": {
+        "common": {
+            "scale": "10 6 1",
+            "rotation": "0 0 0",
+            "fixedAngleDegrees": 300,
+            "initialY": 28,
+            "initialZ": -35
+        },
+        "media": [
+            {
+                "type": "image",
+                "url": "./Assets/hotspot-icons/hotspot.png",
+                "frameUrl": "./Assets/hotspot-icons/hotspot.png",
+                "info": "Lower Level Detail",
+                "audioUrl": "",
+                "link": "https://www.hrp.org.uk/hampton-court-palace/explore/the-kings-staircase/",
+                "description": "Lower level details and ground-level architectural features."
+            }
+        ]
+    },
+    "hotspot12": {
+        "common": {
+            "scale": "12 8 1",
+            "rotation": "0 0 0",
+            "fixedAngleDegrees": 140,
+            "initialY": -22,
+            "initialZ": -45
+        },
+        "media": [
+            {
+                "type": "image",
+                "url": "./Assets/hotspot-icons/hotspot.png",
+                "frameUrl": "./Assets/hotspot-icons/hotspot.png",
+                "info": "Central Perspective",
+                "audioUrl": "",
+                "link": "https://www.hrp.org.uk/hampton-court-palace/explore/the-kings-staircase/",
+                "description": "Central perspective view of the entire King's Staircase experience."
+            }
+        ]
+    }
+}

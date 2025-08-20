@@ -121,6 +121,35 @@ body {
     transform: translateY(0);
 }
 
+#hotspotsButton {
+    display: block;
+    width: 100%;
+    max-width: 327px;
+    height: 48px;
+    background-color: rgba(255, 255, 255, 0.2);
+    color: #ffffff;
+    border: 2px solid #ffffff;
+    border-radius: 8px;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 48px;
+    letter-spacing: 1.25px;
+    text-transform: uppercase;
+    cursor: pointer;
+    margin: 16px auto 0 auto;
+    transition: all 0.2s ease;
+}
+
+#hotspotsButton:hover {
+    background-color: rgba(255, 255, 255, 0.3);
+    transform: translateY(-1px);
+}
+
+#hotspotsButton:active {
+    transform: translateY(0);
+}
+
 .test-build {
     color: rgba(255, 255, 255, 0.7);
     font-size: 12px;
