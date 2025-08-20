@@ -25,6 +25,10 @@ const zoomSpeed = 0.01; // Adjust the zoom speed as needed
 const dragSpeedX = 0.07; // Adjust the drag speed for the x-axis
 const dragSpeedY = 0.005; // Adjust the drag speed for the y-axis
 
+// ===== GLOBAL SETTINGS =====
+// Global hotspot scale multiplier - adjust this to scale all hotspots uniformly
+const GLOBAL_HOTSPOT_SCALE = 0.5// 1.0 = normal size, 2.0 = double size, 0.5 = half size
+
 // Pinch-to-zoom variables
 let initialPinchDistance = null;
 let isPinching = false; // Flag to indicate if a pinch-to-zoom gesture is in progress
@@ -433,14 +437,48 @@ function displayHotspotMedia(mediaItem, index, commonValues, currentPosition, cu
     // Add the 'clickable' class to make the image detectable by the raycaster
     entity.classList.add('clickable');
 
-    // Set the scale exactly as defined in the hotspotsConfig.json
+    // Set the scale exactly as defined in the hotspotsConfig.json, then apply global scale
     let scaleComponents = commonValues.scale.split(' ').map(Number);
-    entity.setAttribute("scale", `${scaleComponents[0]} ${scaleComponents[1]} ${scaleComponents[2]}`); 
+    const scaledX = scaleComponents[0] * GLOBAL_HOTSPOT_SCALE;
+    const scaledY = scaleComponents[1] * GLOBAL_HOTSPOT_SCALE;
+    const scaledZ = scaleComponents[2] * GLOBAL_HOTSPOT_SCALE;
+    entity.setAttribute("scale", `${scaledX} ${scaledY} ${scaledZ}`); 
 
-    // Set the position and rotation of the entity based on the hotspotsConfig.json values
+    // Set the position based on the hotspotsConfig.json values
     entity.setAttribute("position", currentPosition);
-    entity.setAttribute("rotation", currentRotation);
     entity.setAttribute("visible", "true");
+    
+    // Smart orientation based on position - make hotspots appear properly attached to surfaces
+    const yPosition = currentPosition.y;
+    let rotationX = 0;
+    let rotationY = 0;
+    let rotationZ = 0;
+    
+    // Determine orientation based on Y position (height)
+    if (yPosition > 20) {
+        // Ceiling hotspots - rotate to appear attached to ceiling
+        rotationX = 180; // Flip upside down to attach to ceiling
+        rotationY = 0;   // No Y rotation needed
+        rotationZ = 0;   // No Z rotation needed
+    } else if (yPosition < -10) {
+        // Floor hotspots - rotate to appear attached to floor
+        rotationX = 0;   // Normal orientation for floor
+        rotationY = 0;   // No Y rotation needed
+        rotationZ = 0;   // No Z rotation needed
+    } else {
+        // Wall hotspots - face the user but maintain wall orientation
+        rotationX = 0;   // Normal X rotation
+        rotationY = 0;   // No Y rotation needed
+        rotationZ = 0;   // No Z rotation needed
+    }
+    
+    // Apply the calculated rotation
+    entity.setAttribute("rotation", `${rotationX} ${rotationY} ${rotationZ}`);
+    
+    // Add a subtle look-at effect for wall hotspots to ensure readability
+    if (yPosition >= -10 && yPosition <= 20) {
+        entity.setAttribute("look-at", "[camera]");
+    }
 
     // Add the entity to the scene
     scene.appendChild(entity);
@@ -537,36 +575,36 @@ function changeHotspotMedia(mediaArray, commonValues) {
     setTimeout(showCongratulationsPopup, 60000); // Set to 0 for immediate testing
 }
 
-function createLookImages() {
-    let scene = document.querySelector("a-scene");
+// function createLookImages() {
+//     let scene = document.querySelector("a-scene");
 
-    lookImages.forEach((lookImage) => {
-        if (lookImage.parentNode) {
-            lookImage.parentNode.removeChild(lookImage);
-        }
-    });
-    lookImages = [];
+//     lookImages.forEach((lookImage) => {
+//         if (lookImage.parentNode) {
+//             lookImage.parentNode.removeChild(lookImage);
+//         }
+//     });
+//     lookImages = [];
 
-    const angles = [90, 180, 270];
-    angles.forEach((angle) => {
-        const radians = ((fixedAngleDegrees + angle) * Math.PI) / 180;
-        const lookX = -currentZoom * Math.sin(radians);
-        const lookZ = -currentZoom * Math.cos(radians);
+//     const angles = [90, 180, 270];
+//     angles.forEach((angle) => {
+//         const radians = ((fixedAngleDegrees + angle) * Math.PI) / 180;
+//         const lookX = -currentZoom * Math.sin(radians);
+//         const lookZ = -currentZoom * Math.cos(radians);
 
-        const lookImage = document.createElement("a-image");
-        lookImage.setAttribute("src", "./Assets/look-for1.png");
-        lookImage.setAttribute("position", { x: lookX, y: 0, z: lookZ });
-        lookImage.setAttribute("rotation", {
-            x: 0,
-            y: angle + fixedAngleDegrees,
-            z: 0,
-        });
-        lookImage.setAttribute("scale", "14 4 1");
-        lookImage.setAttribute("visible", "true");
-        scene.appendChild(lookImage);
-        lookImages.push(lookImage);
-    });
-}
+//         const lookImage = document.createElement("a-image");
+//         lookImage.setAttribute("src", "./Assets/look-for1.png");
+//         lookImage.setAttribute("position", { x: lookX, y: 0, z: lookZ });
+//         lookImage.setAttribute("rotation", {
+//             x: 0,
+//             y: angle + fixedAngleDegrees,
+//             z: 0,
+//         });
+//         lookImage.setAttribute("scale", "14 4 1");
+//         lookImage.setAttribute("visible", "true");
+//         scene.appendChild(lookImage);
+//         lookImages.push(lookImage);
+//     });
+// }
 
 function isIOS() {
     return /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;

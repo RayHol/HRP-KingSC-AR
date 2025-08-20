@@ -1,7 +1,7 @@
 {
     "clouds": {
         "common": {
-            "scale": "15 8 1",
+            "scale": "7.5 4 1",
             "rotation": "0 0 0",
             "fixedAngleDegrees": 32,
             "initialY": 36.8,
@@ -21,7 +21,7 @@
     },
     "banquet_of_the_gods": {
         "common": {
-            "scale": "12 6 1",
+            "scale": "7.5 4 1",
             "rotation": "0 0 0",
             "fixedAngleDegrees": 59.22,
             "initialY": 146.94,
@@ -41,7 +41,7 @@
     },
     "peacock": {
         "common": {
-            "scale": "10 6 1",
+            "scale": "7.5 4 1",
             "rotation": "0 0 0",
             "fixedAngleDegrees": 58.94,
             "initialY": 133.95,
@@ -61,7 +61,7 @@
     },
     "three_graces": {
         "common": {
-            "scale": "12 7 1",
+            "scale": "7.5 4 1",
             "rotation": "0 0 0",
             "fixedAngleDegrees": 96.81,
             "initialY": 62.73,
@@ -81,11 +81,11 @@
     },
     "trumpeter": {
         "common": {
-            "scale": "10 5 1",
+            "scale": "7.5 4 1",
             "rotation": "0 0 0",
             "fixedAngleDegrees": -90,
             "initialY": 180,
-            "initialZ": 0.86
+            "initialZ": -0.86
         },
         "media": [
             {
@@ -101,7 +101,7 @@
     },
     "romulus": {
         "common": {
-            "scale": "14 8 1",
+            "scale": "7.5 4 1",
             "rotation": "0 0 0",
             "fixedAngleDegrees": 7.28,
             "initialY": 28.87,
@@ -121,7 +121,7 @@
     },
     "caesar": {
         "common": {
-            "scale": "8 4 1",
+            "scale": "7.5 4 1",
             "rotation": "0 0 0",
             "fixedAngleDegrees": 4.55,
             "initialY": 15.94,
@@ -141,7 +141,7 @@
     },
     "nero": {
         "common": {
-            "scale": "11 6 1",
+            "scale": "7.5 4 1",
             "rotation": "0 0 0",
             "fixedAngleDegrees": -10.85,
             "initialY": 15.36,
@@ -161,7 +161,7 @@
     },
     "silenus": {
         "common": {
-            "scale": "9 5 1",
+            "scale": "7.5 4 1",
             "rotation": "0 0 0",
             "fixedAngleDegrees": 29.12,
             "initialY": 27.95,
@@ -181,7 +181,7 @@
     },
     "furie": {
         "common": {
-            "scale": "13 7 1",
+            "scale": "7.5 4 1",
             "rotation": "0 0 0",
             "fixedAngleDegrees": 21.21,
             "initialY": 22.25,
@@ -201,7 +201,7 @@
     },
     "herakles": {
         "common": {
-            "scale": "10 6 1",
+            "scale": "7.5 4 1",
             "rotation": "0 0 0",
             "fixedAngleDegrees": 34.02,
             "initialY": 22.25,
@@ -221,7 +221,7 @@
     },
     "alexander": {
         "common": {
-            "scale": "12 8 1",
+            "scale": "7.5 4 1",
             "rotation": "0 0 0",
             "fixedAngleDegrees": 35.85,
             "initialY": -10.14,
@@ -241,7 +241,7 @@
     },
     "diana": {
         "common": {
-            "scale": "11 7 1",
+            "scale": "7.5 4 1",
             "rotation": "0 0 0",
             "fixedAngleDegrees": 19.18,
             "initialY": 42.38,
@@ -261,7 +261,7 @@
     },
     "harvest": {
         "common": {
-            "scale": "10 5 1",
+            "scale": "7.5 4 1",
             "rotation": "0 0 0",
             "fixedAngleDegrees": 85.61,
             "initialY": -18.24,
@@ -281,7 +281,7 @@
     },
     "cherub": {
         "common": {
-            "scale": "8 4 1",
+            "scale": "7.5 4 1",
             "rotation": "0 0 0",
             "fixedAngleDegrees": 91.77,
             "initialY": 18.24,
@@ -301,10 +301,10 @@
     },
     "musicians": {
         "common": {
-            "scale": "13 6 1",
+            "scale": "7.5 4 1",
             "rotation": "0 0 0",
-            "fixedAngleDegrees": 87.99
-            "initialY": -37.26
+            "fixedAngleDegrees": 87.99,
+            "initialY": -37.26,
             "initialZ": -1.75
         },
         "media": [
@@ -321,10 +321,10 @@
     },
     "signature": {
         "common": {
-            "scale": "9 5 1",
+            "scale": "7.5 4 1",
             "rotation": "0 0 0",
-            "fixedAngleDegrees": 57.47
-            "initialY": 28.28
+            "fixedAngleDegrees": 57.47,
+            "initialY": 28.28,
             "initialZ": -26.89
         },
         "media": [
