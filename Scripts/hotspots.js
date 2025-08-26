@@ -221,27 +221,6 @@ function preloadAllHotspotImages(hotspotsConfigData) {
     return Promise.all(preloadPromises);
 }
 
-// Add these helper functions at the top of the file (after the global variables)
-
-// Calculate position based on fixed angle and distance (like Skyline app)
-function calculateFixedPosition(fixedAngleDegrees, initialY, initialZ) {
-    const radians = (fixedAngleDegrees * Math.PI) / 180;
-    const distance = Math.abs(initialZ);
-    
-    const x = -distance * Math.sin(radians);
-    const y = initialY;
-    const z = -distance * Math.cos(radians);
-    
-    return { x, y, z };
-}
-
-// Calculate rotation so hotspots face the camera (like Skyline app)
-function calculateFixedRotation(fixedAngleDegrees) {
-    // The rotation should be the OPPOSITE of the position angle
-    // This ensures the hotspot faces the camera
-    return { x: 0, y: -fixedAngleDegrees, z: 0 };
-}
-
 function initializeHotspots() {
     const configFile = getConfigFileName();
     
@@ -287,8 +266,15 @@ function initializeHotspots() {
                 const currentZoom = Math.abs(commonValues.initialZ) || 25;
 
                 // Calculate the position based on the fixedAngleDegrees and currentZoom (initialZ)
-                const position = calculateFixedPosition(fixedAngleDegrees, currentY, currentZoom);
-                const rotation = calculateFixedRotation(fixedAngleDegrees);
+                const radians = (fixedAngleDegrees * Math.PI) / 180;
+                const position = {
+                    x: -currentZoom * Math.sin(radians),
+                    y: currentY,
+                    z: -currentZoom * Math.cos(radians)
+                };
+
+                // FIXED: Use consistent rotation for all hotspots - NO fixedAngleDegrees in rotation
+                const rotation = { x: 0, y: 0, z: 0 }; // All icons face the same direction
 
                 console.log(`Creating hotspot ${hotspotId} at position:`, position);
 
@@ -335,8 +321,14 @@ function initializeHotspots() {
                             const currentY = commonValues.initialY || 0;
                             const currentZoom = Math.abs(commonValues.initialZ) || 25;
 
-                            const position = calculateFixedPosition(fixedAngleDegrees, currentY, currentZoom);
-                            const rotation = calculateFixedRotation(fixedAngleDegrees);
+                            const radians = (fixedAngleDegrees * Math.PI) / 180;
+                            const position = {
+                                x: -currentZoom * Math.sin(radians),
+                                y: currentY,
+                                z: -currentZoom * Math.cos(radians)
+                            };
+
+                            const rotation = { x: 0, y: 0, z: 0 };
 
                             mediaArray
                                 .filter(mediaItem => mediaItem.type === "image")
