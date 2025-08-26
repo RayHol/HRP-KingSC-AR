@@ -17,6 +17,10 @@ let currentHotspotIndex = 0;
 let hotspots = []; // This will be filled with the keys from hotspotsConfig.json
 let mediaArray = []; // Current media array for the hotspot
 
+// Sequential hotspot activation tracking
+let activatedHotspots = new Set(); // Track which hotspots have been activated
+let currentHotspotOrder = []; // Track the order of hotspots as they appear in JSON
+
 const minZoom = 10; // Minimum distance from the user
 const maxZoom = 100; // Maximum distance from the user
 const minY = -15; // Set minimum Y value
@@ -27,7 +31,7 @@ const dragSpeedY = 0.005; // Adjust the drag speed for the y-axis
 
 // ===== GLOBAL SETTINGS =====
 // Global hotspot scale multiplier - adjust this to scale all hotspots uniformly
-const GLOBAL_HOTSPOT_SCALE = 0.5// 1.0 = normal size, 2.0 = double size, 0.5 = half size
+const GLOBAL_HOTSPOT_SCALE = 0.6// 1.0 = normal size, 2.0 = double size, 0.5 = half size
 
 // Pinch-to-zoom variables
 let initialPinchDistance = null;
@@ -175,9 +179,17 @@ function initializeHotspots() {
         .then((data) => {
             // Get the hotspots from the hotspotsConfig.json file
             hotspots = Object.keys(data); // Get all hotspot keys (hotspot1, hotspot2, etc.)
+            currentHotspotOrder = [...hotspots]; // Store the order for sequential activation
+
+            // Ensure crosshair starts in default yellow state
+            const centerTarget = document.getElementById('center-target');
+            if (centerTarget) {
+                centerTarget.classList.remove('hotspot-hover');
+                console.log('Crosshair initialized in default yellow state');
+            }
 
             // Loop through each hotspot to load its media
-            hotspots.forEach((hotspotId) => {
+            hotspots.forEach((hotspotId, index) => {
                 const hotspotData = data[hotspotId];
                 const commonValues = hotspotData.common;
                 const mediaArray = hotspotData.media;
@@ -195,14 +207,20 @@ function initializeHotspots() {
                     z: -currentZoom * Math.cos(radians)
                 };
 
-                const rotation = { x: 0, y: fixedAngleDegrees, z: 0 };
+                // FIXED: Use consistent rotation for all hotspots - NO fixedAngleDegrees in rotation
+                const rotation = { x: 0, y: 0, z: 0 }; // All icons face the same direction
 
                 // Loop through each media item and only display 'image' media
                 mediaArray
                     .filter(mediaItem => mediaItem.type === "image") // Filter only image type media
-                    .forEach((mediaItem, index) => {
-                        displayHotspotMedia(mediaItem, index, commonValues, position, rotation);
+                    .forEach((mediaItem, mediaIndex) => {
+                        displayHotspotMedia(mediaItem, mediaIndex, commonValues, position, rotation, hotspotId, index);
                     });
+            
+            // After all hotspots are created, refresh their visual states to ensure proper initialization
+            setTimeout(() => {
+                refreshAllHotspotVisualStates();
+            }, 100);
             });
         })
         .catch((error) => console.error("Error loading hotspot config:", error));
@@ -393,39 +411,19 @@ window.addEventListener('resize', checkOrientation);
 window.addEventListener('orientationchange', checkOrientation);
 window.addEventListener('DOMContentLoaded', checkOrientation);
 
-function initializeHotspotMedia(mediaArray, commonValues) {
-    const button = document.querySelector('button[data-action="change"]');
-
-    // Clear previous button text
-    const existingButtonText = document.querySelector('.button-text');
-    if (existingButtonText) {
-        existingButtonText.remove();
+// Reset crosshair when page loses focus or visibility changes
+window.addEventListener('blur', resetCrosshairToDefault);
+window.addEventListener('visibilitychange', function() {
+    if (document.hidden) {
+        resetCrosshairToDefault();
     }
+});
 
-    const buttonText = document.createElement("div");
-    buttonText.className = "button-text";
-    if (button) {
-        button.insertAdjacentElement("beforebegin", buttonText);
-    }
+// REMOVED: This function was creating duplicate hotspots at origin (0,0,0)
+// which caused conflicts with the correctly positioned hotspots from initializeHotspots
+// This was the root cause of the X-axis scaling jitter
 
-    // Remove old event listeners
-    if (button) {
-        const newButton = button.cloneNode(true);
-        button.parentNode.replaceChild(newButton, button);
-
-        // Add new event listener for changing media
-        newButton.addEventListener("click", () => {
-            changeHotspotMedia(mediaArray, commonValues);
-        });
-    }
-
-    // Loop through the mediaArray to display all media items
-    mediaArray.forEach((mediaItem, index) => {
-        displayHotspotMedia(mediaArray, index, commonValues);
-    });
-}
-
-function displayHotspotMedia(mediaItem, index, commonValues, currentPosition, currentRotation) {
+function displayHotspotMedia(mediaItem, index, commonValues, currentPosition, currentRotation, hotspotId, hotspotIndex) {
     let scene = document.querySelector("a-scene");
 
     // Create the entity for the image
@@ -448,77 +446,64 @@ function displayHotspotMedia(mediaItem, index, commonValues, currentPosition, cu
     entity.setAttribute("position", currentPosition);
     entity.setAttribute("visible", "true");
     
-    // Smart orientation based on position - make hotspots appear properly attached to surfaces
-    const yPosition = currentPosition.y;
-    let rotationX = 0;
-    let rotationY = 0;
-    let rotationZ = 0;
+    // FIXED: Use the rotation passed from initializeHotspots (includes fixedAngleDegrees)
+    // This ensures position and rotation are consistent and eliminates jittering
+    entity.setAttribute("rotation", currentRotation);
     
-    // Determine orientation based on Y position (height)
-    if (yPosition > 20) {
-        // Ceiling hotspots - rotate to appear attached to ceiling
-        rotationX = 180; // Flip upside down to attach to ceiling
-        rotationY = 0;   // No Y rotation needed
-        rotationZ = 0;   // No Z rotation needed
-    } else if (yPosition < -10) {
-        // Floor hotspots - rotate to appear attached to floor
-        rotationX = 0;   // Normal orientation for floor
-        rotationY = 0;   // No Y rotation needed
-        rotationZ = 0;   // No Z rotation needed
-    } else {
-        // Wall hotspots - face the user but maintain wall orientation
-        rotationX = 0;   // Normal X rotation
-        rotationY = 0;   // No Y rotation needed
-        rotationZ = 0;   // No Z rotation needed
-    }
+    // REMOVED: No look-at effect - this was causing conflicts with fixed rotation
+    // The undefined yPosition variable was causing JavaScript errors
+
+    // Set initial material and visual state based on sequential activation
+    entity.setAttribute("material", "color", "white");
+    entity.setAttribute("material", "opacity", "1.0");
     
-    // Apply the calculated rotation
-    entity.setAttribute("rotation", `${rotationX} ${rotationY} ${rotationZ}`);
+    // Store hotspot ID as data attribute for reference
+    entity.setAttribute("data-hotspot-id", hotspotId);
     
-    // Add a subtle look-at effect for wall hotspots to ensure readability
-    if (yPosition >= -10 && yPosition <= 20) {
-        entity.setAttribute("look-at", "[camera]");
-    }
+    updateHotspotVisualState(entity, hotspotId, hotspotIndex);
 
     // Add the entity to the scene
     scene.appendChild(entity);
 
     // Add a raycaster event to show the hotspot modal when the image is hovered (intersected)
     entity.addEventListener('raycaster-intersected', function () {
+        // Check if this hotspot can be activated (sequential order)
+        if (!canActivateHotspot(hotspotId)) {
+            return; // Don't allow activation if not in sequence
+        }
+
         console.log('Hotspot intersected:', mediaItem.url);
         entity.setAttribute('material', 'color', '#FBD86F');  // Change color on hover/tap to HRP yellow
 
-        // Show the modal with the hotspot info
-        const modal = document.getElementById('hotspot-modal');
-        const hotspotTitle = document.getElementById('hotspot-title');
-        const hotspotDescription = document.getElementById('hotspot-description');
-        const hotspotLink = document.getElementById('hotspot-link');
-
-        // Set the hotspot info
-        if (hotspotTitle) {
-            hotspotTitle.textContent = mediaItem.info || 'Hotspot';
-        }
-        
-        if (hotspotDescription) {
-            hotspotDescription.textContent = mediaItem.description || 'Hotspot description will appear here.';
+        // Change crosshair to green when hovering over hotspot
+        const centerTarget = document.getElementById('center-target');
+        if (centerTarget) {
+            centerTarget.classList.add('hotspot-hover');
         }
 
-        // Set the link URL
-        if (hotspotLink && mediaItem.link) {
-            hotspotLink.href = mediaItem.link;
-        } else if (hotspotLink) {
-            hotspotLink.href = '#';
-        }
+        // Show simple notification
+        showHotspotNotification(mediaItem.info || 'Hotspot');
 
-        // Display the modal
-        if (modal) {
-            modal.style.display = 'flex';
-        }
+        // Activate the hotspot
+        activateHotspot(hotspotId, entity);
     });
 
     entity.addEventListener('raycaster-intersected-cleared', function () {
         console.log('Hotspot no longer intersected:', mediaItem.url);
-        entity.setAttribute('material', 'color', 'white');  // Reset color
+        
+        // Reset to appropriate state based on activation status
+        if (activatedHotspots.has(hotspotId)) {
+            entity.setAttribute('material', 'color', '#FBD86F'); // Keep yellow for activated
+        } else {
+            entity.setAttribute('material', 'color', 'white'); // Reset to white for inactive
+        }
+
+        // Change crosshair back to yellow when no longer hovering over hotspot
+        const centerTarget = document.getElementById('center-target');
+        if (centerTarget) {
+            centerTarget.classList.remove('hotspot-hover');
+            console.log('Crosshair returned to yellow (hotspot-hover class removed)');
+        }
     });
 }
 
@@ -538,42 +523,11 @@ function fadeOutElement(element) {
     element.emit("startFadeOut");
 }
 
-function changeHotspotMedia(mediaArray, commonValues) {
-    if (isChangingMedia) {
-        return;
-    }
-    isChangingMedia = true;
-
-    // Preserve current position and rotation
-    const currentPosition = mediaEntity ? mediaEntity.getAttribute("position") : { x: 0, y: 0, z: 0 };
-    const currentRotation = mediaEntity ? mediaEntity.getAttribute("rotation") : { x: 0, y: 0, z: 0 };
-
-    // Update hotspotIndex to the next media element in the array
-    hotspotIndex = (hotspotIndex + 1) % mediaArray.length;
-
-    // Display the new media element while preserving the position and rotation
-    displayHotspotMedia(mediaArray, hotspotIndex, commonValues, currentPosition, currentRotation);
-
-    // Ensure any audio is handled correctly
-    if (currentAudio) {
-        if (currentAudio.paused) {
-            currentAudio.muted = false; // Ensure the audio is unmuted
-            currentAudio.play().catch(error => {
-                console.error('Audio play error:', error);
-            });
-        } else {
-            currentAudio.pause();
-        }
-    }
-
-    // Reset the flag after a delay to allow further media changes
-    setTimeout(() => {
-        isChangingMedia = false;
-    }, 1000); // Adjust the timeout as needed
-
-    // Show the congratulations pop-up after a short delay for testing
-    setTimeout(showCongratulationsPopup, 60000); // Set to 0 for immediate testing
-}
+// REMOVED: This function was creating duplicate hotspots at origin (0,0,0)
+// which caused conflicts with the correctly positioned hotspots from initializeHotspots
+// This was the root cause of the X-axis scaling jitter
+// 
+// For static AR hotspots, media changing is not needed - all hotspots are displayed at once
 
 // function createLookImages() {
 //     let scene = document.querySelector("a-scene");
@@ -614,6 +568,9 @@ function isAndroid() {
     return /Android/.test(navigator.userAgent);
 }
 
+// DISABLED: Touch handlers were causing conflicts with static hotspots
+// These handlers were designed for movable media, not static AR hotspots
+/*
 document.addEventListener("touchstart", function (e) {
     e.preventDefault(); // Prevent default touch actions
     if (e.touches.length === 2) {
@@ -630,7 +587,10 @@ document.addEventListener("touchstart", function (e) {
         dragAxis = null; // Reset drag axis
     }
 });
+*/
 
+// DISABLED: Touch handlers were causing conflicts with static hotspots
+/*
 document.addEventListener("touchmove", function (e) {
     if (e.touches.length === 2 && initialPinchDistance !== null) {
         e.preventDefault();
@@ -692,13 +652,17 @@ document.addEventListener("touchmove", function (e) {
         }
     }
 }, { passive: false });
+*/
 
+// DISABLED: Touch handlers were causing conflicts with static hotspots
+/*
 document.addEventListener("touchend", function () {
     initialPinchDistance = null;
     isDragging = false;
     isPinching = false;
     dragAxis = null;
 });
+*/
 
 function getPinchDistance(e) {
     const dx = e.touches[0].pageX - e.touches[1].pageX;
@@ -740,5 +704,262 @@ function updateCurrentValues() {
     }
     if (currentZDepthDisplay && mediaEntity) {
         currentZDepthDisplay.textContent = mediaEntity.getAttribute('position').z.toFixed(2);
+    }
+}
+
+// Function to reset crosshair to default yellow state
+function resetCrosshairToDefault() {
+    const centerTarget = document.getElementById('center-target');
+    if (centerTarget) {
+        centerTarget.classList.remove('hotspot-hover');
+        console.log('Crosshair reset to default yellow state');
+    }
+}
+
+// Function to show simple hotspot notification
+function showHotspotNotification(hotspotName) {
+    // Remove any existing notification
+    const existingNotification = document.getElementById('hotspot-notification');
+    if (existingNotification) {
+        existingNotification.remove();
+    }
+
+    // Create notification element
+    const notification = document.createElement('div');
+    notification.id = 'hotspot-notification';
+    notification.className = 'hotspot-notification';
+    notification.innerHTML = `<span>${hotspotName} found, animation will load</span>`;
+
+    // Add to page
+    document.body.appendChild(notification);
+
+    // Show notification with fade-in effect
+    setTimeout(() => {
+        notification.classList.add('show');
+    }, 10);
+
+    // Auto-hide after 3 seconds
+    setTimeout(() => {
+        notification.classList.remove('show');
+        setTimeout(() => {
+            if (notification.parentNode) {
+                notification.remove();
+            }
+        }, 500); // Wait for fade-out animation
+    }, 3000);
+}
+
+// Function to check if a hotspot can be activated (sequential order)
+function canActivateHotspot(hotspotId) {
+    const hotspotIndex = currentHotspotOrder.indexOf(hotspotId);
+    
+    // First hotspot (index 0) can always be activated
+    if (hotspotIndex === 0) {
+        return true;
+    }
+    
+    // Check if all previous hotspots have been activated
+    for (let i = 0; i < hotspotIndex; i++) {
+        const previousHotspotId = currentHotspotOrder[i];
+        if (!activatedHotspots.has(previousHotspotId)) {
+            return false; // Previous hotspot not activated yet
+        }
+    }
+    
+    return true; // All previous hotspots activated
+}
+
+// Function to activate a hotspot
+function activateHotspot(hotspotId, entity) {
+    if (activatedHotspots.has(hotspotId)) {
+        return; // Already activated
+    }
+    
+    // Add to activated set
+    activatedHotspots.add(hotspotId);
+    
+    console.log(`Hotspot ${hotspotId} activated! Total activated: ${activatedHotspots.size}/${currentHotspotOrder.length}`);
+    
+    // Refresh ALL hotspot visual states after activation
+    refreshAllHotspotVisualStates();
+    
+    // Check if all hotspots are activated
+    if (activatedHotspots.size === currentHotspotOrder.length) {
+        console.log('All hotspots activated! Experience complete!');
+        // You could add a completion celebration here
+    }
+}
+
+// Function to update hotspot visual state
+function updateHotspotVisualState(entity, hotspotId, hotspotIndex) {
+    // Remove existing halo rings first
+    removeHotspotHalo(entity);
+    
+    if (activatedHotspots.has(hotspotId)) {
+        // Activated hotspot: tinted yellow with full opacity
+        entity.setAttribute('material', 'color', '#FBD86F');
+        entity.setAttribute('material', 'opacity', '1.0');
+        console.log(`Hotspot ${hotspotId}: Activated (yellow, 100% opacity)`);
+    } else if (canActivateHotspot(hotspotId)) {
+        // Next available hotspot: normal white with glow effect and full opacity
+        entity.setAttribute('material', 'color', 'white');
+        entity.setAttribute('material', 'opacity', '1.0');
+        createHotspotHalo(entity);
+        console.log(`Hotspot ${hotspotId}: Active (white, 100% opacity, GLOWING)`);
+    } else {
+        // Future hotspot: 50% transparent white
+        entity.setAttribute('material', 'color', 'white');
+        entity.setAttribute('material', 'opacity', '0.5');
+        console.log(`Hotspot ${hotspotId}: Future (white, 50% opacity)`);
+    }
+}
+
+// Function to reset hotspot sequence (useful for testing or restarting)
+function resetHotspotSequence() {
+    activatedHotspots.clear();
+    console.log('Hotspot sequence reset. All hotspots are now inactive.');
+    
+    // Refresh all hotspot visual states
+    const scene = document.querySelector("a-scene");
+    const hotspotEntities = scene.querySelectorAll('.clickable');
+    
+    hotspotEntities.forEach(entity => {
+        // Remove halo effect and reset to initial state
+        removeHotspotHalo(entity);
+        entity.setAttribute('material', 'color', 'white');
+        entity.setAttribute('material', 'opacity', '1.0');
+    });
+    
+    // Re-apply visual states after reset
+    setTimeout(() => {
+        hotspotEntities.forEach(entity => {
+            const hotspotId = entity.getAttribute('data-hotspot-id');
+            if (hotspotId) {
+                const hotspotIndex = currentHotspotOrder.indexOf(hotspotId);
+                updateHotspotVisualState(entity, hotspotId, hotspotIndex);
+            }
+        });
+    }, 100);
+}
+
+// Make reset function globally accessible for testing
+window.resetHotspotSequence = resetHotspotSequence;
+
+// Function to refresh all hotspot visual states (useful for debugging)
+function refreshAllHotspotVisualStates() {
+    const scene = document.querySelector("a-scene");
+    const hotspotEntities = scene.querySelectorAll('.clickable');
+    
+    console.log(`Refreshing ${hotspotEntities.length} hotspot entities...`);
+    console.log('Current activated hotspots:', Array.from(activatedHotspots));
+    console.log('Current hotspot order:', currentHotspotOrder);
+    
+    hotspotEntities.forEach(entity => {
+        const hotspotId = entity.getAttribute('data-hotspot-id');
+        if (hotspotId) {
+            const hotspotIndex = currentHotspotOrder.indexOf(hotspotId);
+            console.log(`Processing entity for hotspot ${hotspotId} at index ${hotspotIndex}`);
+            updateHotspotVisualState(entity, hotspotId, hotspotIndex);
+        } else {
+            console.log('Entity missing data-hotspot-id attribute');
+        }
+    });
+    
+    console.log('All hotspot visual states refreshed');
+}
+
+// Make refresh function globally accessible for testing
+window.refreshAllHotspotVisualStates = refreshAllHotspotVisualStates;
+
+// Function to manually test hotspot states (for debugging)
+function testHotspotStates() {
+    console.log('=== HOTSPOT STATE TEST ===');
+    console.log('Total hotspots:', currentHotspotOrder.length);
+    console.log('Activated hotspots:', Array.from(activatedHotspots));
+    console.log('Current order:', currentHotspotOrder);
+    
+    currentHotspotOrder.forEach((hotspotId, index) => {
+        const canActivate = canActivateHotspot(hotspotId);
+        const isActivated = activatedHotspots.has(hotspotId);
+        console.log(`${index}: ${hotspotId} - Can activate: ${canActivate}, Activated: ${isActivated}`);
+    });
+    
+    console.log('=== END TEST ===');
+}
+
+// Make test function globally accessible
+window.testHotspotStates = testHotspotStates;
+
+// Function to create animated halo effect around a hotspot
+function createHotspotHalo(entity) {
+    // Remove any existing halo first
+    removeHotspotHalo(entity);
+    
+    const scene = document.querySelector("a-scene");
+    const entityPosition = entity.getAttribute('position');
+    const entityScale = entity.getAttribute('scale');
+    
+    // Calculate proper halo size based on hotspot scale
+    // Use the actual hotspot dimensions for better matching
+    const hotspotSize = Math.max(entityScale.x, entityScale.y);
+    const outerRadius = hotspotSize * 0.55;  // Much smaller outer radius
+    
+    // Position halos slightly behind the hotspot to avoid Z-depth clashing
+    const haloPosition = {
+        x: entityPosition.x,
+        y: entityPosition.y,
+        z: entityPosition.z + 0.1  // Move 0.1 units behind the hotspot
+    };
+    
+    // Create outer halo ring only
+    const outerHalo = document.createElement('a-ring');
+    outerHalo.setAttribute('radius-inner', outerRadius);
+    outerHalo.setAttribute('radius-outer', hotspotSize * 0.7); // Closer to hotspot size
+    outerHalo.setAttribute('position', haloPosition);
+    outerHalo.setAttribute('material', 'color', 'white'); // Changed to white
+    outerHalo.setAttribute('material', 'opacity', '0.5'); // Lower opacity for outer ring
+    outerHalo.setAttribute('material', 'transparent', 'true');
+    outerHalo.setAttribute('rotation', '0 0 90'); // Fixed: No rotation to match icons
+    outerHalo.setAttribute('animation', {
+        property: 'scale',
+        to: '1.08 1.08 1.08', // Even smaller scale animation
+        dur: 1000,
+        easing: 'easeInOutQuad',
+        loop: true,
+        dir: 'alternate'
+    });
+    outerHalo.setAttribute('data-halo-type', 'outer');
+    outerHalo.setAttribute('data-parent-hotspot', entity.getAttribute('data-hotspot-id'));
+    
+    // Add halo to scene
+    scene.appendChild(outerHalo);
+    
+    // Store reference to halo on the entity
+    entity.haloRings = [outerHalo];
+    
+    console.log(`Created white halo effect for hotspot ${entity.getAttribute('data-hotspot-id')} with size ${hotspotSize}`);
+}
+
+// Function to remove halo effect from a hotspot
+function removeHotspotHalo(entity) {
+    if (entity.haloRings) {
+        entity.haloRings.forEach(halo => {
+            if (halo.parentNode) {
+                halo.parentNode.removeChild(halo);
+            }
+        });
+        entity.haloRings = null;
+    }
+    
+    // Also remove any orphaned halos by searching for them
+    const scene = document.querySelector("a-scene");
+    const hotspotId = entity.getAttribute('data-hotspot-id');
+    if (hotspotId) {
+        const orphanedHalos = scene.querySelectorAll(`[data-parent-hotspot="${hotspotId}"]`);
+        orphanedHalos.forEach(halo => {
+            if (halo.parentNode) {
+                halo.parentNode.removeChild(halo);
+            }
+        });
     }
 } 

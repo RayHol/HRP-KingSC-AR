@@ -19,6 +19,86 @@
             }
         ]
     },
+    "banquet_of_the_gods": {
+        "common": {
+            "scale": "7.5 7.5 1",
+            "rotation": "0 0 0",
+            "fixedAngleDegrees": 59.22,
+            "initialY": 146.94,
+            "initialZ": -39.88
+        },
+        "media": [
+            {
+                "type": "image",
+                "url": "./Assets/hotspot-icons/Asset 2.png",
+                "frameUrl": "./Assets/hotspot-icons/Asset 2.png",
+                "info": "Banquet of the Gods",
+                "audioUrl": "",
+                "link": "",
+                "description": ""
+            }
+        ]
+    },
+    "peacock": {
+        "common": {
+            "scale": "7.5 7.5 1",
+            "rotation": "0 0 0",
+            "fixedAngleDegrees": 58.94,
+            "initialY": 133.95,
+            "initialZ": -40.22
+        },
+        "media": [
+            {
+                "type": "image",
+                "url": "./Assets/hotspot-icons/Asset 3.png",
+                "frameUrl": "./Assets/hotspot-icons/Asset 3.png",
+                "info": "Peacock",
+                "audioUrl": "",
+                "link": "",
+                "description": ""
+            }
+        ]
+    },
+    "three_graces": {
+        "common": {
+            "scale": "7.5 7.5 1",
+            "rotation": "0 0 0",
+            "fixedAngleDegrees": 96.81,
+            "initialY": 62.73,
+            "initialZ": 45.06
+        },
+        "media": [
+            {
+                "type": "image",
+                "url": "./Assets/hotspot-icons/Asset 4.png",
+                "frameUrl": "./Assets/hotspot-icons/Asset 4.png",
+                "info": "Three Graces",
+                "audioUrl": "",
+                "link": "",
+                "description": ""
+            }
+        ]
+    },
+    "trumpeter": {
+        "common": {
+            "scale": "7.5 7.5 1",
+            "rotation": "0 0 0",
+            "fixedAngleDegrees": -90,
+            "initialY": 180,
+            "initialZ": -40.86
+        },
+        "media": [
+            {
+                "type": "image",
+                "url": "./Assets/hotspot-icons/Asset 5.png",
+                "frameUrl": "./Assets/hotspot-icons/Asset 5.png",
+                "info": "Trumpeter",
+                "audioUrl": "",
+                "link": "",
+                "description": ""
+            }
+        ]
+    },
     "romulus": {
         "common": {
             "scale": "7.5 7.5 1",
@@ -173,6 +253,86 @@
                 "url": "./Assets/hotspot-icons/Asset 13.png",
                 "frameUrl": "./Assets/hotspot-icons/Asset 13.png",
                 "info": "Diana",
+                "audioUrl": "",
+                "link": "",
+                "description": ""
+            }
+        ]
+    },
+    "harvest": {
+        "common": {
+            "scale": "7.5 4 1",
+            "rotation": "0 0 0",
+            "fixedAngleDegrees": 85.61,
+            "initialY": 18.24,
+            "initialZ": -43.83
+        },
+        "media": [
+            {
+                "type": "image",
+                "url": "./Assets/hotspot-icons/Asset 14.png",
+                "frameUrl": "./Assets/hotspot-icons/Asset 14.png",
+                "info": "Harvest",
+                "audioUrl": "",
+                "link": "",
+                "description": ""
+            }
+        ]
+    },
+    "cherub": {
+        "common": {
+            "scale": "7.5 7.5 1",
+            "rotation": "0 0 0",
+            "fixedAngleDegrees": 91.77,
+            "initialY": 18.24,
+            "initialZ": 1.54
+        },
+        "media": [
+            {
+                "type": "image",
+                "url": "./Assets/hotspot-icons/hotspot.png",
+                "frameUrl": "./Assets/hotspot-icons/hotspot.png",
+                "info": "Cherub",
+                "audioUrl": "",
+                "link": "",
+                "description": ""
+            }
+        ]
+    },
+    "musicians": {
+        "common": {
+            "scale": "7.5 7.5 1",
+            "rotation": "0 0 0",
+            "fixedAngleDegrees": 87.99,
+            "initialY": 37.26,
+            "initialZ": -41.75
+        },
+        "media": [
+            {
+                "type": "image",
+                "url": "./Assets/hotspot-icons/hotspot.png",
+                "frameUrl": "./Assets/hotspot-icons/hotspot.png",
+                "info": "Musicians",
+                "audioUrl": "",
+                "link": "",
+                "description": ""
+            }
+        ]
+    },
+    "signature": {
+        "common": {
+            "scale": "7.5 7.5 1",
+            "rotation": "0 0 0",
+            "fixedAngleDegrees": 57.47,
+            "initialY": 28.28,
+            "initialZ": -26.89
+        },
+        "media": [
+            {
+                "type": "image",
+                "url": "./Assets/hotspot-icons/Asset 15.png",
+                "frameUrl": "./Assets/hotspot-icons/Asset 15.png",
+                "info": "Signature",
                 "audioUrl": "",
                 "link": "",
                 "description": ""
