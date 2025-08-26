@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multi-Location Hotspot System - QR Code Info</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 100vh;
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 30px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        .location-card {
+            background: rgba(255, 255, 255, 0.15);
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 10px;
+            border-left: 5px solid #FBD86F;
+        }
+        .location-card h2 {
+            color: #FBD86F;
+            margin-top: 0;
+        }
+        .test-link {
+            display: inline-block;
+            background: #FBD86F;
+            color: #333;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 25px;
+            font-weight: bold;
+            margin: 10px 5px;
+            transition: all 0.3s ease;
+        }
+        .test-link:hover {
+            background: #E5C05F;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(251, 216, 111, 0.4);
+        }
+        .qr-code {
+            text-align: center;
+            margin: 20px 0;
+        }
+        .code-block {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            margin: 10px 0;
+            word-break: break-all;
+        }
+        .instructions {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        .status {
+            text-align: center;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 10px;
+            background: rgba(76, 175, 80, 0.2);
+            border: 1px solid #4CAF50;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎯 Multi-Location Hotspot System</h1>
+        
+        <div class="status">
+            ✅ <strong>Implementation Complete!</strong><br>
+            Your AR hotspot system now supports multiple scanning locations with different hotspot positions.
+        </div>
+
+        <div class="instructions">
+            <h3>📋 How It Works</h3>
+            <p>The system uses URL parameters to determine which hotspot configuration to load:</p>
+            <ul>
+                <li><strong>No parameter:</strong> Loads default configuration</li>
+                <li><strong>?location=stairs:</strong> Loads stairs-specific positions</li>
+                <li><strong>?location=balcony:</strong> Loads balcony-specific positions</li>
+            </ul>
+        </div>
+
+        <div class="location-card">
+            <h2>🏠 Default Location</h2>
+            <p>Standard hotspot positions for general viewing</p>
+            <div class="code-block">https://localhost:8000/hotspots_page.html</div>
+            <a href="https://localhost:8000/hotspots_page.html" class="test-link" target="_blank">Test Default</a>
+        </div>
+
+        <div class="location-card">
+            <h2>🪜 Stairs Location</h2>
+            <p>Optimized hotspot positions for viewing from the bottom of the stairs</p>
+            <div class="code-block">https://localhost:8000/hotspots_page.html?location=stairs</div>
+            <a href="https://localhost:8000/hotspots_page.html?location=stairs" class="test-link" target="_blank">Test Stairs</a>
+        </div>
+
+        <div class="location-card">
+            <h2>🏛️ Balcony Location</h2>
+            <p>Optimized hotspot positions for viewing from the balcony</p>
+            <div class="code-block">https://localhost:8000/hotspots_page.html?location=balcony</div>
+            <a href="https://localhost:8000/hotspots_page.html?location=balcony" class="test-link" target="_blank">Test Balcony</a>
+        </div>
+
+        <div class="instructions">
+            <h3>📱 QR Code Implementation</h3>
+            <p>To generate QR codes for these locations:</p>
+            <ol>
+                <li>Use any QR code generator (Google "QR code generator")</li>
+                <li>Input the URLs above</li>
+                <li>Print the QR codes</li>
+                <li>Place them at the corresponding physical locations</li>
+            </ol>
+            <p><strong>Recommended QR code generators:</strong></p>
+            <ul>
+                <li><a href="https://qr-code-generator.com" target="_blank" style="color: #FBD86F;">qr-code-generator.com</a></li>
+                <li><a href="https://www.qrcode-monkey.com" target="_blank" style="color: #FBD86F;">qrcode-monkey.com</a></li>
+            </ul>
+        </div>
+
+        <div class="instructions">
+            <h3>🔧 Customizing Positions</h3>
+            <p>To adjust hotspot positions for each location:</p>
+            <ol>
+                <li>Edit <code>Scripts/hotspotsConfig-stairs.json</code> for stairs positions</li>
+                <li>Edit <code>Scripts/hotspotsConfig-balcony.json</code> for balcony positions</li>
+                <li>Adjust the <code>fixedAngleDegrees</code>, <code>initialY</code>, and <code>initialZ</code> values</li>
+                <li>Test the changes using the URLs above</li>
+            </ol>
+        </div>
+
+        <div class="instructions">
+            <h3>🚀 Next Steps</h3>
+            <ul>
+                <li>Test each URL to verify different hotspot positions</li>
+                <li>Manually adjust positions in the JSON files</li>
+                <li>Generate QR codes for the final URLs</li>
+                <li>Deploy to your production server</li>
+                <li>Place QR codes at physical locations</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>

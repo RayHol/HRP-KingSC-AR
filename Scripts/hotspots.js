@@ -31,7 +31,7 @@ const dragSpeedY = 0.005; // Adjust the drag speed for the y-axis
 
 // ===== GLOBAL SETTINGS =====
 // Global hotspot scale multiplier - adjust this to scale all hotspots uniformly
-const GLOBAL_HOTSPOT_SCALE = 0.6// 1.0 = normal size, 2.0 = double size, 0.5 = half size
+const GLOBAL_HOTSPOT_SCALE = 0.2// 1.0 = normal size, 2.0 = double size, 0.5 = half size
 
 // Pinch-to-zoom variables
 let initialPinchDistance = null;
@@ -173,14 +173,95 @@ function toggleMuteButton(isMuted) {
 //     loadHotspotMedia();
 // }
 
-function initializeHotspots() {
-    fetch("./Scripts/hotspotsConfig.json")
-        .then((response) => response.json())
-        .then((data) => {
-            // Get the hotspots from the hotspotsConfig.json file
-            hotspots = Object.keys(data); // Get all hotspot keys (hotspot1, hotspot2, etc.)
-            currentHotspotOrder = [...hotspots]; // Store the order for sequential activation
+// Function to determine which config file to load based on URL parameters
+function getConfigFileName() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const location = urlParams.get('location');
+    
+    console.log(`Location parameter detected: ${location}`);
+    
+    switch(location) {
+        case 'stairs':
+            console.log('Loading stairs configuration');
+            return './Scripts/hotspotsConfig-stairs.json';
+        case 'balcony':
+            console.log('Loading balcony configuration'); 
+            return './Scripts/hotspotsConfig-balcony.json';
+        default:
+            console.log('Loading default configuration');
+            return './Scripts/hotspotsConfig.json'; // Default fallback
+    }
+}
 
+function preloadAllHotspotImages(hotspotsConfigData) {
+    const imageUrls = [];
+    
+    // Use the passed config data instead of fetching again
+    Object.keys(hotspotsConfigData).forEach((hotspotId) => {
+        const hotspotData = hotspotsConfigData[hotspotId];
+        if (hotspotData && hotspotData.media) {
+            hotspotData.media.forEach((mediaItem) => {
+                if (mediaItem.type === "image") {
+                    imageUrls.push(mediaItem.url);
+                }
+            });
+        }
+    });
+    
+    // Preload all images
+    const preloadPromises = imageUrls.map(url => {
+        return new Promise((resolve) => {
+            const img = new Image();
+            img.onload = () => resolve();
+            img.onerror = () => resolve(); // Continue even if some fail
+            img.src = url;
+        });
+    });
+    
+    return Promise.all(preloadPromises);
+}
+
+// Add these helper functions at the top of the file (after the global variables)
+
+// Calculate position based on fixed angle and distance (like Skyline app)
+function calculateFixedPosition(fixedAngleDegrees, initialY, initialZ) {
+    const radians = (fixedAngleDegrees * Math.PI) / 180;
+    const distance = Math.abs(initialZ);
+    
+    const x = -distance * Math.sin(radians);
+    const y = initialY;
+    const z = -distance * Math.cos(radians);
+    
+    return { x, y, z };
+}
+
+// Calculate rotation so hotspots face the camera (like Skyline app)
+function calculateFixedRotation(fixedAngleDegrees) {
+    // The rotation should be the OPPOSITE of the position angle
+    // This ensures the hotspot faces the camera
+    return { x: 0, y: -fixedAngleDegrees, z: 0 };
+}
+
+function initializeHotspots() {
+    const configFile = getConfigFileName();
+    
+    console.log(`Attempting to load config file: ${configFile}`);
+    
+    fetch(configFile)
+        .then((response) => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then((data) => {
+            hotspotsConfig = data;
+            hotspots = Object.keys(data);
+            currentHotspotOrder = [...hotspots];
+            
+            console.log(`Successfully loaded ${hotspots.length} hotspots from ${configFile}`);
+            console.log('Hotspot order:', currentHotspotOrder);
+            
             // Ensure crosshair starts in default yellow state
             const centerTarget = document.getElementById('center-target');
             if (centerTarget) {
@@ -188,9 +269,15 @@ function initializeHotspots() {
                 console.log('Crosshair initialized in default yellow state');
             }
 
-            // Loop through each hotspot to load its media
+            // PASS the already loaded data instead of fetching again
+            return preloadAllHotspotImages(data);
+        })
+        .then(() => {
+            console.log('All images preloaded, creating hotspot entities...');
+            
+            // NOW create the hotspots after images are loaded
             hotspots.forEach((hotspotId, index) => {
-                const hotspotData = data[hotspotId];
+                const hotspotData = hotspotsConfig[hotspotId];
                 const commonValues = hotspotData.common;
                 const mediaArray = hotspotData.media;
 
@@ -200,15 +287,10 @@ function initializeHotspots() {
                 const currentZoom = Math.abs(commonValues.initialZ) || 25;
 
                 // Calculate the position based on the fixedAngleDegrees and currentZoom (initialZ)
-                const radians = (fixedAngleDegrees * Math.PI) / 180;
-                const position = {
-                    x: -currentZoom * Math.sin(radians),
-                    y: currentY,
-                    z: -currentZoom * Math.cos(radians)
-                };
+                const position = calculateFixedPosition(fixedAngleDegrees, currentY, currentZoom);
+                const rotation = calculateFixedRotation(fixedAngleDegrees);
 
-                // FIXED: Use consistent rotation for all hotspots - NO fixedAngleDegrees in rotation
-                const rotation = { x: 0, y: 0, z: 0 }; // All icons face the same direction
+                console.log(`Creating hotspot ${hotspotId} at position:`, position);
 
                 // Loop through each media item and only display 'image' media
                 mediaArray
@@ -216,14 +298,62 @@ function initializeHotspots() {
                     .forEach((mediaItem, mediaIndex) => {
                         displayHotspotMedia(mediaItem, mediaIndex, commonValues, position, rotation, hotspotId, index);
                     });
+            });
             
             // After all hotspots are created, refresh their visual states to ensure proper initialization
             setTimeout(() => {
+                console.log('Refreshing all hotspot visual states...');
                 refreshAllHotspotVisualStates();
             }, 100);
-            });
         })
-        .catch((error) => console.error("Error loading hotspot config:", error));
+        .catch((error) => {
+            console.error("Error loading hotspot config:", error);
+            console.error("Config file path:", configFile);
+            
+            // Fallback to default config if specific one fails
+            if (configFile !== './Scripts/hotspotsConfig.json') {
+                console.log('Attempting fallback to default config...');
+                fetch('./Scripts/hotspotsConfig.json')
+                    .then((response) => response.json())
+                    .then((data) => {
+                        hotspotsConfig = data;
+                        hotspots = Object.keys(data);
+                        currentHotspotOrder = [...hotspots];
+                        
+                        console.log('Fallback config loaded successfully');
+                        
+                        // Continue with initialization using fallback config
+                        return preloadAllHotspotImages(data);
+                    })
+                    .then(() => {
+                        hotspots.forEach((hotspotId, index) => {
+                            const hotspotData = hotspotsConfig[hotspotId];
+                            const commonValues = hotspotData.common;
+                            const mediaArray = hotspotData.media;
+
+                            const fixedAngleDegrees = commonValues.fixedAngleDegrees || 0;
+                            const currentY = commonValues.initialY || 0;
+                            const currentZoom = Math.abs(commonValues.initialZ) || 25;
+
+                            const position = calculateFixedPosition(fixedAngleDegrees, currentY, currentZoom);
+                            const rotation = calculateFixedRotation(fixedAngleDegrees);
+
+                            mediaArray
+                                .filter(mediaItem => mediaItem.type === "image")
+                                .forEach((mediaItem, mediaIndex) => {
+                                    displayHotspotMedia(mediaItem, mediaIndex, commonValues, position, rotation, hotspotId, index);
+                                });
+                        });
+                        
+                        setTimeout(() => {
+                            refreshAllHotspotVisualStates();
+                        }, 100);
+                    })
+                    .catch((fallbackError) => {
+                        console.error("Error loading fallback config:", fallbackError);
+                    });
+            }
+        });
 }
 
 function updateFixedAngleDegrees(newAngle) {

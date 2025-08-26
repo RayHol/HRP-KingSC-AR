@@ -6,6 +6,8 @@
     <meta charset="UTF-8" />
     <title>King's Staircase - Hotspots | HRP</title>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700&display=swap">
+    
+    <!-- KEEP: A-Frame 1.4.0 to avoid white screen -->
     <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
     <!-- <script src="https://cdn.jsdelivr.net/gh/donmccurdy/aframe-extras@v6.1.1/dist/aframe-extras.min.js"></script> -->
     <!-- <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js@3.4.2/aframe/build/aframe-ar.min.js"></script> -->
@@ -54,13 +56,18 @@
         </div>
     </div>
 
-    <!-- A-Frame Scene -->
-    <!-- <div class="centered instructions"></div> -->
-    
-    <a-scene id="ar-scene" vr-mode-ui="enabled: false" arjs="debugUIEnabled: enabled;" style="display:block;">
+    <!-- A-Frame Scene - FIXED: Use working Skyline AR.js config with A-Frame 1.4.0 -->
+    <a-scene id="ar-scene" vr-mode-ui="enabled: false" 
+         arjs="debugUIEnabled: false; far: 100000; near: 0.001; maxDetectionRate: 60; 
+                sourceWidth: 1920; sourceHeight: 1080; 
+                sourceType: webcam; 
+                cameraParametersUrl: https://raw.githack.com/jeromeetienne/AR.js/master/data/data/camera_para.dat;" 
+         style="display:block;">
         <a-light type="ambient" color="#ffffff" ></a-light>
         <a-light type="directional" color="#ffffff" position="-2 4 5"></a-light>
-        <a-entity camera rotation-reader look-controls="touchEnabled: false" raycaster="objects: .clickable" position="0 1.6 0"></a-entity>
+        <a-entity camera rotation-reader look-controls="touchEnabled: false" raycaster="objects: .clickable" position="0 1.6 0" id="camera" far="10000">
+            <a-cursor color="#FFFFFF" position="0 0 -1" visible="false"></a-cursor>
+        </a-entity>
     </a-scene>
 
     <!-- 2D Center Target Crosshair for AR Hotspot Aiming -->

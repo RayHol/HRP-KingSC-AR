@@ -1,31 +1,11 @@
 {
-    "clouds": {
-        "common": {
-            "scale": "30 30 1",
-            "rotation": "0 0 0",
-            "fixedAngleDegrees": 32,
-            "initialY": 36.8,
-            "initialZ": 42
-        },
-        "media": [
-            {
-                "type": "image",
-                "url": "./Assets/hotspot-icons/Asset 1.png",
-                "frameUrl": "./Assets/hotspot-icons/Asset 1.png",
-                "info": "Clouds",
-                "audioUrl": "",
-                "link": "",
-                "description": ""
-            }
-        ]
-    },
     "romulus": {
         "common": {
             "scale": "30 30 1",
             "rotation": "0 0 0",
-            "fixedAngleDegrees": 7.28,
-            "initialY": 28.87,
-            "initialZ": -49.60
+            "fixedAngleDegrees": -49.7,
+            "initialY": 34.83,
+            "initialZ": -32.34
         },
         "media": [
             {
@@ -43,9 +23,9 @@
         "common": {
             "scale": "30 30 1",
             "rotation": "0 0 0",
-            "fixedAngleDegrees": 4.55,
-            "initialY": 15.94,
-            "initialZ": -49.11
+            "fixedAngleDegrees": -35.07,
+            "initialY": 35.02,
+            "initialZ": -40.53
         },
         "media": [
             {
@@ -63,9 +43,9 @@
         "common": {
             "scale": "30 30 1",
             "rotation": "0 0 0",
-            "fixedAngleDegrees": -10.85,
-            "initialY": 15.36,
-            "initialZ": -49.11
+            "fixedAngleDegrees": -48.37,
+            "initialY": 30.83,
+            "initialZ": -32.96
         },
         "media": [
             {
@@ -83,9 +63,9 @@
         "common": {
             "scale": "30 30 1",
             "rotation": "0 0 0",
-            "fixedAngleDegrees": 29.12,
-            "initialY": 27.95,
-            "initialZ": -43.68
+            "fixedAngleDegrees": -4.97,
+            "initialY": 67.09,
+            "initialZ": -49.34
         },
         "media": [
             {
@@ -103,9 +83,9 @@
         "common": {
             "scale": "30 30 1",
             "rotation": "0 0 0",
-            "fixedAngleDegrees": 21.21,
-            "initialY": 22.25,
-            "initialZ": -46.61
+            "fixedAngleDegrees": 21.35,
+            "initialY": 53.38,
+            "initialZ": -46.13
         },
         "media": [
             {
@@ -123,9 +103,9 @@
         "common": {
             "scale": "30 30 1",
             "rotation": "0 0 0",
-            "fixedAngleDegrees": 34.02,
-            "initialY": 22.25,
-            "initialZ": -41.44
+            "fixedAngleDegrees": 2.80,
+            "initialY": 53.04,
+            "initialZ": -49.47
         },
         "media": [
             {
@@ -143,9 +123,9 @@
         "common": {
             "scale": "30 30 1",
             "rotation": "0 0 0",
-            "fixedAngleDegrees": 35.85,
-            "initialY": -10.14,
-            "initialZ": -38.94
+            "fixedAngleDegrees": 6.23,
+            "initialY": 42.02,
+            "initialZ": -49.23
         },
         "media": [
             {
@@ -163,9 +143,9 @@
         "common": {
             "scale": "30 30 1",
             "rotation": "0 0 0",
-            "fixedAngleDegrees": 19.18,
-            "initialY": 42.38,
-            "initialZ": -47.22
+            "fixedAngleDegrees": -19.04,
+            "initialY": 65.18,
+            "initialZ": -49.82
         },
         "media": [
             {
