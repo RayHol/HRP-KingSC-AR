@@ -28,6 +28,8 @@
     
     <!-- Include the custom CSS file for styling -->
     <link rel="stylesheet" href=".\Scripts\ar_page.css">
+
+    <script src="https://unpkg.com/aframe-transparent-video-shader@1.0.6/dist/aframe-transparent-video-shader.umd.js"></script>
     
   
 </head>
@@ -71,8 +73,9 @@
         <!-- Asset container -->
         <a-assets>
             <!-- Video 1 asset for target 1 -->
-            <video id="video1" src=".\Assets\Videos\cw_guitar.mp4" preload="auto" response-type="arraybuffer" loop
-                crossorigin="anonymous" webkit-playsinline autoplay muted playsinline>
+            <video id="video1" preload="auto" response-type="arraybuffer" loop crossorigin="anonymous" webkit-playsinline autoplay muted playsinline>
+              <source src=".\Assets\Videos\Transparent_2.mp4" type="video/mp4;codecs=hvc1">
+              <source src=".\Assets\Videos\Cherub.webm" type="video/webm">
             </video>
             <!-- Video 2 asset for target 2 -->
             <video id="video2" src=".\Assets\Videos\ceiling1.mp4" preload="auto" response-type="arraybuffer" loop
