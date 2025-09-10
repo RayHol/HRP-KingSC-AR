@@ -74,8 +74,8 @@
         <a-assets>
             <!-- Video 1 asset for target 1 -->
             <video id="video1" preload="auto" response-type="arraybuffer" loop crossorigin="anonymous" webkit-playsinline autoplay muted playsinline>
-              <source src=".\Assets\Videos\Transparent_2.mp4" type="video/mp4;codecs=hvc1">
-              <source src=".\Assets\Videos\Cherub.webm" type="video/webm">
+              <source src=".\Assets\Videos\Cherub1_1.mp4" type="video/mp4;codecs=hvc1">
+              <source src=".\Assets\Videos\Cherub1.webm" type="video/webm">
             </video>
             <!-- Video 2 asset for target 2 -->
             <video id="video2" src=".\Assets\Videos\ceiling1.mp4" preload="auto" response-type="arraybuffer" loop
@@ -97,7 +97,7 @@
         <a-entity id="target1" mindar-image-target="targetIndex: 0" ar-controller
             smooth-position="target: #videooverlay1; factor: 0.1">
             <a-plane id="videooverlay1" 
-                material="src: #video1; opacity: 0; transparent: false; alphaTest: 0.5"
+                material="shader: transparent-video; src: #video1"
                 animation__fadein="startEvents: fadein1; property: material.opacity; from: 0; to: 1; dur: 500;" height="1.2" width="2"
                 animation__fadeout="startEvents: fadeout1; property: material.opacity; from: 1; to: 0; dur: 500;"></a-plane>
         </a-entity>
