@@ -26,9 +26,8 @@
     <div class="main-content">
         <h1 class="main-title">THE KING'S STAIRCASE</h1>
         <p class="subtitle">Unlock the story behind one of the palace's great paintings.</p>
-        <button id="startButton" onclick="location.href='AR_page.html';">START EXPERIENCE</button>
-        <button id="stairsButton" onclick="location.href='hotspots_page.html?location=stairs';">Stairs Hotspots</button>
-        <button id="balconyButton" onclick="location.href='hotspots_page.html?location=balcony';">Balcony Hotspots</button>
+        
+        <button id="startButton" onclick="startExperience()">START EXPERIENCE</button>
         <div class="test-build">TEST BUILD</div>
     </div>
 </body>
@@ -40,6 +39,78 @@
   gtag('js', new Date());
 
   gtag('config', 'G-XT4SMTQCY2');
+</script>
+
+<script>
+async function startExperience() {
+    // Get location parameter from URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const location = urlParams.get('location');
+    
+    // Default to 'stairs' if no location parameter is provided
+    const selectedLocation = location || 'stairs';
+    
+    // Validate location parameter
+    if (selectedLocation !== 'stairs' && selectedLocation !== 'balcony') {
+        console.warn('Invalid location parameter, defaulting to stairs');
+        window.location.href = 'hotspots_page.html?location=stairs';
+        return;
+    }
+    
+    console.log(`Starting experience for location: ${selectedLocation}`);
+    
+    try {
+        // Request device motion permissions before navigating
+        if (typeof DeviceMotionEvent !== 'undefined' && typeof DeviceMotionEvent.requestPermission === 'function') {
+            console.log('Requesting device motion permission...');
+            const permission = await DeviceMotionEvent.requestPermission();
+            
+            if (permission === 'granted') {
+                console.log('Device motion permission granted');
+            } else {
+                console.warn('Device motion permission denied, but continuing...');
+            }
+        } else {
+            console.log('Device motion permission not required on this device');
+        }
+        
+        // Request device orientation permissions if available
+        if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function') {
+            console.log('Requesting device orientation permission...');
+            const permission = await DeviceOrientationEvent.requestPermission();
+            
+            if (permission === 'granted') {
+                console.log('Device orientation permission granted');
+            } else {
+                console.warn('Device orientation permission denied, but continuing...');
+            }
+        } else {
+            console.log('Device orientation permission not required on this device');
+        }
+        
+    } catch (error) {
+        console.warn('Error requesting permissions:', error);
+        // Continue anyway - some devices don't require explicit permission
+    }
+    
+    // Navigate to hotspots page after permission request
+    window.location.href = `hotspots_page.html?location=${selectedLocation}`;
+}
+
+// Optional: Update page content based on location
+document.addEventListener('DOMContentLoaded', function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const location = urlParams.get('location');
+    
+    if (location === 'balcony') {
+        // You could update the title or subtitle here if needed
+        console.log('Balcony location detected');
+    } else if (location === 'stairs') {
+        console.log('Stairs location detected');
+    } else {
+        console.log('No location parameter detected, defaulting to stairs');
+    }
+});
 </script>
 </html>
 

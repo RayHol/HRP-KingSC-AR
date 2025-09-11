@@ -123,35 +123,6 @@ body {
     transform: translateY(0);
 }
 
-/* Location Selection Buttons */
-#stairsButton, #balconyButton {
-    display: block;
-    width: 100%;
-    max-width: 327px;
-    height: 48px;
-    background-color: #FBD86F;
-    color: #000000;
-    border: none;
-    border-radius: 8px;
-    font-family: 'Poppins', sans-serif;
-    font-weight: 500;
-    font-size: 14px;
-    line-height: 48px;
-    letter-spacing: 1.25px;
-    text-transform: uppercase;
-    cursor: pointer;
-    margin: 16px auto 0 auto;
-    transition: all 0.2s ease;
-}
-
-#stairsButton:hover, #balconyButton:hover {
-    background-color: #F4C84F;
-    transform: translateY(-1px);
-}
-
-#stairsButton:active, #balconyButton:active {
-    transform: translateY(0);
-}
 
 #hotspotsButton {
     display: block;
@@ -210,11 +181,6 @@ body {
         bottom: 100px;
     }
     
-    #stairsButton, #balconyButton {
-        height: 48px;
-        line-height: 48px;
-        font-size: 13px;
-    }
 }
 
 @media (max-width: 360px) {
@@ -234,12 +200,6 @@ body {
         bottom: 80px;
     }
     
-    #stairsButton, #balconyButton {
-        height: 44px;
-        line-height: 44px;
-        font-size: 12px;
-        letter-spacing: 1px;
-    }
 }
 
 /* Landscape orientation */
@@ -262,10 +222,4 @@ body {
         margin-bottom: 15px;
     }
     
-    #stairsButton, #balconyButton {
-        height: 44px;
-        line-height: 44px;
-        font-size: 12px;
-        margin-bottom: 8px;
-    }
 }
