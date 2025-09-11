@@ -1452,6 +1452,12 @@ function setupUIButtonListeners() {
         helpBtn.addEventListener('click', handleHelpButton);
     }
     
+    // Help close button
+    const helpCloseBtn = document.getElementById('help-close-btn');
+    if (helpCloseBtn) {
+        helpCloseBtn.addEventListener('click', hideHelpOverlay);
+    }
+    
     // Badges/Replay button
     const badgesReplayBtn = document.getElementById('badges-replay-btn');
     if (badgesReplayBtn) {
@@ -1475,8 +1481,7 @@ function handleBackButton() {
 // Help button handler
 function handleHelpButton() {
     console.log('Help button clicked');
-    // TODO: Open help overlay (to be implemented later)
-    alert('Help overlay will be implemented later');
+    showHelpOverlay();
 }
 
 // Badges/Replay button handler
@@ -1524,6 +1529,28 @@ function showTranscriptButton(show = true) {
     const transcriptBtn = document.getElementById('transcript-btn');
     if (transcriptBtn) {
         transcriptBtn.style.display = show ? 'flex' : 'none';
+    }
+}
+
+// Help overlay functions
+function showHelpOverlay() {
+    const helpOverlay = document.getElementById('help-overlay');
+    if (helpOverlay) {
+        helpOverlay.style.display = 'flex';
+        // Trigger reflow to ensure display change is applied
+        helpOverlay.offsetHeight;
+        helpOverlay.classList.add('show');
+    }
+}
+
+function hideHelpOverlay() {
+    const helpOverlay = document.getElementById('help-overlay');
+    if (helpOverlay) {
+        helpOverlay.classList.remove('show');
+        // Wait for animation to complete before hiding
+        setTimeout(() => {
+            helpOverlay.style.display = 'none';
+        }, 400); // Match the CSS transition duration
     }
 }
 
