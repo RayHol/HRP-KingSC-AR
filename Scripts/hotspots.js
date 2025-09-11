@@ -1473,6 +1473,12 @@ function setupUIButtonListeners() {
         badgesCloseBtn.addEventListener('click', hideBadgesOverlay);
     }
     
+    // Congratulations overlay collect button
+    const collectBadgeBtn = document.getElementById('collect-badge-btn');
+    if (collectBadgeBtn) {
+        collectBadgeBtn.addEventListener('click', hideCongratulationsOverlay);
+    }
+    
     // Badges/Replay button
     const badgesReplayBtn = document.getElementById('badges-replay-btn');
     if (badgesReplayBtn) {
@@ -1672,6 +1678,9 @@ function unlockBadge(badgeId) {
         unlockedBadges.add(badgeId);
         console.log(`Badge unlocked: ${badgeId}`);
         
+        // Show congratulations overlay with the unlocked badge
+        showCongratulationsOverlay(badgeId);
+        
         // Update the specific badge in the grid if overlay is open
         const badgesOverlay = document.getElementById('badges-overlay');
         if (badgesOverlay && badgesOverlay.style.display === 'flex') {
@@ -1686,6 +1695,41 @@ function unlockBadge(badgeId) {
                 }
             }
         }
+    }
+}
+
+// Congratulations overlay functions
+function showCongratulationsOverlay(badgeId) {
+    const congratsOverlay = document.getElementById('congrats-overlay');
+    const congratsBadgeImage = document.getElementById('congrats-badge-image');
+    
+    if (congratsOverlay && congratsBadgeImage) {
+        // Find the badge configuration
+        const badgeConfigItem = badgeConfig.find(b => b.id === badgeId);
+        if (badgeConfigItem) {
+            // Set the badge image
+            congratsBadgeImage.src = `./Assets/Badges/${badgeConfigItem.filename}`;
+            congratsBadgeImage.alt = badgeConfigItem.name;
+            
+            // Show the overlay
+            congratsOverlay.style.display = 'flex';
+            congratsOverlay.offsetHeight; // Trigger reflow
+            congratsOverlay.classList.add('show');
+            
+            console.log(`Congratulations overlay shown for badge: ${badgeId}`);
+        } else {
+            console.error(`Badge configuration not found for ID: ${badgeId}`);
+        }
+    }
+}
+
+function hideCongratulationsOverlay() {
+    const congratsOverlay = document.getElementById('congrats-overlay');
+    if (congratsOverlay) {
+        congratsOverlay.classList.remove('show');
+        setTimeout(() => {
+            congratsOverlay.style.display = 'none';
+        }, 300); // Match the CSS transition duration
     }
 }
 
@@ -1720,6 +1764,6 @@ document.addEventListener("DOMContentLoaded", function() {
     setTimeout(initializeSafetyWarning, 100);
     
     // Uncomment the line below to test badge unlocking
-    setTimeout(testUnlockBadges, 2000);
+    // setTimeout(testUnlockBadges, 2000);
     setTimeout(initializeMainUI, 200);
 }); 
