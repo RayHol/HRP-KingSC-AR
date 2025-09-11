@@ -575,10 +575,7 @@ function displayHotspotMedia(mediaItem, index, commonValues, currentPosition, cu
         const isAlreadyTriggered = activatedHotspots.has(hotspotId);
         updateBadgesReplayButton(isAlreadyTriggered);
 
-        // Show simple notification
-        showHotspotNotification(mediaItem.info || 'Hotspot');
-
-        // Activate the hotspot with MindAR
+        // Activate the hotspot with MindAR directly (no notification)
         activateHotspotWithMindAR(hotspotId, entity);
     });
 
@@ -1702,6 +1699,22 @@ function hideCongratulationsOverlay() {
         congratsOverlay.classList.remove('show');
         setTimeout(() => {
             congratsOverlay.style.display = 'none';
+            
+            // Mark the current hotspot as completed
+            if (currentActiveHotspotId) {
+                activatedHotspots.add(currentActiveHotspotId);
+                console.log(`Hotspot ${currentActiveHotspotId} marked as completed! Total activated: ${activatedHotspots.size}/${currentHotspotOrder.length}`);
+                
+                // Refresh all hotspot visual states to show completed status
+                refreshAllHotspotVisualStates();
+                
+                // Clear the current active hotspot ID
+                currentActiveHotspotId = null;
+            }
+            
+            // Return to hotspot finding mode (main AR scene should already be visible)
+            console.log('Returned to hotspot finding mode');
+            
         }, 300); // Match the CSS transition duration
     }
 }
@@ -1754,6 +1767,7 @@ let mindarTargets = new Map(); // Map hotspot IDs to MindAR target indices
 let currentMindarVideo = null;
 let isMindarActive = false;
 let currentHotspotVideo = null;
+let currentActiveHotspotId = null; // Track which hotspot is currently being processed
 
 // Initialize MindAR system
 function initializeMindAR() {
@@ -1822,8 +1836,7 @@ function showMindARScene(hotspotId) {
     
     isMindarActive = true;
     
-    // Add loading indicator
-    showMindarLoading('Point your camera at the target image...');
+    // No loading indicator needed - MindAR will handle target detection automatically
     
     console.log(`MindAR scene activated for hotspot: ${hotspotId}`);
 }
@@ -1859,9 +1872,6 @@ function hideMindARScene() {
     
     isMindarActive = false;
     
-    // Hide any loading indicators
-    hideMindarLoading();
-    
     console.log('MindAR scene deactivated');
 }
 
@@ -1889,11 +1899,7 @@ function hideMindarLoading() {
 function handleMindarTargetFound(hotspotId) {
     console.log(`MindAR target detected for hotspot: ${hotspotId}`);
     
-    // Hide loading indicator
-    hideMindarLoading();
-    
-    // Show target found indicator
-    showTargetFoundIndicator();
+    // No target found indicator needed - video will play directly
     
     // Get the video element
     const video = document.getElementById(`video-${hotspotId}`);
@@ -1972,6 +1978,9 @@ function activateHotspotWithMindAR(hotspotId, entity) {
     }
     
     console.log(`Activating MindAR for hotspot: ${hotspotId}`);
+    
+    // Set the current active hotspot ID
+    currentActiveHotspotId = hotspotId;
     
     // Show the appropriate MindAR target
     const targetEntity = document.getElementById(`target-${hotspotId}`);

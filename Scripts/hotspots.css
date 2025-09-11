@@ -2103,22 +2103,7 @@ body {
     transform: scale(1.1);
 }
 
-/* MindAR Loading Indicator */
-.mindar-loading {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    z-index: 2001;
-    color: white;
-    font-size: 18px;
-    text-align: center;
-    background: rgba(0, 0, 0, 0.7);
-    padding: 20px;
-    border-radius: 10px;
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-}
+/* MindAR Loading Indicator - Removed as not needed */
 
 /* MindAR Target Detection Indicator */
 .mindar-target-found {
@@ -2185,10 +2170,7 @@ body {
         font-size: 20px;
     }
     
-    .mindar-loading {
-        font-size: 16px;
-        padding: 15px;
-    }
+    /* MindAR loading styles removed */
     
     .mindar-target-found {
         font-size: 14px;
