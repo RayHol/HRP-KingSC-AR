@@ -1473,6 +1473,147 @@ body {
 }
 
 /* ========================================
+   BADGES OVERLAY
+   ======================================== */
+
+.badges-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(15px);
+    z-index: 2000;
+    display: none;
+    opacity: 0;
+    transition: all 0.3s ease;
+}
+
+.badges-overlay.show {
+    display: flex;
+    opacity: 1;
+}
+
+.badges-content {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(20px);
+    transform: translateX(-100%);
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+    box-sizing: border-box;
+}
+
+.badges-overlay.show .badges-content {
+    transform: translateX(0);
+}
+
+.badges-close-btn {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    width: 40px;
+    height: 40px;
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    z-index: 2001;
+}
+
+.badges-close-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: scale(1.05);
+}
+
+.badges-items {
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+    max-width: 400px;
+    width: 100%;
+    align-items: center;
+}
+
+.badges-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 20px;
+    width: 100%;
+}
+
+.badges-title {
+    color: #FAFAFA;
+    text-align: center;
+    font-family: "Open Sans Condensed", sans-serif;
+    font-size: 24px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 140%;
+    text-transform: uppercase;
+    margin: 0;
+}
+
+.badges-description {
+    color: #FAFAFA;
+    text-align: center;
+    font-family: "Open Sans", sans-serif;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 150%;
+    margin: 0;
+    max-width: 300px;
+}
+
+/* Badges overlay responsive */
+@media (max-width: 768px) {
+    .badges-content {
+        padding: 20px 15px;
+    }
+    
+    .badges-items {
+        gap: 30px;
+        max-width: 350px;
+    }
+    
+    .badges-placeholder {
+        gap: 16px;
+    }
+    
+    .badges-title {
+        font-size: 20px;
+    }
+    
+    .badges-description {
+        font-size: 14px;
+    }
+    
+    .badges-close-btn {
+        top: 15px;
+        right: 15px;
+        width: 36px;
+        height: 36px;
+    }
+}
+
+/* ========================================
    MAIN UI ELEMENTS
    ======================================== */
 

@@ -1458,6 +1458,12 @@ function setupUIButtonListeners() {
         helpCloseBtn.addEventListener('click', hideHelpOverlay);
     }
     
+    // Badges close button
+    const badgesCloseBtn = document.getElementById('badges-close-btn');
+    if (badgesCloseBtn) {
+        badgesCloseBtn.addEventListener('click', hideBadgesOverlay);
+    }
+    
     // Badges/Replay button
     const badgesReplayBtn = document.getElementById('badges-replay-btn');
     if (badgesReplayBtn) {
@@ -1494,8 +1500,7 @@ function handleBadgesReplayButton() {
         alert('Replay functionality will be implemented later');
     } else {
         console.log('Badges button clicked');
-        // TODO: Open badges overlay (to be implemented later)
-        alert('Badges overlay will be implemented later');
+        showBadgesOverlay();
     }
 }
 
@@ -1550,6 +1555,28 @@ function hideHelpOverlay() {
         // Wait for animation to complete before hiding
         setTimeout(() => {
             helpOverlay.style.display = 'none';
+        }, 400); // Match the CSS transition duration
+    }
+}
+
+// Badges overlay functions
+function showBadgesOverlay() {
+    const badgesOverlay = document.getElementById('badges-overlay');
+    if (badgesOverlay) {
+        badgesOverlay.style.display = 'flex';
+        // Trigger reflow to ensure display change is applied
+        badgesOverlay.offsetHeight;
+        badgesOverlay.classList.add('show');
+    }
+}
+
+function hideBadgesOverlay() {
+    const badgesOverlay = document.getElementById('badges-overlay');
+    if (badgesOverlay) {
+        badgesOverlay.classList.remove('show');
+        // Wait for animation to complete before hiding
+        setTimeout(() => {
+            badgesOverlay.style.display = 'none';
         }, 400); // Match the CSS transition duration
     }
 }
