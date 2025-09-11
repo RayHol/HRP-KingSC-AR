@@ -47,6 +47,7 @@ let dragAxis = null; // 'x' for rotation, 'y' for vertical movement
 let currentAudio = null; // Keep track of the current playing audio
 let isChangingMedia = false; // Flag to prevent repeated calls
 let isFirstLoad = true; // Global flag to check if it's the first load
+let hasUserInteracted = false; // Track if user has interacted (for iOS audio)
 
 let currentFixedAngleDisplay;
 let currentYPositionDisplay;
@@ -1095,9 +1096,26 @@ function initializeSafetyWarning() {
         okBtn.style.opacity = '1';
     }, 3000);
     
-    // OK button click handler
+    // OK button click handler - THIS IS THE KEY USER INTERACTION
     okBtn.addEventListener('click', function() {
+        console.log('Warning button clicked!');
         if (!okBtn.disabled) {
+            // Mark that user has interacted (for iOS audio)
+            hasUserInteracted = true;
+            console.log('User interaction recorded - iOS audio context established');
+            
+            // Create a silent audio context to establish user interaction
+            try {
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                if (audioContext.state === 'suspended') {
+                    audioContext.resume().then(() => {
+                        console.log('Audio context resumed for iOS compatibility');
+                    });
+                }
+            } catch (e) {
+                console.log('Audio context creation failed:', e);
+            }
+            
             closeSafetyWarning();
         }
     });
@@ -1213,6 +1231,22 @@ function initializeIntroVideo() {
 function playVideo() {
     const video = document.getElementById('intro-video');
     if (video) {
+        // Mark that user has interacted (for iOS audio)
+        hasUserInteracted = true;
+        console.log('Intro video play - User interaction recorded for iOS audio');
+        
+        // Create a silent audio context to establish user interaction
+        try {
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            if (audioContext.state === 'suspended') {
+                audioContext.resume().then(() => {
+                    console.log('Audio context resumed for iOS compatibility');
+                });
+            }
+        } catch (e) {
+            console.log('Audio context creation failed:', e);
+        }
+        
         // For iOS, we need to ensure the video can play with sound
         video.muted = false;
         video.play().catch(error => {
@@ -1895,40 +1929,123 @@ function hideMindarLoading() {
     }
 }
 
+// Update MindAR debug UI with audio information
+function updateMindarDebugUI(hotspotId, video, status = null) {
+    const debugStatus = document.getElementById('mindar-debug-status');
+    if (!debugStatus) return;
+    
+    // Update hotspot ID
+    const hotspotIdElement = document.getElementById('mindar-hotspot-id');
+    if (hotspotIdElement) {
+        hotspotIdElement.textContent = hotspotId;
+    }
+    
+    // Add audio debug information
+    let audioInfo = '';
+    if (video) {
+        audioInfo = `
+            <div>Video muted: ${video.muted}</div>
+            <div>Video paused: ${video.paused}</div>
+            <div>Video volume: ${video.volume}</div>
+            <div>Video readyState: ${video.readyState}</div>
+            <div>User interacted: ${hasUserInteracted}</div>
+            <div>Video src: ${video.src || video.currentSrc || 'No src'}</div>
+        `;
+    } else {
+        audioInfo = '<div>Video: Not found</div>';
+    }
+    
+    if (status) {
+        audioInfo += `<div>Status: ${status}</div>`;
+    }
+    
+    // Update or create audio debug section
+    let audioDebugElement = document.getElementById('mindar-audio-debug');
+    if (!audioDebugElement) {
+        audioDebugElement = document.createElement('div');
+        audioDebugElement.id = 'mindar-audio-debug';
+        audioDebugElement.style.marginTop = '10px';
+        audioDebugElement.style.fontSize = '12px';
+        debugStatus.appendChild(audioDebugElement);
+    }
+    audioDebugElement.innerHTML = audioInfo;
+}
+
 // Handle MindAR target detection
 function handleMindarTargetFound(hotspotId) {
     console.log(`MindAR target detected for hotspot: ${hotspotId}`);
-    
-    // No target found indicator needed - video will play directly
     
     // Get the video element
     const video = document.getElementById(`video-${hotspotId}`);
     if (video) {
         currentMindarVideo = video;
-        video.muted = false; // Unmute for playback
-        video.play().then(() => {
-            console.log(`Video playing for hotspot: ${hotspotId}`);
-            
-            // Trigger fade-in animation
-            const videoOverlay = document.getElementById(`videooverlay-${hotspotId}`);
-            if (videoOverlay) {
-                videoOverlay.emit('fadein-' + hotspotId);
-            }
-            
-            // Set up video end handler
-            video.addEventListener('ended', () => {
-                handleVideoEnded(hotspotId);
-            }, { once: true });
-            
-        }).catch(error => {
-            console.error('Error playing video:', error);
-            // Fallback: show congratulations after a delay
-            setTimeout(() => {
-                handleVideoEnded(hotspotId);
-            }, 3000);
-        });
+        
+        // Update debug UI with audio information
+        updateMindarDebugUI(hotspotId, video);
+        
+        // iOS audio fix - use the established user interaction
+        console.log(`hasUserInteracted: ${hasUserInteracted}`);
+        if (hasUserInteracted) {
+            // User has already interacted, so we can play with audio
+            video.muted = false;
+            console.log(`Attempting to play video with audio for hotspot: ${hotspotId}`);
+            video.play().then(() => {
+                console.log(`Video playing with audio for hotspot: ${hotspotId}`);
+                
+                // Update debug UI
+                updateMindarDebugUI(hotspotId, video, 'Playing with audio');
+                
+                // Trigger fade-in animation
+                const videoOverlay = document.getElementById(`videooverlay-${hotspotId}`);
+                if (videoOverlay) {
+                    videoOverlay.emit('fadein-' + hotspotId);
+                }
+                
+                // Set up video end handler
+                video.addEventListener('ended', () => {
+                    handleVideoEnded(hotspotId);
+                }, { once: true });
+                
+            }).catch(error => {
+                console.warn('Video play failed:', error);
+                updateMindarDebugUI(hotspotId, video, 'Play failed: ' + error.message);
+                // Fallback: show congratulations after a delay
+                setTimeout(() => {
+                    handleVideoEnded(hotspotId);
+                }, 3000);
+            });
+        } else {
+            // No user interaction yet, play muted
+            video.muted = true;
+            video.play().then(() => {
+                console.log(`Video playing muted for hotspot: ${hotspotId}`);
+                
+                // Update debug UI
+                updateMindarDebugUI(hotspotId, video, 'Playing muted (no user interaction)');
+                
+                // Trigger fade-in animation
+                const videoOverlay = document.getElementById(`videooverlay-${hotspotId}`);
+                if (videoOverlay) {
+                    videoOverlay.emit('fadein-' + hotspotId);
+                }
+                
+                // Set up video end handler
+                video.addEventListener('ended', () => {
+                    handleVideoEnded(hotspotId);
+                }, { once: true });
+                
+            }).catch(error => {
+                console.error('Video play failed:', error);
+                updateMindarDebugUI(hotspotId, video, 'Play failed: ' + error.message);
+                // Fallback: show congratulations after a delay
+                setTimeout(() => {
+                    handleVideoEnded(hotspotId);
+                }, 3000);
+            });
+        }
     } else {
         console.error(`Video element not found for hotspot: ${hotspotId}`);
+        updateMindarDebugUI(hotspotId, null, 'Video element not found');
     }
 }
 
