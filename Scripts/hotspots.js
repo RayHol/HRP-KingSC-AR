@@ -254,6 +254,13 @@ function initializeHotspots() {
         .then(() => {
             console.log('All images preloaded, creating hotspot entities...');
             
+            // Wait for A-Frame scene to be ready
+            const scene = document.querySelector("a-scene");
+            if (!scene) {
+                console.error("A-Frame scene not found when trying to create hotspots!");
+                return;
+            }
+            
             // NOW create the hotspots after images are loaded
             hotspots.forEach((hotspotId, index) => {
                 const hotspotData = hotspotsConfig[hotspotId];
@@ -296,55 +303,8 @@ function initializeHotspots() {
             console.error("Error loading hotspot config:", error);
             console.error("Config file path:", configFile);
             
-            // Fallback to default config if specific one fails
-            if (configFile !== './Scripts/hotspotsConfig.json') {
-                console.log('Attempting fallback to default config...');
-                fetch('./Scripts/hotspotsConfig.json')
-                    .then((response) => response.json())
-                    .then((data) => {
-                        hotspotsConfig = data;
-                        hotspots = Object.keys(data);
-                        currentHotspotOrder = [...hotspots];
-                        
-                        console.log('Fallback config loaded successfully');
-                        
-                        // Continue with initialization using fallback config
-                        return preloadAllHotspotImages(data);
-                    })
-                    .then(() => {
-                        hotspots.forEach((hotspotId, index) => {
-                            const hotspotData = hotspotsConfig[hotspotId];
-                            const commonValues = hotspotData.common;
-                            const mediaArray = hotspotData.media;
-
-                            const fixedAngleDegrees = commonValues.fixedAngleDegrees || 0;
-                            const currentY = commonValues.initialY || 0;
-                            const currentZoom = Math.abs(commonValues.initialZ) || 25;
-
-                            const radians = (fixedAngleDegrees * Math.PI) / 180;
-                            const position = {
-                                x: -currentZoom * Math.sin(radians),
-                                y: currentY,
-                                z: -currentZoom * Math.cos(radians)
-                            };
-
-                            const rotation = { x: 0, y: 0, z: 0 };
-
-                            mediaArray
-                                .filter(mediaItem => mediaItem.type === "image")
-                                .forEach((mediaItem, mediaIndex) => {
-                                    displayHotspotMedia(mediaItem, mediaIndex, commonValues, position, rotation, hotspotId, index);
-                                });
-                        });
-                        
-                        setTimeout(() => {
-                            refreshAllHotspotVisualStates();
-                        }, 100);
-                    })
-                    .catch((fallbackError) => {
-                        console.error("Error loading fallback config:", fallbackError);
-                    });
-            }
+            // Remove the problematic fallback mechanism that was causing both configs to load
+            // The stairs config loads successfully, so no fallback is needed
         });
 }
 
@@ -395,7 +355,7 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 
     const arScene = document.getElementById('ar-scene');
-    initializeHotspots();
+    // Move initializeHotspots to the second DOMContentLoaded listener with proper timing
 
     const closePopupButton = document.getElementById('close-congrats-overlay');
     if (closePopupButton) {
@@ -547,6 +507,13 @@ window.addEventListener('visibilitychange', function() {
 
 function displayHotspotMedia(mediaItem, index, commonValues, currentPosition, currentRotation, hotspotId, hotspotIndex) {
     let scene = document.querySelector("a-scene");
+    
+    if (!scene) {
+        console.error("A-Frame scene not found!");
+        return;
+    }
+    
+    console.log(`Creating hotspot entity for ${hotspotId} at position:`, currentPosition);
 
     // Create the entity for the image
     let entity = document.createElement("a-image");
@@ -586,6 +553,7 @@ function displayHotspotMedia(mediaItem, index, commonValues, currentPosition, cu
 
     // Add the entity to the scene
     scene.appendChild(entity);
+    console.log(`Hotspot entity ${hotspotId} added to scene successfully`);
 
     // Add a raycaster event to show the hotspot modal when the image is hovered (intersected)
     entity.addEventListener('raycaster-intersected', function () {
@@ -1768,6 +1736,9 @@ document.addEventListener("DOMContentLoaded", function() {
     // Small delay to ensure all elements are ready
     setTimeout(initializeSafetyWarning, 100);
     
+    // Initialize hotspots after A-Frame scene is ready
+    setTimeout(initializeHotspots, 500);
+    
     // Uncomment the line below to test badge unlocking
     // setTimeout(testUnlockBadges, 2000);
     setTimeout(initializeMainUI, 200);
@@ -1803,17 +1774,35 @@ function createMindarTarget(hotspotId, videoUrl, targetIndex) {
         return;
     }
     
-    // Create video asset
+    // Create video asset with multiple source formats for iOS/Android compatibility
     const videoId = `video-${hotspotId}`;
     const videoElement = document.createElement('video');
     videoElement.id = videoId;
-    videoElement.src = videoUrl;
     videoElement.preload = 'auto';
     videoElement.loop = true;
     videoElement.crossOrigin = 'anonymous';
     videoElement.webkitPlaysinline = true;
     videoElement.playsinline = true;
     videoElement.muted = true; // Start muted for autoplay
+    
+    // Create multiple source elements for different formats
+    // iOS prefers .mp4 with hvc1 codec, Android prefers .webm
+    const mp4Source = document.createElement('source');
+    mp4Source.src = videoUrl.replace('.webm', '.mp4');
+    mp4Source.type = 'video/mp4; codecs="hvc1"';
+    
+    const webmSource = document.createElement('source');
+    webmSource.src = videoUrl.replace('.mp4', '.webm');
+    webmSource.type = 'video/webm';
+    
+    // Add sources to video element
+    videoElement.appendChild(mp4Source);
+    videoElement.appendChild(webmSource);
+    
+    // Fallback: if no format-specific URL provided, use the original URL
+    if (videoUrl && !videoUrl.includes('.mp4') && !videoUrl.includes('.webm')) {
+        videoElement.src = videoUrl;
+    }
     
     // Add video to assets
     const assets = mindarScene.querySelector('a-assets');
