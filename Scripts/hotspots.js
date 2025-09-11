@@ -578,8 +578,8 @@ function displayHotspotMedia(mediaItem, index, commonValues, currentPosition, cu
         // Show simple notification
         showHotspotNotification(mediaItem.info || 'Hotspot');
 
-        // Activate the hotspot
-        activateHotspot(hotspotId, entity);
+        // Activate the hotspot with MindAR
+        activateHotspotWithMindAR(hotspotId, entity);
     });
 
     entity.addEventListener('raycaster-intersected-cleared', function () {
@@ -1763,88 +1763,51 @@ function initializeMindAR() {
         return false;
     }
     
-    console.log('MindAR system initialized');
+    // Add MindAR event listeners for debugging
+    mindarScene.addEventListener('targetFound', function(event) {
+        console.log('MindAR target found:', event.detail);
+        const targetStatus = document.getElementById('mindar-target-status');
+        if (targetStatus) {
+            targetStatus.textContent = 'Yes';
+            targetStatus.style.color = 'green';
+        }
+    });
+    
+    mindarScene.addEventListener('targetLost', function(event) {
+        console.log('MindAR target lost:', event.detail);
+        const targetStatus = document.getElementById('mindar-target-status');
+        if (targetStatus) {
+            targetStatus.textContent = 'No';
+            targetStatus.style.color = 'red';
+        }
+    });
+    
+    // Add scene ready event listener
+    mindarScene.addEventListener('loaded', function() {
+        console.log('MindAR scene loaded and ready');
+    });
+    
+    console.log('MindAR system initialized with event listeners');
+    console.log('MindAR scene element:', mindarScene);
+    console.log('MindAR scene attributes:', mindarScene.getAttribute('mindar-image'));
     return true;
 }
 
-// Create MindAR target for a specific hotspot
-function createMindarTarget(hotspotId, videoUrl, targetIndex) {
-    if (!mindarScene) {
-        console.error('MindAR scene not initialized');
-        return;
-    }
-    
-    // Create video asset with multiple source formats for iOS/Android compatibility
-    const videoId = `video-${hotspotId}`;
-    const videoElement = document.createElement('video');
-    videoElement.id = videoId;
-    videoElement.preload = 'auto';
-    videoElement.loop = true;
-    videoElement.crossOrigin = 'anonymous';
-    videoElement.webkitPlaysinline = true;
-    videoElement.playsinline = true;
-    videoElement.muted = true; // Start muted for autoplay
-    
-    // Create multiple source elements for different formats
-    // iOS prefers .mp4 with hvc1 codec, Android prefers .webm
-    const mp4Source = document.createElement('source');
-    mp4Source.src = videoUrl.replace('.webm', '.mp4');
-    mp4Source.type = 'video/mp4; codecs="hvc1"';
-    
-    const webmSource = document.createElement('source');
-    webmSource.src = videoUrl.replace('.mp4', '.webm');
-    webmSource.type = 'video/webm';
-    
-    // Add sources to video element
-    videoElement.appendChild(mp4Source);
-    videoElement.appendChild(webmSource);
-    
-    // Fallback: if no format-specific URL provided, use the original URL
-    if (videoUrl && !videoUrl.includes('.mp4') && !videoUrl.includes('.webm')) {
-        videoElement.src = videoUrl;
-    }
-    
-    // Add video to assets
-    const assets = mindarScene.querySelector('a-assets');
-    if (assets) {
-        assets.appendChild(videoElement);
-    }
-    
-    // Create MindAR target entity
-    const targetEntity = document.createElement('a-entity');
-    targetEntity.id = `target-${hotspotId}`;
-    targetEntity.setAttribute('mindar-image-target', `targetIndex: ${targetIndex}`);
-    targetEntity.setAttribute('ar-controller', '');
-    targetEntity.setAttribute('smooth-position', 'target: #videooverlay-' + hotspotId + '; factor: 0.1');
-    
-    // Create video overlay plane
-    const videoOverlay = document.createElement('a-plane');
-    videoOverlay.id = `videooverlay-${hotspotId}`;
-    videoOverlay.setAttribute('material', 'shader: transparent-video; src: #' + videoId);
-    videoOverlay.setAttribute('height', '1.2');
-    videoOverlay.setAttribute('width', '2');
-    videoOverlay.setAttribute('animation__fadein', 'startEvents: fadein-' + hotspotId + '; property: material.opacity; from: 0; to: 1; dur: 500;');
-    videoOverlay.setAttribute('animation__fadeout', 'startEvents: fadeout-' + hotspotId + '; property: material.opacity; from: 1; to: 0; dur: 500;');
-    
-    targetEntity.appendChild(videoOverlay);
-    mindarScene.appendChild(targetEntity);
-    
-    // Store target mapping
-    mindarTargets.set(hotspotId, {
-        targetIndex: targetIndex,
-        entity: targetEntity,
-        video: videoElement,
-        videoOverlay: videoOverlay
-    });
-    
-    console.log(`MindAR target created for hotspot ${hotspotId} with video ${videoUrl}`);
-}
+// Note: MindAR targets are now pre-defined in HTML, no need for dynamic creation
 
 // Show MindAR scene and activate target detection
 function showMindARScene(hotspotId) {
     if (!mindarScene) {
         console.error('MindAR scene not initialized');
         return;
+    }
+    
+    // Show debug status
+    const debugStatus = document.getElementById('mindar-debug-status');
+    if (debugStatus) {
+        debugStatus.style.display = 'block';
+        document.getElementById('mindar-status-text').textContent = 'Active';
+        document.getElementById('mindar-hotspot-id').textContent = hotspotId;
     }
     
     // Hide main AR scene
@@ -1869,6 +1832,12 @@ function showMindARScene(hotspotId) {
 function hideMindARScene() {
     if (!mindarScene) {
         return;
+    }
+    
+    // Hide debug status
+    const debugStatus = document.getElementById('mindar-debug-status');
+    if (debugStatus) {
+        debugStatus.style.display = 'none';
     }
     
     // Stop any playing video
@@ -1918,12 +1887,6 @@ function hideMindarLoading() {
 
 // Handle MindAR target detection
 function handleMindarTargetFound(hotspotId) {
-    const target = mindarTargets.get(hotspotId);
-    if (!target) {
-        console.error(`MindAR target not found for hotspot: ${hotspotId}`);
-        return;
-    }
-    
     console.log(`MindAR target detected for hotspot: ${hotspotId}`);
     
     // Hide loading indicator
@@ -1932,8 +1895,8 @@ function handleMindarTargetFound(hotspotId) {
     // Show target found indicator
     showTargetFoundIndicator();
     
-    // Play video
-    const video = target.video;
+    // Get the video element
+    const video = document.getElementById(`video-${hotspotId}`);
     if (video) {
         currentMindarVideo = video;
         video.muted = false; // Unmute for playback
@@ -1941,7 +1904,7 @@ function handleMindarTargetFound(hotspotId) {
             console.log(`Video playing for hotspot: ${hotspotId}`);
             
             // Trigger fade-in animation
-            const videoOverlay = target.videoOverlay;
+            const videoOverlay = document.getElementById(`videooverlay-${hotspotId}`);
             if (videoOverlay) {
                 videoOverlay.emit('fadein-' + hotspotId);
             }
@@ -1958,6 +1921,8 @@ function handleMindarTargetFound(hotspotId) {
                 handleVideoEnded(hotspotId);
             }, 3000);
         });
+    } else {
+        console.error(`Video element not found for hotspot: ${hotspotId}`);
     }
 }
 
@@ -2006,32 +1971,32 @@ function activateHotspotWithMindAR(hotspotId, entity) {
         return; // Already activated
     }
     
-    // Check if hotspot has video link
-    const hotspotConfig = hotspots.find(h => h.id === hotspotId);
-    if (!hotspotConfig || !hotspotConfig.media || !hotspotConfig.media[0] || !hotspotConfig.media[0].link) {
-        console.log(`No video link found for hotspot: ${hotspotId}, using fallback activation`);
+    console.log(`Activating MindAR for hotspot: ${hotspotId}`);
+    
+    // Show the appropriate MindAR target
+    const targetEntity = document.getElementById(`target-${hotspotId}`);
+    if (targetEntity) {
+        targetEntity.style.display = 'block';
+        console.log(`Showing MindAR target for: ${hotspotId}`);
+    } else {
+        console.error(`No MindAR target found for hotspot: ${hotspotId}`);
         // Fallback to original activation
         activateHotspot(hotspotId, entity);
         return;
-    }
-    
-    const videoUrl = hotspotConfig.media[0].link;
-    console.log(`Activating MindAR for hotspot ${hotspotId} with video: ${videoUrl}`);
-    
-    // Create MindAR target if it doesn't exist
-    if (!mindarTargets.has(hotspotId)) {
-        const targetIndex = mindarTargets.size; // Use sequential target indices
-        createMindarTarget(hotspotId, videoUrl, targetIndex);
     }
     
     // Show MindAR scene
     showMindARScene(hotspotId);
     
     // Set up target detection handler
-    const target = mindarTargets.get(hotspotId);
-    if (target && target.entity) {
-        target.entity.addEventListener('targetFound', () => {
+    if (targetEntity) {
+        targetEntity.addEventListener('targetFound', () => {
+            console.log(`Target found event fired for hotspot: ${hotspotId}`);
             handleMindarTargetFound(hotspotId);
+        });
+        
+        targetEntity.addEventListener('targetLost', () => {
+            console.log(`Target lost event fired for hotspot: ${hotspotId}`);
         });
     }
 }
