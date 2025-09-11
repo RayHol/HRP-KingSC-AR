@@ -1084,4 +1084,136 @@ function removeHotspotHalo(entity) {
             }
         });
     }
-} 
+}
+
+// ===== INTRO VIDEO OVERLAY FUNCTIONALITY =====
+let hasWatchedIntro = false;
+let isVideoPlaying = false;
+
+function initializeIntroVideo() {
+    const introOverlay = document.getElementById('intro-overlay');
+    const video = document.getElementById('intro-video');
+    const playPauseBtn = document.getElementById('play-pause-btn');
+    const playIcon = document.getElementById('play-icon');
+    const closeBtn = document.getElementById('close-intro-btn');
+    const skipBtn = document.getElementById('skip-intro-btn');
+    
+    if (!introOverlay || !video || !playPauseBtn) {
+        console.warn('Intro video elements not found');
+        return;
+    }
+    
+    // Show the intro overlay on page load
+    introOverlay.style.display = 'flex';
+    
+    // Play/Pause button functionality
+    playPauseBtn.addEventListener('click', function() {
+        if (video.paused) {
+            playVideo();
+        } else {
+            pauseVideo();
+        }
+    });
+    
+    // Close button functionality
+    closeBtn.addEventListener('click', function() {
+        closeIntroOverlay();
+    });
+    
+    // Skip button functionality
+    skipBtn.addEventListener('click', function() {
+        closeIntroOverlay();
+    });
+    
+    // Video event listeners
+    video.addEventListener('play', function() {
+        isVideoPlaying = true;
+        video.classList.add('playing');
+        playIcon.src = './Assets/UI/Play, Repeat, Circle.png'; // You might want a pause icon here
+        skipBtn.style.display = 'block';
+    });
+    
+    video.addEventListener('pause', function() {
+        isVideoPlaying = false;
+        video.classList.remove('playing');
+        playIcon.src = './Assets/UI/Play, Repeat, Circle.png';
+        skipBtn.style.display = 'none';
+    });
+    
+    video.addEventListener('ended', function() {
+        isVideoPlaying = false;
+        video.classList.remove('playing');
+        hasWatchedIntro = true;
+        playIcon.src = './Assets/UI/Play, Repeat, Circle.png';
+        skipBtn.style.display = 'none';
+        closeBtn.style.display = 'block';
+    });
+    
+    // Handle video loading errors
+    video.addEventListener('error', function(e) {
+        console.error('Video loading error:', e);
+        // Show close button even if video fails to load
+        closeBtn.style.display = 'block';
+    });
+    
+    // iOS audio fix - ensure video can play with sound
+    video.addEventListener('loadedmetadata', function() {
+        // Set video properties for iOS compatibility
+        video.muted = false;
+        video.playsInline = true;
+    });
+}
+
+function playVideo() {
+    const video = document.getElementById('intro-video');
+    if (video) {
+        // For iOS, we need to ensure the video can play with sound
+        video.muted = false;
+        video.play().catch(error => {
+            console.warn('Video play failed:', error);
+            // If play fails, try with muted first (iOS workaround)
+            video.muted = true;
+            video.play().then(() => {
+                // Once playing, unmute
+                video.muted = false;
+            }).catch(err => {
+                console.error('Video play failed even with muted:', err);
+            });
+        });
+    }
+}
+
+function pauseVideo() {
+    const video = document.getElementById('intro-video');
+    if (video) {
+        video.pause();
+    }
+}
+
+function closeIntroOverlay() {
+    const introOverlay = document.getElementById('intro-overlay');
+    const video = document.getElementById('intro-video');
+    
+    if (introOverlay) {
+        introOverlay.style.display = 'none';
+    }
+    
+    if (video) {
+        video.pause();
+        video.currentTime = 0; // Reset video to beginning
+    }
+    
+    // Mark as watched
+    hasWatchedIntro = true;
+    
+    // Initialize hotspots after intro is closed
+    if (typeof initializeHotspots === "function") {
+        initializeHotspots();
+    }
+}
+
+// Initialize intro video when DOM is loaded
+document.addEventListener("DOMContentLoaded", function() {
+    // Small delay to ensure all elements are ready
+    setTimeout(initializeIntroVideo, 100);
+}); 

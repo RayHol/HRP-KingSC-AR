@@ -568,4 +568,203 @@ body {
 
 .hotspot-notification span {
     display: block;
+}
+
+/* Intro Video Overlay Styles */
+.intro-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 10000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.intro-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(5px);
+}
+
+.intro-content {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    max-width: 90%;
+    max-height: 90%;
+}
+
+.intro-video {
+    width: auto;
+    height: 80vh;
+    max-width: 90vw;
+    max-height: 80vh;
+    background-color: transparent;
+    border-radius: 0;
+    box-shadow: none;
+}
+
+.video-controls {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 10001;
+}
+
+.play-pause-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.play-pause-btn:hover {
+    transform: scale(1.1);
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+.play-pause-btn img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.close-intro-btn {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    width: 50px;
+    height: 50px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    z-index: 10001;
+    backdrop-filter: blur(10px);
+}
+
+.close-intro-btn:hover {
+    transform: scale(1.1);
+    background-color: rgba(255, 255, 255, 0.3);
+}
+
+.close-intro-btn img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.skip-intro-btn {
+    position: absolute;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: none;
+    border: 2px solid rgba(255, 255, 255, 0.8);
+    color: white;
+    padding: 12px 30px;
+    border-radius: 25px;
+    font-family: 'Poppins', sans-serif;
+    font-size: 16px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    z-index: 10001;
+    backdrop-filter: blur(10px);
+    background-color: rgba(0, 0, 0, 0.3);
+}
+
+.skip-intro-btn:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 1);
+    transform: translateX(-50%) translateY(-2px);
+}
+
+.skip-intro-btn:active {
+    transform: translateX(-50%) translateY(0);
+}
+
+/* Hide video controls when video is playing */
+.intro-video.playing ~ .video-controls {
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+
+/* Show skip button when video is playing */
+.intro-video.playing ~ .skip-intro-btn {
+    display: block;
+}
+
+/* Responsive design for intro overlay */
+@media (max-width: 768px) {
+    .intro-video {
+        height: 70vh;
+        max-width: 95vw;
+        max-height: 70vh;
+    }
+    
+    .play-pause-btn {
+        width: 60px;
+        height: 60px;
+    }
+    
+    .close-intro-btn {
+        width: 40px;
+        height: 40px;
+        top: 15px;
+        right: 15px;
+    }
+    
+    .skip-intro-btn {
+        bottom: 20px;
+        padding: 10px 25px;
+        font-size: 14px;
+    }
+}
+
+@media (max-width: 480px) {
+    .intro-video {
+        height: 60vh;
+        max-width: 95vw;
+        max-height: 60vh;
+    }
+    
+    .play-pause-btn {
+        width: 50px;
+        height: 50px;
+    }
+    
+    .skip-intro-btn {
+        padding: 8px 20px;
+        font-size: 12px;
+    }
 } 

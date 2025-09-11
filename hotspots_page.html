@@ -45,6 +45,34 @@
         </div>
     </div> -->
 
+    <!-- Intro Video Overlay -->
+    <div id="intro-overlay" class="intro-overlay">
+        <div class="intro-background"></div>
+        <div class="intro-content">
+            <video id="intro-video" class="intro-video" preload="metadata">
+                <source src="./Assets/Videos/1.mp4" type="video/mp4">
+                Your browser does not support the video tag.
+            </video>
+            
+            <!-- Video Controls -->
+            <div class="video-controls">
+                <button id="play-pause-btn" class="play-pause-btn">
+                    <img id="play-icon" src="./Assets/UI/Play, Repeat, Circle.png" alt="Play">
+                </button>
+            </div>
+            
+            <!-- Close Button (only shown after video is watched) -->
+            <button id="close-intro-btn" class="close-intro-btn" style="display: none;">
+                <img src="./Assets/UI/Disabled.png" alt="Close">
+            </button>
+            
+            <!-- Skip Button (only shown while video is playing) -->
+            <button id="skip-intro-btn" class="skip-intro-btn" style="display: none;">
+                SKIP
+            </button>
+        </div>
+    </div>
+
     <!-- Modal for Hotspot Info -->
     <div id="hotspot-modal" class="modal" style="display: none;">
         <div class="modal-content">
@@ -102,10 +130,8 @@
         // Automatically display the AR scene
         arScene.style.display = 'block';
         
-        // Initialize hotspots immediately
-        if (typeof initializeHotspots === "function") {
-            initializeHotspots();
-        }
+        // Don't initialize hotspots immediately - let intro video control this
+        // The intro video will call initializeHotspots() when it's closed
     });
     </script>
 </body>
