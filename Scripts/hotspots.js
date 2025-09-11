@@ -1411,8 +1411,116 @@ function closeTutorial() {
     }
 }
 
+// ========================================
+// MAIN UI ELEMENTS FUNCTIONALITY
+// ========================================
+
+// Track current location for back button
+let currentLocation = 'stairs'; // Default fallback
+
+// Initialize main UI elements
+function initializeMainUI() {
+    // Get location from URL parameters
+    const urlParams = new URLSearchParams(window.location.search);
+    currentLocation = urlParams.get('location') || 'stairs';
+    
+    // Set up button event listeners
+    setupUIButtonListeners();
+    
+    // Initialize badges/replay button state
+    updateBadgesReplayButton(false); // Start in badges mode
+}
+
+// Set up event listeners for all UI buttons
+function setupUIButtonListeners() {
+    // Back button
+    const backBtn = document.getElementById('back-btn');
+    if (backBtn) {
+        backBtn.addEventListener('click', handleBackButton);
+    }
+    
+    // Help button
+    const helpBtn = document.getElementById('help-btn');
+    if (helpBtn) {
+        helpBtn.addEventListener('click', handleHelpButton);
+    }
+    
+    // Badges/Replay button
+    const badgesReplayBtn = document.getElementById('badges-replay-btn');
+    if (badgesReplayBtn) {
+        badgesReplayBtn.addEventListener('click', handleBadgesReplayButton);
+    }
+    
+    // Transcript button
+    const transcriptBtn = document.getElementById('transcript-btn');
+    if (transcriptBtn) {
+        transcriptBtn.addEventListener('click', handleTranscriptButton);
+    }
+}
+
+// Back button handler
+function handleBackButton() {
+    console.log('Back button clicked');
+    // Navigate back to index page with current location
+    window.location.href = `index.html?location=${currentLocation}`;
+}
+
+// Help button handler
+function handleHelpButton() {
+    console.log('Help button clicked');
+    // TODO: Open help overlay (to be implemented later)
+    alert('Help overlay will be implemented later');
+}
+
+// Badges/Replay button handler
+function handleBadgesReplayButton() {
+    const isReplayMode = document.getElementById('badges-replay-text').textContent === 'REPLAY';
+    
+    if (isReplayMode) {
+        console.log('Replay button clicked');
+        // TODO: Replay current hotspot video (to be implemented later)
+        alert('Replay functionality will be implemented later');
+    } else {
+        console.log('Badges button clicked');
+        // TODO: Open badges overlay (to be implemented later)
+        alert('Badges overlay will be implemented later');
+    }
+}
+
+// Transcript button handler
+function handleTranscriptButton() {
+    console.log('Transcript button clicked');
+    // TODO: Open transcript panel (to be implemented later)
+    alert('Transcript panel will be implemented later');
+}
+
+// Update badges/replay button state
+function updateBadgesReplayButton(isHoveringHotspot) {
+    const icon = document.getElementById('badges-replay-icon');
+    const text = document.getElementById('badges-replay-text');
+    
+    if (isHoveringHotspot) {
+        // Switch to replay mode
+        icon.src = './Assets/UI/Play, Repeat, Circle.png';
+        text.textContent = 'REPLAY';
+    } else {
+        // Switch to badges mode
+        icon.src = './Assets/UI/crown-square-icon.png';
+        text.textContent = 'BADGES';
+    }
+}
+
+// Show/hide transcript button
+function showTranscriptButton(show = true) {
+    const transcriptBtn = document.getElementById('transcript-btn');
+    if (transcriptBtn) {
+        transcriptBtn.style.display = show ? 'flex' : 'none';
+    }
+}
+
 // Initialize safety warning when DOM is loaded
 document.addEventListener("DOMContentLoaded", function() {
     // Small delay to ensure all elements are ready
     setTimeout(initializeSafetyWarning, 100);
+    setTimeout(initializeMainUI, 200);
 }); 
