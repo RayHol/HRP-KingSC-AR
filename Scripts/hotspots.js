@@ -909,6 +909,15 @@ function activateHotspot(hotspotId, entity) {
     
     console.log(`Hotspot ${hotspotId} activated! Total activated: ${activatedHotspots.size}/${currentHotspotOrder.length}`);
     
+    // Unlock corresponding badge
+    const badgeId = hotspotToBadgeMapping[hotspotId];
+    if (badgeId) {
+        unlockBadge(badgeId);
+        console.log(`Badge unlocked: ${badgeId}`);
+    } else {
+        console.log(`No badge mapping found for hotspot: ${hotspotId}`);
+    }
+    
     // Refresh ALL hotspot visual states after activation
     refreshAllHotspotVisualStates();
     
@@ -1604,6 +1613,19 @@ const badgeConfig = [
     { id: 'final', name: 'Final', filename: 'Final.png', grayFilename: 'Final_g.png' }
 ];
 
+// Mapping between hotspot IDs and badge IDs
+const hotspotToBadgeMapping = {
+    'romulus': 'romulus',
+    'caesar': 'caeser',
+    'nero': 'nero',
+    'silenus': 'silenus',
+    'furie': 'furies', // Note: config uses 'furie' but badge uses 'furies'
+    'herakles': 'herakles',
+    'alexander': 'alexander',
+    'diana': 'diana'
+    // Add more mappings as needed for other hotspots
+};
+
 // Track which badges are unlocked (initially all locked except for testing)
 let unlockedBadges = new Set();
 
@@ -1677,12 +1699,27 @@ function testUnlockBadges() {
     console.log('Test badges unlocked for demonstration');
 }
 
+// Test function to simulate hotspot activation (for testing badge unlocking)
+function testHotspotActivation() {
+    // Simulate activating some hotspots to test badge unlocking
+    console.log('Testing hotspot activation and badge unlocking...');
+    
+    // Simulate activating romulus hotspot
+    setTimeout(() => {
+        if (typeof activateHotspot === 'function') {
+            console.log('Simulating romulus hotspot activation...');
+            // Note: This won't work without a real entity, but shows the concept
+            // In real usage, this would be called from the raycaster-intersected event
+        }
+    }, 3000);
+}
+
 // Initialize safety warning when DOM is loaded
 document.addEventListener("DOMContentLoaded", function() {
     // Small delay to ensure all elements are ready
     setTimeout(initializeSafetyWarning, 100);
     
     // Uncomment the line below to test badge unlocking
-    // setTimeout(testUnlockBadges, 2000);
+    setTimeout(testUnlockBadges, 2000);
     setTimeout(initializeMainUI, 200);
 }); 
