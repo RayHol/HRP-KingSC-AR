@@ -61,6 +61,64 @@
         </div>
     </div>
 
+    <!-- How to Use Tutorial Overlay -->
+    <div id="tutorial-overlay" class="tutorial-overlay">
+        <div class="tutorial-background"></div>
+        <div class="tutorial-content">
+            <!-- Static Header -->
+            <div class="tutorial-header">
+                <h2 class="tutorial-title">HOW TO USE IT</h2>
+                <button id="tutorial-skip-btn" class="tutorial-skip-btn">SKIP</button>
+                <div class="tutorial-progress">
+                    <div class="progress-line active" data-step="1"></div>
+                    <div class="progress-line" data-step="2"></div>
+                    <div class="progress-line" data-step="3"></div>
+                </div>
+            </div>
+            
+            <!-- Animated Content Area -->
+            <div class="tutorial-content-area">
+                <!-- Prompt 1: Find the Crowns -->
+                <div class="tutorial-prompt active" data-prompt="1">
+                    <div class="tutorial-icon">
+                        <img src="./Assets/UI/Image (21).png" alt="Crown Icon">
+                    </div>
+                    <h3 class="tutorial-prompt-title">FIND THE NUMBERED "CROWNS"</h3>
+                    <p class="tutorial-prompt-text">Use the camera to look for the crowns in order</p>
+                            <div class="tutorial-buttons single-button">
+                                <button id="tutorial-next-1" class="tutorial-next-btn">NEXT</button>
+                            </div>
+                </div>
+                
+                <!-- Prompt 2: Watch the Painting -->
+                <div class="tutorial-prompt" data-prompt="2">
+                    <div class="tutorial-icon">
+                        <img src="./Assets/UI/Image (22).png" alt="Headphones Icon">
+                    </div>
+                    <h3 class="tutorial-prompt-title">WATCH THE PAINTING COME TO LIFE</h3>
+                    <p class="tutorial-prompt-text">Follow the numbers in order to discover the story of the painting.</p>
+                            <div class="tutorial-buttons multiple-buttons" style="display: flex !important; flex-direction: row !important; justify-content: space-between !important; gap: 20px !important;">
+                                <button id="tutorial-back-2" class="tutorial-back-btn" style="flex: 1 !important; width: auto !important;">BACK</button>
+                                <button id="tutorial-next-2" class="tutorial-next-btn" style="flex: 1 !important; width: auto !important;">NEXT</button>
+                            </div>
+                </div>
+                
+                <!-- Prompt 3: Collect Badges -->
+                <div class="tutorial-prompt" data-prompt="3">
+                    <div class="tutorial-icon">
+                        <img src="./Assets/UI/Image (23).png" alt="Badge Icon">
+                    </div>
+                    <h3 class="tutorial-prompt-title">COLLECT ALL THE BADGES</h3>
+                    <p class="tutorial-prompt-text">Earn badges as you unlock each crown.<br>There are 17 to find.</p>
+                            <div class="tutorial-buttons multiple-buttons" style="display: flex !important; flex-direction: row !important; justify-content: space-between !important; gap: 20px !important;">
+                                <button id="tutorial-back-3" class="tutorial-back-btn" style="flex: 1 !important; width: auto !important;">BACK</button>
+                                <button id="tutorial-start-btn" class="tutorial-start-btn" style="flex: 1 !important; width: auto !important;">START</button>
+                            </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Intro Video Overlay -->
     <div id="intro-overlay" class="intro-overlay">
         <div class="intro-background"></div>

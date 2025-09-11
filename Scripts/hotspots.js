@@ -1266,7 +1266,146 @@ function closeIntroOverlay() {
     // Mark as watched
     hasWatchedIntro = true;
     
-    // Initialize hotspots after intro is closed
+    // Initialize tutorial after intro is closed
+    if (typeof initializeTutorial === "function") {
+        initializeTutorial();
+    }
+}
+
+// ===== TUTORIAL OVERLAY FUNCTIONALITY =====
+let currentTutorialStep = 1;
+let isTutorialAnimating = false;
+
+function initializeTutorial() {
+    const tutorialOverlay = document.getElementById('tutorial-overlay');
+    const skipBtn = document.getElementById('tutorial-skip-btn');
+    const nextBtn1 = document.getElementById('tutorial-next-1');
+    const nextBtn2 = document.getElementById('tutorial-next-2');
+    const backBtn2 = document.getElementById('tutorial-back-2');
+    const backBtn3 = document.getElementById('tutorial-back-3');
+    const startBtn = document.getElementById('tutorial-start-btn');
+    
+    if (!tutorialOverlay) {
+        console.warn('Tutorial overlay not found');
+        return;
+    }
+    
+    // Show the tutorial overlay
+    tutorialOverlay.style.display = 'flex';
+    
+    // Reset to first step
+    currentTutorialStep = 1;
+    updateTutorialProgress();
+    showTutorialPrompt(1);
+    
+    // Event listeners
+    skipBtn.addEventListener('click', closeTutorial);
+    nextBtn1.addEventListener('click', () => goToTutorialStep(2));
+    nextBtn2.addEventListener('click', () => goToTutorialStep(3));
+    backBtn2.addEventListener('click', () => goToTutorialStep(1));
+    backBtn3.addEventListener('click', () => goToTutorialStep(2));
+    startBtn.addEventListener('click', closeTutorial);
+}
+
+function goToTutorialStep(step) {
+    if (isTutorialAnimating) return;
+    
+    const currentPrompt = document.querySelector(`[data-prompt="${currentTutorialStep}"]`);
+    const nextPrompt = document.querySelector(`[data-prompt="${step}"]`);
+    
+    if (!currentPrompt || !nextPrompt) return;
+    
+    isTutorialAnimating = true;
+    
+    // Remove all animation classes and reset
+    currentPrompt.classList.remove('slide-out-left', 'slide-out-right', 'slide-in-left', 'slide-in-right', 'animating', 'no-transition');
+    nextPrompt.classList.remove('slide-out-left', 'slide-out-right', 'slide-in-left', 'slide-in-right', 'animating', 'no-transition');
+    
+    // Determine animation direction
+    if (step > currentTutorialStep) {
+        // Moving forward - both sections move together to the left
+        // Position next section to the right and make it visible
+        nextPrompt.classList.add('slide-in-right', 'no-transition');
+        nextPrompt.classList.add('active');
+        
+        // Force a reflow to ensure positioning
+        nextPrompt.offsetHeight;
+        
+        // Enable transitions and start animation
+        nextPrompt.classList.remove('no-transition');
+        nextPrompt.classList.add('animating');
+        currentPrompt.classList.add('animating');
+        
+        // Apply animation classes
+        currentPrompt.classList.add('slide-out-left');
+        nextPrompt.classList.remove('slide-in-right');
+        nextPrompt.classList.add('active');
+        
+    } else {
+        // Moving backward - both sections move together to the right
+        // Position next section to the left and make it visible
+        nextPrompt.classList.add('slide-in-left', 'no-transition');
+        nextPrompt.classList.add('active');
+        
+        // Force a reflow to ensure positioning
+        nextPrompt.offsetHeight;
+        
+        // Enable transitions and start animation
+        nextPrompt.classList.remove('no-transition');
+        nextPrompt.classList.add('animating');
+        currentPrompt.classList.add('animating');
+        
+        // Apply animation classes
+        currentPrompt.classList.add('slide-out-right');
+        nextPrompt.classList.remove('slide-in-left');
+        nextPrompt.classList.add('active');
+    }
+    
+    // Clean up after animation completes
+    setTimeout(() => {
+        // Remove all animation classes
+        currentPrompt.classList.remove('slide-out-left', 'slide-out-right', 'slide-in-left', 'slide-in-right', 'animating', 'no-transition', 'active');
+        nextPrompt.classList.remove('slide-out-left', 'slide-out-right', 'slide-in-left', 'slide-in-right', 'animating', 'no-transition');
+        
+        // Update state
+        currentTutorialStep = step;
+        updateTutorialProgress();
+        isTutorialAnimating = false;
+    }, 500);
+}
+
+function showTutorialPrompt(step) {
+    // Hide all prompts
+    const prompts = document.querySelectorAll('.tutorial-prompt');
+    prompts.forEach(prompt => {
+        prompt.classList.remove('active', 'slide-out-left', 'slide-out-right', 'slide-in-left', 'slide-in-right');
+    });
+    
+    // Show the target prompt
+    const targetPrompt = document.querySelector(`[data-prompt="${step}"]`);
+    if (targetPrompt) {
+        targetPrompt.classList.add('active');
+    }
+}
+
+function updateTutorialProgress() {
+    const progressLines = document.querySelectorAll('.progress-line');
+    progressLines.forEach((line, index) => {
+        if (index < currentTutorialStep) {
+            line.classList.add('active');
+        } else {
+            line.classList.remove('active');
+        }
+    });
+}
+
+function closeTutorial() {
+    const tutorialOverlay = document.getElementById('tutorial-overlay');
+    if (tutorialOverlay) {
+        tutorialOverlay.style.display = 'none';
+    }
+    
+    // Initialize hotspots after tutorial is closed
     if (typeof initializeHotspots === "function") {
         initializeHotspots();
     }

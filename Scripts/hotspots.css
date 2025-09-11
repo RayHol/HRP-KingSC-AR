@@ -1,4 +1,4 @@
-/* Reset and base styles */
+/* Reset and base styles - Updated for tutorial button layout - v7.0 - CONSISTENT TYPOGRAPHY */
 * {
     margin: 0;
     padding: 0;
@@ -616,22 +616,24 @@ body {
 }
 
 .warning-title {
-    font-family: 'Open Sans Condensed', sans-serif;
+    font-family: "Open Sans Condensed", sans-serif;
     font-size: 24px;
     font-weight: 700;
     color: #1B1B1B;
+    text-align: center;
     margin-bottom: 16px;
+    line-height: 130%;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
 }
 
 .warning-message {
-    font-family: 'Open Sans', sans-serif;
-    font-size: 16px;
+    font-family: "Open Sans", sans-serif;
+    font-size: 14px;
     font-weight: 500;
     color: #1B1B1B;
+    text-align: center;
     margin-bottom: 30px;
-    line-height: 1.4;
+    line-height: 150%;
 }
 
 .warning-ok-btn {
@@ -640,7 +642,7 @@ body {
     border: none;
     padding: 12px 60px;
     border-radius: 8px;
-    font-family: 'Open Sans', sans-serif;
+    font-family: "Open Sans", sans-serif;
     font-size: 16px;
     font-weight: 600;
     text-transform: uppercase;
@@ -914,4 +916,381 @@ body {
         padding: 8px 20px;
         font-size: 12px;
     }
+}
+
+/* ===== TUTORIAL OVERLAY STYLES ===== */
+.tutorial-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 10002;
+    display: none;
+    align-items: center;
+    justify-content: center;
+}
+
+.tutorial-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(10px);
+}
+
+.tutorial-content {
+    position: relative;
+    background: white;
+    border-radius: 16px;
+    padding: 40px 30px;
+    max-width: 400px;
+    width: 90%;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    text-align: center;
+}
+
+/* Tutorial Header - Static */
+.tutorial-header {
+    text-align: center;
+    margin-bottom: 30px;
+    position: relative;
+}
+
+.tutorial-title {
+    font-family: "Open Sans Condensed", sans-serif;
+    font-size: 24px;
+    font-weight: 700;
+    color: #1B1B1B;
+    text-align: center;
+    margin: 0 0 20px 0;
+    line-height: 130%;
+    text-transform: uppercase;
+}
+
+.tutorial-skip-btn {
+    position: absolute;
+    top: 0;
+    right: 0;
+    background: none;
+    border: none;
+    color: #1B1B1B;
+    font-family: "Open Sans Condensed", sans-serif;
+    font-weight: 700;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    cursor: pointer;
+    padding: 0;
+    transition: color 0.3s ease;
+}
+
+.tutorial-skip-btn:hover {
+    color: #666;
+}
+
+.tutorial-progress {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 20px;
+}
+
+.progress-line {
+    width: 60px;
+    height: 4px;
+    background-color: #E0E0E0;
+    border-radius: 2px;
+    transition: background-color 0.3s ease;
+}
+
+.progress-line.active {
+    background-color: #1B1B1B;
+}
+
+/* Tutorial Content Area - Animated */
+.tutorial-content-area {
+    position: relative;
+    overflow: hidden;
+    height: 300px;
+}
+
+.tutorial-prompt {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    opacity: 0;
+    transform: translateX(100%);
+    transition: transform 0.5s ease-in-out, opacity 0.3s ease-in-out;
+    text-align: center;
+}
+
+.tutorial-prompt.active {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+/* Animation classes for smooth transitions */
+.tutorial-prompt.slide-out-left {
+    transform: translateX(-100%);
+    opacity: 0;
+}
+
+.tutorial-prompt.slide-in-right {
+    transform: translateX(100%);
+    opacity: 0;
+}
+
+.tutorial-prompt.slide-out-right {
+    transform: translateX(100%);
+    opacity: 0;
+}
+
+.tutorial-prompt.slide-in-left {
+    transform: translateX(-100%);
+    opacity: 0;
+}
+
+/* Animation states for proper positioning */
+.tutorial-prompt.animating {
+    transition: transform 0.5s ease-in-out, opacity 0.3s ease-in-out;
+}
+
+.tutorial-prompt.no-transition {
+    transition: none;
+}
+
+.tutorial-icon {
+    margin-bottom: 30px;
+    display: flex;
+    justify-content: center;
+}
+
+.tutorial-icon img {
+    width: 120px;
+    height: 120px;
+    object-fit: contain;
+}
+
+.tutorial-prompt-title {
+    font-family: "Open Sans Condensed", sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    color: #1B1B1B;
+    text-align: center;
+    margin: 0 0 20px 0;
+    line-height: 140%;
+    text-transform: uppercase;
+}
+
+.tutorial-prompt-text {
+    font-family: "Open Sans", sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    color: #1B1B1B;
+    text-align: center;
+    margin: 0 0 30px 0;
+    line-height: 150%;
+}
+
+.tutorial-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+/* Override base flex-wrap for multiple buttons */
+.tutorial-buttons.multiple-buttons {
+    flex-wrap: nowrap !important;
+}
+
+/* Single button (NEXT on first prompt) - full width */
+.tutorial-buttons.single-button {
+    justify-content: center;
+}
+
+.tutorial-buttons.single-button .tutorial-next-btn {
+    width: 90% !important;
+    max-width: none !important;
+}
+
+/* Multiple buttons (BACK + NEXT/START) - side by side at half width */
+.tutorial-buttons.multiple-buttons {
+    display: flex !important;
+    flex-direction: row !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    gap: 20px !important;
+    flex-wrap: nowrap !important;
+    width: 100% !important;
+}
+
+.tutorial-buttons.multiple-buttons .tutorial-next-btn,
+.tutorial-buttons.multiple-buttons .tutorial-start-btn,
+.tutorial-buttons.multiple-buttons .tutorial-back-btn {
+    flex: 1 1 0% !important;
+    width: auto !important;
+    min-width: 120px !important;
+    max-width: none !important;
+    display: block !important;
+    float: none !important;
+    clear: none !important;
+}
+
+.tutorial-next-btn,
+.tutorial-start-btn {
+    background-color: #1B1B1B;
+    color: white;
+    border: none;
+    padding: 15px 40px;
+    border-radius: 8px;
+    font-family: "Open Sans", sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.tutorial-next-btn:hover,
+.tutorial-start-btn:hover {
+    background-color: #333;
+    transform: translateY(-2px);
+}
+
+.tutorial-back-btn {
+    background-color: #EEF0F3;
+    color: #1B1B1B;
+    border: none;
+    padding: 15px 40px;
+    border-radius: 8px;
+    font-family: "Open Sans", sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.tutorial-back-btn:hover {
+    background-color: #D0D5DC;
+    transform: translateY(-2px);
+}
+
+/* Tutorial Responsive Design */
+@media (max-width: 768px) {
+    .tutorial-content {
+        padding: 30px 20px;
+        margin: 20px;
+    }
+    
+    .tutorial-title {
+        font-size: 24px;
+    }
+    
+    .tutorial-prompt-title {
+        font-size: 20px;
+    }
+    
+    .tutorial-icon img {
+        width: 100px;
+        height: 100px;
+    }
+    
+    .tutorial-buttons {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .tutorial-buttons.single-button .tutorial-next-btn {
+        width: 90% !important;
+        max-width: none !important;
+    }
+    
+    .tutorial-buttons.multiple-buttons {
+        display: flex !important;
+        flex-direction: row !important;
+        justify-content: space-between !important;
+        align-items: center !important;
+        gap: 20px !important;
+        flex-wrap: nowrap !important;
+    }
+    
+    .tutorial-buttons.multiple-buttons .tutorial-next-btn,
+    .tutorial-buttons.multiple-buttons .tutorial-start-btn,
+    .tutorial-buttons.multiple-buttons .tutorial-back-btn {
+        flex: 1 !important;
+        width: auto !important;
+        min-width: 120px !important;
+        max-width: none !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .tutorial-content {
+        padding: 20px 15px;
+        margin: 10px;
+    }
+    
+    .tutorial-title {
+        font-size: 20px;
+    }
+    
+    .tutorial-prompt-title {
+        font-size: 18px;
+    }
+    
+    .tutorial-icon img {
+        width: 80px;
+        height: 80px;
+    }
+    
+    .tutorial-prompt-text {
+        font-size: 14px;
+    }
+    
+    .tutorial-buttons.multiple-buttons {
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: center !important;
+        align-items: center !important;
+        gap: 15px !important;
+    }
+    
+    .tutorial-buttons.multiple-buttons .tutorial-next-btn,
+    .tutorial-buttons.multiple-buttons .tutorial-start-btn,
+    .tutorial-buttons.multiple-buttons .tutorial-back-btn {
+        flex: none !important;
+        width: 100% !important;
+        max-width: 280px !important;
+    }
+}
+
+/* FORCE TUTORIAL BUTTONS SIDE BY SIDE - HIGHEST PRIORITY */
+.tutorial-overlay .tutorial-content .tutorial-buttons.multiple-buttons {
+    display: flex !important;
+    flex-direction: row !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    gap: 20px !important;
+    flex-wrap: nowrap !important;
+    width: 100% !important;
+}
+
+.tutorial-overlay .tutorial-content .tutorial-buttons.multiple-buttons .tutorial-next-btn,
+.tutorial-overlay .tutorial-content .tutorial-buttons.multiple-buttons .tutorial-start-btn,
+.tutorial-overlay .tutorial-content .tutorial-buttons.multiple-buttons .tutorial-back-btn {
+    flex: 1 1 0% !important;
+    width: auto !important;
+    min-width: 120px !important;
+    max-width: none !important;
+    display: block !important;
+    float: none !important;
+    clear: none !important;
 } 
