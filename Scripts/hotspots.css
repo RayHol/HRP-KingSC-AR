@@ -1,4 +1,4 @@
-/* Reset and base styles - Updated for tutorial button layout - v8.0 - MAIN UI ELEMENTS */
+/* Reset and base styles - Updated for tutorial button layout - v11.0 - FINAL UI FIXES */
 * {
     margin: 0;
     padding: 0;
@@ -1300,29 +1300,29 @@ body {
    ======================================== */
 
 .main-ui {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-    z-index: 1000;
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    pointer-events: none !important;
+    z-index: 1000 !important;
 }
 
 .ui-button {
-    position: absolute;
-    background: rgba(255, 255, 255, 0.3);
-    backdrop-filter: blur(10px);
-    border: none;
-    border-radius: 12px;
-    cursor: pointer;
-    pointer-events: auto;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    position: absolute !important;
+    background: rgba(255, 255, 255, 0.3) !important;
+    backdrop-filter: blur(10px) !important;
+    border: none !important;
+    border-radius: 12px !important;
+    cursor: pointer !important;
+    pointer-events: auto !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 8px !important;
+    transition: all 0.3s ease !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
 }
 
 .ui-button:hover {
@@ -1336,78 +1336,93 @@ body {
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
-.ui-icon {
-    width: 20px;
-    height: 20px;
-    object-fit: contain;
+.ui-button .ui-icon {
+    width: 24px !important;
+    height: 24px !important;
+    object-fit: contain !important;
 }
 
-.ui-text {
-    color: #FAFAFA;
-    font-family: "Open Sans Condensed", sans-serif;
-    font-size: 14px;
-    font-weight: 700;
-    line-height: 40px;
-    text-transform: uppercase;
-    text-align: center;
-    white-space: nowrap;
+.ui-button .ui-text {
+    color: #FAFAFA !important;
+    font-family: "Open Sans Condensed", sans-serif !important;
+    font-size: 16px !important;
+    font-weight: 700 !important;
+    line-height: 40px !important;
+    text-transform: uppercase !important;
+    text-align: center !important;
+    white-space: nowrap !important;
 }
 
 /* Back Button - Top Left */
-.back-button {
-    top: 15px;
-    left: 15px;
-    width: 40px;
-    height: 40px;
-    padding: 0;
+.ui-button.back-button {
+    top: 15px !important;
+    left: 15px !important;
+    width: 40px !important;
+    height: 40px !important;
+    padding: 0 !important;
+    min-width: 40px !important;
+    align-items: center !important;
+    justify-content: center !important;
+    display: flex !important;
 }
 
-.back-button .ui-icon {
-    width: 20px;
-    height: 20px;
+.ui-button.back-button .ui-icon {
+    width: 24px !important;
+    height: 24px !important;
 }
 
 /* Help Button - Top Right */
-.help-button {
-    top: 15px;
-    right: 15px;
-    width: 40px;
-    height: 40px;
-    padding: 0;
+.ui-button.help-button {
+    top: 15px !important;
+    right: 15px !important;
+    width: 40px !important;
+    height: 40px !important;
+    padding: 0 !important;
+    min-width: 40px !important;
+    align-items: center !important;
+    justify-content: center !important;
+    display: flex !important;
 }
 
-.help-button .ui-icon {
-    width: 20px;
-    height: 20px;
+.ui-button.help-button .ui-icon {
+    width: 24px !important;
+    height: 24px !important;
 }
 
 /* Badges/Replay Button - Top Right (next to help) */
-.badges-replay-button {
-    top: 15px;
-    right: 65px;
-    min-width: 100px;
-    height: 40px;
-    padding: 0 12px;
+.ui-button.badges-replay-button {
+    top: 15px !important;
+    right: 65px !important;
+    width: 100px !important;
+    min-width: 100px !important;
+    height: 40px !important;
+    padding: 0 8px !important;
+    align-items: center !important;
+    justify-content: center !important;
+    display: flex !important;
 }
 
-.badges-replay-button .ui-icon {
-    width: 16px;
-    height: 16px;
+.ui-button.badges-replay-button .ui-icon {
+    width: 20px !important;
+    height: 20px !important;
 }
 
 /* Transcript Button - Bottom Center */
-.transcript-button {
-    bottom: 30px;
-    left: 50%;
-    transform: translateX(-50%);
-    min-width: 140px;
-    height: 48px;
-    padding: 0 20px;
+.ui-button.transcript-button {
+    bottom: 30px !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    min-width: 120px !important;
+    height: 40px !important;
+    padding: 0 12px !important;
+    align-items: center !important;
+    justify-content: center !important;
+    display: flex !important;
 }
 
-.transcript-button .ui-icon {
-    width: 20px;
-    height: 20px;
+.ui-button.transcript-button .ui-icon {
+    width: 24px !important;
+    height: 24px !important;
 }
 
 /* Hide transcript button by default (will show when video is playing) */
@@ -1436,14 +1451,14 @@ body {
         right: 58px;
         min-width: 80px;
         height: 36px;
-        padding: 0 8px;
+        padding: 0 6px;
     }
     
     .transcript-button {
         bottom: 20px;
         min-width: 100px;
         height: 36px;
-        padding: 0 12px;
+        padding: 0 8px;
     }
     
     .ui-text {
@@ -1451,8 +1466,15 @@ body {
         line-height: 36px;
     }
     
-    .ui-icon {
-        width: 16px;
-        height: 16px;
+    .back-button .ui-icon,
+    .help-button .ui-icon,
+    .transcript-button .ui-icon {
+        width: 20px;
+        height: 20px;
+    }
+    
+    .badges-replay-button .ui-icon {
+        width: 18px;
+        height: 18px;
     }
 } 
