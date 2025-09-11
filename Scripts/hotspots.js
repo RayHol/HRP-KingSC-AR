@@ -1086,6 +1086,54 @@ function removeHotspotHalo(entity) {
     }
 }
 
+// ===== SAFETY WARNING POPUP FUNCTIONALITY =====
+let warningTimer = null;
+
+function initializeSafetyWarning() {
+    const warningPopup = document.getElementById('safety-warning-popup');
+    const okBtn = document.getElementById('warning-ok-btn');
+    
+    if (!warningPopup || !okBtn) {
+        console.warn('Safety warning elements not found');
+        return;
+    }
+    
+    // Show the warning popup immediately
+    warningPopup.style.display = 'flex';
+    
+    // Start 3-second timer to enable OK button
+    warningTimer = setTimeout(() => {
+        okBtn.disabled = false;
+        okBtn.style.backgroundColor = '#333';
+        okBtn.style.cursor = 'pointer';
+        okBtn.style.opacity = '1';
+    }, 3000);
+    
+    // OK button click handler
+    okBtn.addEventListener('click', function() {
+        if (!okBtn.disabled) {
+            closeSafetyWarning();
+        }
+    });
+}
+
+function closeSafetyWarning() {
+    const warningPopup = document.getElementById('safety-warning-popup');
+    
+    if (warningPopup) {
+        warningPopup.style.display = 'none';
+    }
+    
+    // Clear timer if it's still running
+    if (warningTimer) {
+        clearTimeout(warningTimer);
+        warningTimer = null;
+    }
+    
+    // Initialize intro video after warning is closed
+    initializeIntroVideo();
+}
+
 // ===== INTRO VIDEO OVERLAY FUNCTIONALITY =====
 let hasWatchedIntro = false;
 let isVideoPlaying = false;
@@ -1105,6 +1153,9 @@ function initializeIntroVideo() {
     
     // Show the intro overlay on page load
     introOverlay.style.display = 'flex';
+    
+    // Show skip button immediately when intro video loads
+    skipBtn.style.display = 'block';
     
     // Play/Pause button functionality
     playPauseBtn.addEventListener('click', function() {
@@ -1130,14 +1181,14 @@ function initializeIntroVideo() {
         isVideoPlaying = true;
         video.classList.add('playing');
         playIcon.src = './Assets/UI/Play, Repeat, Circle.png'; // You might want a pause icon here
-        skipBtn.style.display = 'block';
+        // Keep skip button visible during playback
     });
     
     video.addEventListener('pause', function() {
         isVideoPlaying = false;
         video.classList.remove('playing');
         playIcon.src = './Assets/UI/Play, Repeat, Circle.png';
-        skipBtn.style.display = 'none';
+        // Keep skip button visible when paused
     });
     
     video.addEventListener('ended', function() {
@@ -1160,7 +1211,16 @@ function initializeIntroVideo() {
     video.addEventListener('loadedmetadata', function() {
         // Set video properties for iOS compatibility
         video.muted = false;
-        video.playsInline = true;
+        video.playsInline = false; // Allow fullscreen
+    });
+    
+    // Force video to load and show preview immediately
+    video.load();
+    
+    // Additional event to ensure first frame is loaded
+    video.addEventListener('loadeddata', function() {
+        // Video first frame is loaded, should show preview
+        console.log('Video first frame loaded, preview should be visible');
     });
 }
 
@@ -1212,8 +1272,8 @@ function closeIntroOverlay() {
     }
 }
 
-// Initialize intro video when DOM is loaded
+// Initialize safety warning when DOM is loaded
 document.addEventListener("DOMContentLoaded", function() {
     // Small delay to ensure all elements are ready
-    setTimeout(initializeIntroVideo, 100);
+    setTimeout(initializeSafetyWarning, 100);
 }); 

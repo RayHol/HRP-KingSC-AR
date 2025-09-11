@@ -570,6 +570,103 @@ body {
     display: block;
 }
 
+/* Safety Warning Popup Styles */
+.safety-warning-popup {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 10001;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.warning-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(5px);
+}
+
+.warning-content {
+    position: relative;
+    background: white;
+    padding: 40px 30px;
+    border-radius: 16px;
+    max-width: 400px;
+    width: 90%;
+    text-align: center;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    z-index: 10002;
+}
+
+.warning-icon {
+    margin-bottom: 20px;
+}
+
+.warning-icon img {
+    width: 120px;
+    height: 120px;
+    object-fit: contain;
+}
+
+.warning-title {
+    font-family: 'Open Sans Condensed', sans-serif;
+    font-size: 24px;
+    font-weight: 700;
+    color: #1B1B1B;
+    margin-bottom: 16px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.warning-message {
+    font-family: 'Open Sans', sans-serif;
+    font-size: 16px;
+    font-weight: 500;
+    color: #1B1B1B;
+    margin-bottom: 30px;
+    line-height: 1.4;
+}
+
+.warning-ok-btn {
+    background-color: #1B1B1B;
+    color: white;
+    border: none;
+    padding: 12px 60px;
+    border-radius: 8px;
+    font-family: 'Open Sans', sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    min-width: 200px;
+    width: 100%;
+    max-width: 300px;
+}
+
+.warning-ok-btn:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+.warning-ok-btn:not(:disabled):hover {
+    background-color: #333;
+    transform: translateY(-1px);
+}
+
+.warning-ok-btn:not(:disabled):active {
+    transform: translateY(0);
+}
+
 /* Intro Video Overlay Styles */
 .intro-overlay {
     position: fixed;
@@ -686,10 +783,9 @@ body {
     left: 50%;
     transform: translateX(-50%);
     background: none;
-    border: 2px solid rgba(255, 255, 255, 0.8);
+    border: none;
     color: white;
     padding: 12px 30px;
-    border-radius: 25px;
     font-family: 'Poppins', sans-serif;
     font-size: 16px;
     font-weight: 500;
@@ -698,13 +794,10 @@ body {
     cursor: pointer;
     transition: all 0.3s ease;
     z-index: 10001;
-    backdrop-filter: blur(10px);
-    background-color: rgba(0, 0, 0, 0.3);
 }
 
 .skip-intro-btn:hover {
-    background-color: rgba(255, 255, 255, 0.1);
-    border-color: rgba(255, 255, 255, 1);
+    color: rgba(255, 255, 255, 0.8);
     transform: translateX(-50%) translateY(-2px);
 }
 
@@ -722,6 +815,59 @@ body {
 /* Show skip button when video is playing */
 .intro-video.playing ~ .skip-intro-btn {
     display: block;
+}
+
+/* Responsive design for warning popup */
+@media (max-width: 768px) {
+    .warning-content {
+        padding: 30px 20px;
+        max-width: 350px;
+    }
+    
+    .warning-title {
+        font-size: 20px;
+    }
+    
+    .warning-message {
+        font-size: 14px;
+    }
+    
+    .warning-icon img {
+        width: 105px;
+        height: 105px;
+    }
+    
+    .warning-ok-btn {
+        min-width: 180px;
+        max-width: 280px;
+    }
+}
+
+@media (max-width: 480px) {
+    .warning-content {
+        padding: 25px 15px;
+        max-width: 320px;
+    }
+    
+    .warning-title {
+        font-size: 18px;
+    }
+    
+    .warning-message {
+        font-size: 13px;
+    }
+    
+    .warning-icon img {
+        width: 90px;
+        height: 90px;
+    }
+    
+    .warning-ok-btn {
+        padding: 10px 40px;
+        font-size: 14px;
+        min-width: 160px;
+        max-width: 260px;
+    }
 }
 
 /* Responsive design for intro overlay */
@@ -764,6 +910,7 @@ body {
     }
     
     .skip-intro-btn {
+        bottom: 15px;
         padding: 8px 20px;
         font-size: 12px;
     }

@@ -6,6 +6,7 @@
     <meta charset="UTF-8" />
     <title>King's Staircase - Hotspots | HRP</title>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700&family=Open+Sans+Condensed:wght@700&display=swap">
     
     <!-- KEEP: A-Frame 1.4.0 to avoid white screen -->
     <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
@@ -45,11 +46,26 @@
         </div>
     </div> -->
 
+    <!-- Safety Warning Popup -->
+    <div id="safety-warning-popup" class="safety-warning-popup">
+        <div class="warning-background"></div>
+        <div class="warning-content">
+            <div class="warning-icon">
+                <img src="./Assets/UI/warning.png" alt="Warning">
+            </div>
+            <h2 class="warning-title">PLEASE MIND THE STAIRS</h2>
+            <p class="warning-message">Be careful of your surroundings when interacting with this experience</p>
+            <button id="warning-ok-btn" class="warning-ok-btn" disabled>
+                OK
+            </button>
+        </div>
+    </div>
+
     <!-- Intro Video Overlay -->
     <div id="intro-overlay" class="intro-overlay">
         <div class="intro-background"></div>
         <div class="intro-content">
-            <video id="intro-video" class="intro-video" preload="metadata">
+            <video id="intro-video" class="intro-video" preload="auto" poster="" playsinline="false" webkit-playsinline="false">
                 <source src="./Assets/Videos/1.mp4" type="video/mp4">
                 Your browser does not support the video tag.
             </video>
