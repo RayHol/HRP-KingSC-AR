@@ -1567,6 +1567,8 @@ function showBadgesOverlay() {
         // Trigger reflow to ensure display change is applied
         badgesOverlay.offsetHeight;
         badgesOverlay.classList.add('show');
+        // Populate badges when showing
+        populateBadgesGrid();
     }
 }
 
@@ -1581,9 +1583,106 @@ function hideBadgesOverlay() {
     }
 }
 
+// Badge configuration in the specific order requested
+const badgeConfig = [
+    { id: 'clouds', name: 'Clouds', filename: 'Ceiling clouds.png', grayFilename: 'Ceiling clouds_g.png' },
+    { id: 'peacock', name: 'Peacock', filename: 'Peacocks.png', grayFilename: 'Peacocks_g.png' },
+    { id: 'three-graces', name: 'Three Graces', filename: 'Three Graces.png', grayFilename: 'Three Graces_g.png' },
+    { id: 'trumpeter', name: 'Trumpeter', filename: 'Trumpeter.png', grayFilename: 'TrumpeterG.png' },
+    { id: 'romulus', name: 'Romulus', filename: 'Romulus.png', grayFilename: 'Romulus_g.png' },
+    { id: 'caeser', name: 'Caeser', filename: 'Caeser.png', grayFilename: 'Caeser_g.png' },
+    { id: 'nero', name: 'Nero', filename: 'Nero.png', grayFilename: 'Nero_g.png' },
+    { id: 'silenus', name: 'Silenus', filename: 'Silenus.png', grayFilename: 'Silenus_g.png' },
+    { id: 'furies', name: 'Furies', filename: 'Furies.png', grayFilename: 'Furies_g.png' },
+    { id: 'alexander', name: 'Alexander', filename: 'Alexander the Great.png', grayFilename: 'Alexander the Great_g.png' },
+    { id: 'herakles', name: 'Herakles', filename: 'Herakles.png', grayFilename: 'Herakles_g.png' },
+    { id: 'diana', name: 'Diana', filename: 'Diana.png', grayFilename: 'Diana_g.png' },
+    { id: 'harvest', name: 'Harvest', filename: 'Harvest Flowers.png', grayFilename: 'Harvest Flowers_g.png' },
+    { id: 'cherubs', name: 'Cherubs', filename: 'Cherubs.png', grayFilename: 'Cherubs_g.png' },
+    { id: 'musicians', name: 'Musicians', filename: 'Musician.png', grayFilename: 'Musician_g.png' },
+    { id: 'outro', name: 'Outro Signature', filename: 'Signature - outro.png', grayFilename: 'Signature - outro_g.png' },
+    { id: 'final', name: 'Final', filename: 'Final.png', grayFilename: 'Final_g.png' }
+];
+
+// Track which badges are unlocked (initially all locked except for testing)
+let unlockedBadges = new Set();
+
+// Populate the badges grid
+function populateBadgesGrid() {
+    const badgesGrid = document.getElementById('badges-grid');
+    if (!badgesGrid) return;
+    
+    // Clear existing badges
+    badgesGrid.innerHTML = '';
+    
+    // Create badge items
+    badgeConfig.forEach((badge, index) => {
+        const badgeItem = document.createElement('div');
+        badgeItem.className = 'badge-item';
+        badgeItem.setAttribute('data-badge-id', badge.id);
+        
+        const badgeImage = document.createElement('img');
+        badgeImage.className = 'badge-image';
+        
+        // Determine if badge is unlocked
+        const isUnlocked = unlockedBadges.has(badge.id) || (badge.id === 'final' && unlockedBadges.size >= 16);
+        
+        // Set appropriate image and class
+        if (isUnlocked) {
+            badgeImage.src = `./Assets/Badges/${badge.filename}`;
+            badgeImage.classList.add('unlocked');
+        } else {
+            badgeImage.src = `./Assets/Badges/${badge.grayFilename}`;
+            badgeImage.classList.add('grayed');
+        }
+        
+        badgeImage.alt = badge.name;
+        badgeImage.loading = 'lazy';
+        
+        badgeItem.appendChild(badgeImage);
+        badgesGrid.appendChild(badgeItem);
+    });
+}
+
+// Function to unlock a badge (to be called when hotspot is triggered)
+function unlockBadge(badgeId) {
+    if (badgeId && !unlockedBadges.has(badgeId)) {
+        unlockedBadges.add(badgeId);
+        console.log(`Badge unlocked: ${badgeId}`);
+        
+        // Update the specific badge in the grid if overlay is open
+        const badgesOverlay = document.getElementById('badges-overlay');
+        if (badgesOverlay && badgesOverlay.style.display === 'flex') {
+            const badgeItem = document.querySelector(`[data-badge-id="${badgeId}"]`);
+            if (badgeItem) {
+                const badgeImage = badgeItem.querySelector('.badge-image');
+                const badgeConfigItem = badgeConfig.find(b => b.id === badgeId);
+                if (badgeImage && badgeConfigItem) {
+                    badgeImage.src = `./Assets/Badges/${badgeConfigItem.filename}`;
+                    badgeImage.classList.remove('grayed');
+                    badgeImage.classList.add('unlocked');
+                }
+            }
+        }
+    }
+}
+
+// Test function to unlock some badges for demonstration
+function testUnlockBadges() {
+    // Unlock a few badges for testing
+    unlockBadge('clouds');
+    unlockBadge('peacock');
+    unlockBadge('three-graces');
+    unlockBadge('alexander');
+    console.log('Test badges unlocked for demonstration');
+}
+
 // Initialize safety warning when DOM is loaded
 document.addEventListener("DOMContentLoaded", function() {
     // Small delay to ensure all elements are ready
     setTimeout(initializeSafetyWarning, 100);
+    
+    // Uncomment the line below to test badge unlocking
+    // setTimeout(testUnlockBadges, 2000);
     setTimeout(initializeMainUI, 200);
 }); 

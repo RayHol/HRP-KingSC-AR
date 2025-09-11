@@ -1543,19 +1543,13 @@ body {
 .badges-items {
     display: flex;
     flex-direction: column;
-    gap: 40px;
-    max-width: 400px;
+    gap: 15px;
+    max-width: 100%;
     width: 100%;
     align-items: center;
-}
-
-.badges-placeholder {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    gap: 20px;
-    width: 100%;
+    height: 100%;
+    padding: 0 10px;
+    box-sizing: border-box;
 }
 
 .badges-title {
@@ -1568,18 +1562,66 @@ body {
     line-height: 140%;
     text-transform: uppercase;
     margin: 0;
+    flex-shrink: 0;
 }
 
-.badges-description {
-    color: #FAFAFA;
-    text-align: center;
-    font-family: "Open Sans", sans-serif;
-    font-size: 16px;
-    font-style: normal;
-    font-weight: 500;
-    line-height: 150%;
-    margin: 0;
-    max-width: 300px;
+.badges-grid-container {
+    flex: 1;
+    width: 100%;
+    overflow: hidden;
+    position: relative;
+}
+
+.badges-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px 16px;
+    row-gap: 18px;
+    padding: 10px 0;
+    width: 100%;
+    max-height: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    justify-items: center;
+}
+
+.badges-grid::-webkit-scrollbar {
+    display: none;
+}
+
+.badge-item {
+    position: relative;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+    border-radius: 8px;
+    overflow: hidden;
+    width: 105px;
+    height: 120px;
+    flex-shrink: 0;
+}
+
+.badge-item:hover {
+    transform: scale(1.05);
+}
+
+.badge-image {
+    width: 105px;
+    height: 120px;
+    object-fit: cover;
+    border-radius: 8px;
+    transition: opacity 0.3s ease;
+}
+
+.badge-image.grayed {
+    opacity: 0.4;
+    filter: grayscale(100%);
+}
+
+.badge-image.unlocked {
+    opacity: 1;
+    filter: none;
 }
 
 /* Badges overlay responsive */
@@ -1589,20 +1631,28 @@ body {
     }
     
     .badges-items {
-        gap: 30px;
-        max-width: 350px;
-    }
-    
-    .badges-placeholder {
-        gap: 16px;
+        gap: 12px;
+        padding: 0 8px;
     }
     
     .badges-title {
         font-size: 20px;
     }
     
-    .badges-description {
-        font-size: 14px;
+    .badges-grid {
+        gap: 10px 12px;
+        row-gap: 16px;
+        padding: 8px 0;
+    }
+    
+    .badge-item {
+        width: 90px;
+        height: 105px;
+    }
+    
+    .badge-image {
+        width: 90px;
+        height: 105px;
     }
     
     .badges-close-btn {
@@ -1795,4 +1845,5 @@ body {
         width: 18px;
         height: 18px;
     }
+} 
 } 
