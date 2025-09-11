@@ -1426,8 +1426,8 @@ body {
 }
 
 /* Hide transcript button by default (will show when video is playing) */
-.transcript-button {
-    display: none;
+.ui-button.transcript-button {
+    display: none !important;
 }
 
 /* Responsive adjustments */

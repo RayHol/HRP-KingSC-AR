@@ -603,6 +603,10 @@ function displayHotspotMedia(mediaItem, index, commonValues, currentPosition, cu
             centerTarget.classList.add('hotspot-hover');
         }
 
+        // Update badges/replay button based on whether hotspot has been triggered
+        const isAlreadyTriggered = activatedHotspots.has(hotspotId);
+        updateBadgesReplayButton(isAlreadyTriggered);
+
         // Show simple notification
         showHotspotNotification(mediaItem.info || 'Hotspot');
 
@@ -626,6 +630,9 @@ function displayHotspotMedia(mediaItem, index, commonValues, currentPosition, cu
             centerTarget.classList.remove('hotspot-hover');
             console.log('Crosshair returned to yellow (hotspot-hover class removed)');
         }
+
+        // Reset badges/replay button back to badges mode
+        updateBadgesReplayButton(false);
     });
 }
 
@@ -1503,10 +1510,12 @@ function updateBadgesReplayButton(isHoveringHotspot) {
         // Switch to replay mode
         icon.src = './Assets/UI/Play, Repeat, Circle.png';
         text.textContent = 'REPLAY';
+        console.log('Badges button switched to REPLAY mode');
     } else {
         // Switch to badges mode
         icon.src = './Assets/UI/crown-square-icon.png';
         text.textContent = 'BADGES';
+        console.log('Badges button switched to BADGES mode');
     }
 }
 
