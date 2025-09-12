@@ -1889,12 +1889,11 @@ function showMindARScene(hotspotId) {
         return;
     }
     
-    // Show debug status
+    // Hide debug status (keep it hidden)
     const debugStatus = document.getElementById('mindar-debug-status');
     if (debugStatus) {
-        debugStatus.style.display = 'block';
-        document.getElementById('mindar-status-text').textContent = 'Active';
-        document.getElementById('mindar-hotspot-id').textContent = hotspotId;
+        debugStatus.style.display = 'none';
+        debugStatus.style.visibility = 'hidden';
     }
     
     // Hide main AR scene
@@ -1920,10 +1919,11 @@ function hideMindARScene() {
         return;
     }
     
-    // Hide debug status
+    // Hide debug status (keep it hidden)
     const debugStatus = document.getElementById('mindar-debug-status');
     if (debugStatus) {
         debugStatus.style.display = 'none';
+        debugStatus.style.visibility = 'hidden';
     }
     
     // Stop any playing video
