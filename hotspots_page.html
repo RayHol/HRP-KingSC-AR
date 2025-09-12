@@ -322,6 +322,43 @@
                 <source src="./Assets/Videos/romulus_a.mp4" type="video/mp4;codecs=hvc1">
                 <source src="./Assets/Videos/romulus_a.webm" type="video/webm">
             </video>
+            
+            <!-- Video for target 1 (caesar) -->
+            <video id="video-caesar" preload="auto" response-type="arraybuffer" crossorigin="anonymous" webkit-playsinline playsinline>
+                <source src="./Assets/Videos/Caesar_a.mp4" type="video/mp4;codecs=hvc1">
+                <source src="./Assets/Videos/Caesar_a.webm" type="video/webm">
+            </video>
+            
+            <!-- Video for target 2 (nero) -->
+            <video id="video-nero" preload="auto" response-type="arraybuffer" crossorigin="anonymous" webkit-playsinline playsinline>
+                <source src="./Assets/Videos/Nero.mp4" type="video/mp4;codecs=hvc1">
+            </video>
+            
+            <!-- Video for target 3 (silenus) -->
+            <video id="video-silenus" preload="auto" response-type="arraybuffer" crossorigin="anonymous" webkit-playsinline playsinline>
+                <source src="./Assets/Videos/Silenus_a.mp4" type="video/mp4;codecs=hvc1">
+                <source src="./Assets/Videos/Silenus_a.webm" type="video/webm">
+            </video>
+            
+            <!-- Video for target 4 (furies) -->
+            <video id="video-furies" preload="auto" response-type="arraybuffer" crossorigin="anonymous" webkit-playsinline playsinline>
+                <source src="./Assets/Videos/Furies.mp4" type="video/mp4;codecs=hvc1">
+            </video>
+            
+            <!-- Video for target 5 (herakles) -->
+            <video id="video-herakles" preload="auto" response-type="arraybuffer" crossorigin="anonymous" webkit-playsinline playsinline>
+                <source src="./Assets/Videos/Herakles.mp4" type="video/mp4;codecs=hvc1">
+            </video>
+            
+            <!-- Video for target 6 (alexander) -->
+            <video id="video-alexander" preload="auto" response-type="arraybuffer" crossorigin="anonymous" webkit-playsinline playsinline>
+                <source src="./Assets/Videos/Alexander.mp4" type="video/mp4;codecs=hvc1">
+            </video>
+            
+            <!-- Video for target 7 (diana) -->
+            <video id="video-diana" preload="auto" response-type="arraybuffer" crossorigin="anonymous" webkit-playsinline playsinline>
+                <source src="./Assets/Videos/Diana.mp4" type="video/mp4;codecs=hvc1">
+            </video>
         </a-assets>
 
         <!-- Camera entity -->
@@ -338,6 +375,83 @@
                 animation__fadein="startEvents: fadein-romulus; property: material.opacity; from: 0; to: 1; dur: 500;" 
                 height="0.8" width="0.8"
                 animation__fadeout="startEvents: fadeout-romulus; property: material.opacity; from: 1; to: 0; dur: 500;">
+            </a-plane>
+        </a-entity>
+        
+        <!-- MindAR Target 1 (caesar) - initially hidden -->
+        <a-entity id="target-caesar" mindar-image-target="targetIndex: 1" ar-controller
+            smooth-position="target: #videooverlay-caesar; factor: 0.1" style="display: none;">
+            <a-plane id="videooverlay-caesar" 
+                material="shader: transparent-video; src: #video-caesar; transparent: true; opacity: 0"
+                animation__fadein="startEvents: fadein-caesar; property: material.opacity; from: 0; to: 1; dur: 500;" 
+                height="0.8" width="0.8"
+                animation__fadeout="startEvents: fadeout-caesar; property: material.opacity; from: 1; to: 0; dur: 500;">
+            </a-plane>
+        </a-entity>
+        
+        <!-- MindAR Target 2 (nero) - initially hidden -->
+        <a-entity id="target-nero" mindar-image-target="targetIndex: 2" ar-controller
+            smooth-position="target: #videooverlay-nero; factor: 0.1" style="display: none;">
+            <a-plane id="videooverlay-nero" 
+                material="shader: transparent-video; src: #video-nero; transparent: true; opacity: 0"
+                animation__fadein="startEvents: fadein-nero; property: material.opacity; from: 0; to: 1; dur: 500;" 
+                height="1.4" width="0.8"
+                animation__fadeout="startEvents: fadeout-nero; property: material.opacity; from: 1; to: 0; dur: 500;">
+            </a-plane>
+        </a-entity>
+        
+        <!-- MindAR Target 3 (silenus) - initially hidden -->
+        <a-entity id="target-silenus" mindar-image-target="targetIndex: 3" ar-controller
+            smooth-position="target: #videooverlay-silenus; factor: 0.1" style="display: none;">
+            <a-plane id="videooverlay-silenus" 
+                material="shader: transparent-video; src: #video-silenus; transparent: true; opacity: 0"
+                animation__fadein="startEvents: fadein-silenus; property: material.opacity; from: 0; to: 1; dur: 500;" 
+                height="0.8" width="0.8"
+                animation__fadeout="startEvents: fadeout-silenus; property: material.opacity; from: 1; to: 0; dur: 500;">
+            </a-plane>
+        </a-entity>
+        
+        <!-- MindAR Target 4 (furies) - initially hidden -->
+        <a-entity id="target-furies" mindar-image-target="targetIndex: 4" ar-controller
+            smooth-position="target: #videooverlay-furies; factor: 0.1" style="display: none;">
+            <a-plane id="videooverlay-furies" 
+                material="shader: transparent-video; src: #video-furies; transparent: true; opacity: 0"
+                animation__fadein="startEvents: fadein-furies; property: material.opacity; from: 0; to: 1; dur: 500;" 
+                height="1.4" width="0.8"
+                animation__fadeout="startEvents: fadeout-furies; property: material.opacity; from: 1; to: 0; dur: 500;">
+            </a-plane>
+        </a-entity>
+        
+        <!-- MindAR Target 5 (herakles) - initially hidden -->
+        <a-entity id="target-herakles" mindar-image-target="targetIndex: 5" ar-controller
+            smooth-position="target: #videooverlay-herakles; factor: 0.1" style="display: none;">
+            <a-plane id="videooverlay-herakles" 
+                material="shader: transparent-video; src: #video-herakles; transparent: true; opacity: 0"
+                animation__fadein="startEvents: fadein-herakles; property: material.opacity; from: 0; to: 1; dur: 500;" 
+                height="0.8" width="0.8"
+                animation__fadeout="startEvents: fadeout-herakles; property: material.opacity; from: 1; to: 0; dur: 500;">
+            </a-plane>
+        </a-entity>
+        
+        <!-- MindAR Target 6 (alexander) - initially hidden -->
+        <a-entity id="target-alexander" mindar-image-target="targetIndex: 6" ar-controller
+            smooth-position="target: #videooverlay-alexander; factor: 0.1" style="display: none;">
+            <a-plane id="videooverlay-alexander" 
+                material="shader: transparent-video; src: #video-alexander; transparent: true; opacity: 0"
+                animation__fadein="startEvents: fadein-alexander; property: material.opacity; from: 0; to: 1; dur: 500;" 
+                height="1.4" width="0.8"
+                animation__fadeout="startEvents: fadeout-alexander; property: material.opacity; from: 1; to: 0; dur: 500;">
+            </a-plane>
+        </a-entity>
+        
+        <!-- MindAR Target 7 (diana) - initially hidden -->
+        <a-entity id="target-diana" mindar-image-target="targetIndex: 7" ar-controller
+            smooth-position="target: #videooverlay-diana; factor: 0.1" style="display: none;">
+            <a-plane id="videooverlay-diana" 
+                material="shader: transparent-video; src: #video-diana; transparent: true; opacity: 0"
+                animation__fadein="startEvents: fadein-diana; property: material.opacity; from: 0; to: 1; dur: 500;" 
+                height="1.4" width="0.8"
+                animation__fadeout="startEvents: fadeout-diana; property: material.opacity; from: 1; to: 0; dur: 500;">
             </a-plane>
         </a-entity>
     </a-scene>
