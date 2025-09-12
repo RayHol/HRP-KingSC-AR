@@ -1134,6 +1134,21 @@ function closeSafetyWarning() {
         warningTimer = null;
     }
     
+    // Force user interaction for video playback
+    hasUserInteracted = true;
+    
+    // Create a silent audio context to establish user interaction
+    try {
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        if (audioContext.state === 'suspended') {
+            audioContext.resume().then(() => {
+                console.log('Audio context resumed for video playback');
+            });
+        }
+    } catch (e) {
+        console.log('Audio context creation failed:', e);
+    }
+    
     // Initialize intro video after warning is closed
     initializeIntroVideo();
 }
@@ -1983,65 +1998,80 @@ function handleMindarTargetFound(hotspotId) {
         // Update debug UI with audio information
         updateMindarDebugUI(hotspotId, video);
         
-        // iOS audio fix - use the established user interaction
-        console.log(`hasUserInteracted: ${hasUserInteracted}`);
-        if (hasUserInteracted) {
-            // User has already interacted, so we can play with audio
-            video.muted = false;
-            console.log(`Attempting to play video with audio for hotspot: ${hotspotId}`);
-            video.play().then(() => {
-                console.log(`Video playing with audio for hotspot: ${hotspotId}`);
-                
-                // Update debug UI
-                updateMindarDebugUI(hotspotId, video, 'Playing with audio');
-                
-                // Trigger fade-in animation
-                const videoOverlay = document.getElementById(`videooverlay-${hotspotId}`);
-                if (videoOverlay) {
-                    videoOverlay.emit('fadein-' + hotspotId);
-                }
-                
-                // Set up video end handler
-                video.addEventListener('ended', () => {
-                    handleVideoEnded(hotspotId);
-                }, { once: true });
-                
-            }).catch(error => {
-                console.warn('Video play failed:', error);
-                updateMindarDebugUI(hotspotId, video, 'Play failed: ' + error.message);
-                // Fallback: show congratulations after a delay
-                setTimeout(() => {
-                    handleVideoEnded(hotspotId);
-                }, 3000);
-            });
+        // Ensure video is loaded before playing
+        if (video.readyState < 2) {
+            console.log('Video not ready, loading...');
+            video.load();
+        }
+        
+        // Wait for video to be ready
+        const playVideo = () => {
+            console.log(`hasUserInteracted: ${hasUserInteracted}`);
+            if (hasUserInteracted) {
+                // User has already interacted, so we can play with audio
+                video.muted = false;
+                console.log(`Attempting to play video with audio for hotspot: ${hotspotId}`);
+                video.play().then(() => {
+                    console.log(`Video playing with audio for hotspot: ${hotspotId}`);
+                    
+                    // Update debug UI
+                    updateMindarDebugUI(hotspotId, video, 'Playing with audio');
+                    
+                    // Trigger fade-in animation
+                    const videoOverlay = document.getElementById(`videooverlay-${hotspotId}`);
+                    if (videoOverlay) {
+                        videoOverlay.emit('fadein-' + hotspotId);
+                    }
+                    
+                    // Set up video end handler
+                    video.addEventListener('ended', () => {
+                        handleVideoEnded(hotspotId);
+                    }, { once: true });
+                    
+                }).catch(error => {
+                    console.warn('Video play failed:', error);
+                    updateMindarDebugUI(hotspotId, video, 'Play failed: ' + error.message);
+                    // Fallback: show congratulations after a delay
+                    setTimeout(() => {
+                        handleVideoEnded(hotspotId);
+                    }, 3000);
+                });
+            } else {
+                // No user interaction yet, play muted
+                video.muted = true;
+                video.play().then(() => {
+                    console.log(`Video playing muted for hotspot: ${hotspotId}`);
+                    
+                    // Update debug UI
+                    updateMindarDebugUI(hotspotId, video, 'Playing muted (no user interaction)');
+                    
+                    // Trigger fade-in animation
+                    const videoOverlay = document.getElementById(`videooverlay-${hotspotId}`);
+                    if (videoOverlay) {
+                        videoOverlay.emit('fadein-' + hotspotId);
+                    }
+                    
+                    // Set up video end handler
+                    video.addEventListener('ended', () => {
+                        handleVideoEnded(hotspotId);
+                    }, { once: true });
+                    
+                }).catch(error => {
+                    console.error('Video play failed:', error);
+                    updateMindarDebugUI(hotspotId, video, 'Play failed: ' + error.message);
+                    // Fallback: show congratulations after a delay
+                    setTimeout(() => {
+                        handleVideoEnded(hotspotId);
+                    }, 3000);
+                });
+            }
+        };
+        
+        // If video is ready, play immediately, otherwise wait for it to load
+        if (video.readyState >= 2) {
+            playVideo();
         } else {
-            // No user interaction yet, play muted
-            video.muted = true;
-            video.play().then(() => {
-                console.log(`Video playing muted for hotspot: ${hotspotId}`);
-                
-                // Update debug UI
-                updateMindarDebugUI(hotspotId, video, 'Playing muted (no user interaction)');
-                
-                // Trigger fade-in animation
-                const videoOverlay = document.getElementById(`videooverlay-${hotspotId}`);
-                if (videoOverlay) {
-                    videoOverlay.emit('fadein-' + hotspotId);
-                }
-                
-                // Set up video end handler
-                video.addEventListener('ended', () => {
-                    handleVideoEnded(hotspotId);
-                }, { once: true });
-                
-            }).catch(error => {
-                console.error('Video play failed:', error);
-                updateMindarDebugUI(hotspotId, video, 'Play failed: ' + error.message);
-                // Fallback: show congratulations after a delay
-                setTimeout(() => {
-                    handleVideoEnded(hotspotId);
-                }, 3000);
-            });
+            video.addEventListener('loadeddata', playVideo, { once: true });
         }
     } else {
         console.error(`Video element not found for hotspot: ${hotspotId}`);

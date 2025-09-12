@@ -14,7 +14,7 @@
                 "frameUrl": "./Assets/hotspot-icons/Asset 6.png",
                 "info": "Romulus",
                 "audioUrl": "",
-                "link": "./Assets/Videos/romulus_a.mp4",
+                "link": "",
                 "description": ""
             }
         ]
@@ -34,7 +34,7 @@
                 "frameUrl": "./Assets/hotspot-icons/Asset 7.png",
                 "info": "Caesar",
                 "audioUrl": "",
-                "link": "./Assets/Videos/Caesar_a.mp4",
+                "link": "",
                 "description": ""
             }
         ]
@@ -54,7 +54,7 @@
                 "frameUrl": "./Assets/hotspot-icons/Asset 8.png",
                 "info": "Nero",
                 "audioUrl": "",
-                "link": "./Assets/Videos/Nero.mp4",
+                "link": "",
                 "description": ""
             }
         ]
@@ -74,7 +74,7 @@
                 "frameUrl": "./Assets/hotspot-icons/Asset 9.png",
                 "info": "Silenus",
                 "audioUrl": "",
-                "link": "./Assets/Videos/Silenus_a.mp4",
+                "link": "",
                 "description": ""
             }
         ]
@@ -94,7 +94,7 @@
                 "frameUrl": "./Assets/hotspot-icons/Asset 10.png",
                 "info": "Furie",
                 "audioUrl": "",
-                "link": "./Assets/Videos/Furies.mp4",
+                "link": "",
                 "description": ""
             }
         ]
@@ -114,7 +114,7 @@
                 "frameUrl": "./Assets/hotspot-icons/Asset 11.png",
                 "info": "Herakles",
                 "audioUrl": "",
-                "link": "./Assets/Videos/Herakles.mp4",
+                "link": "",
                 "description": ""
             }
         ]
@@ -134,7 +134,7 @@
                 "frameUrl": "./Assets/hotspot-icons/Asset 12.png",
                 "info": "Alexander",
                 "audioUrl": "",
-                "link": "./Assets/Videos/Alexander.mp4",
+                "link": "",
                 "description": ""
             }
         ]
@@ -154,7 +154,7 @@
                 "frameUrl": "./Assets/hotspot-icons/Asset 13.png",
                 "info": "Diana",
                 "audioUrl": "",
-                "link": "./Assets/Videos/Diana.mp4",
+                "link": "",
                 "description": ""
             }
         ]
