@@ -317,11 +317,24 @@
         
         <!-- MindAR Video Assets -->
         <a-assets>
-            <!-- Video for target 0 (romulus) ONLY -->
+            <!-- Video for target 0 (romulus) -->
             <video id="video-romulus" preload="auto" response-type="arraybuffer" crossorigin="anonymous" webkit-playsinline playsinline>
                 <source src="./Assets/Videos/romulus_a.mp4" type="video/mp4;codecs=hvc1">
                 <source src="./Assets/Videos/romulus_a.webm" type="video/webm">
             </video>
+            
+            <!-- Video for target 1 (caesar) -->
+            <video id="video-caesar" preload="auto" response-type="arraybuffer" crossorigin="anonymous" webkit-playsinline playsinline>
+                <source src="./Assets/Videos/Caesar_a.mp4" type="video/mp4;codecs=hvc1">
+                <source src="./Assets/Videos/Caesar_a.webm" type="video/webm">
+            </video>
+            
+            <!-- Video for target 2 (nero) -->
+            <video id="video-nero" preload="auto" response-type="arraybuffer" crossorigin="anonymous" webkit-playsinline playsinline>
+                <source src="./Assets/Videos/Nero.mp4" type="video/mp4;codecs=hvc1">
+            </video>
+            
+
         </a-assets>
 
         <!-- Camera entity -->
@@ -330,7 +343,7 @@
         <!-- Ambient light entity -->
         <a-light type="ambient" color="#FFF"></a-light>
         
-        <!-- MindAR Target 0 (romulus) - ONLY ONE TARGET -->
+        <!-- MindAR Target 0 (romulus) - initially hidden -->
         <a-entity id="target-romulus" mindar-image-target="targetIndex: 0" ar-controller
             smooth-position="target: #videooverlay-romulus; factor: 0.1" style="display: none;">
             <a-plane id="videooverlay-romulus" 
@@ -340,6 +353,19 @@
                 animation__fadeout="startEvents: fadeout-romulus; property: material.opacity; from: 1; to: 0; dur: 500;">
             </a-plane>
         </a-entity>
+        
+        <!-- MindAR Target 1 (caesar) - initially hidden -->
+        <a-entity id="target-caesar" mindar-image-target="targetIndex: 1" ar-controller
+            smooth-position="target: #videooverlay-caesar; factor: 0.1" style="display: none;">
+            <a-plane id="videooverlay-caesar" 
+                material="shader: transparent-video; src: #video-caesar; transparent: true; opacity: 0"
+                animation__fadein="startEvents: fadein-caesar; property: material.opacity; from: 0; to: 1; dur: 500;" 
+                height="1.2" width="1.2"
+                animation__fadeout="startEvents: fadeout-caesar; property: material.opacity; from: 1; to: 0; dur: 500;">
+            </a-plane>
+        </a-entity>
+        
+        
     </a-scene>
 
     <!-- 2D Center Target Crosshair for AR Hotspot Aiming -->
