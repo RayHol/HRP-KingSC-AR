@@ -308,12 +308,12 @@
     <!-- MindAR Scene Overlay (initially hidden) -->
     <a-scene id="mindar-scene" 
         loading-screen="enabled: false"
-        mindar-image="imageTargetSrc: ./Assets/targets.mind; uiLoading:no; uiScanning: no; warmupTolerance: 10; missTolerance: 1; filterMinCF: 0.0001; filterBeta: 0.001"
+        mindar-image="imageTargetSrc: .\Assets\targets.mind; uiLoading:no; uiScanning: #mindar-scanning-overlay; warmupTolerance: 10; missTolerance: 1; filterMinCF: 0.0001; filterBeta: 0.001"
         color-space="sRGB"
         renderer="colorManagement: true, physicallyCorrectLights"
         vr-mode-ui="enabled: false"
         device-orientation-permission-ui="enabled: false"
-        style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 2000;">
+        style="visibility: hidden; position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 2000;">
         
         <!-- MindAR Video Assets -->
         <a-assets>
@@ -482,14 +482,14 @@
 
     <script src="./Scripts/hotspots.js?v=3"></script>
     <script>
-    document.addEventListener("DOMContentLoaded", function() {
-        const arScene = document.getElementById('ar-scene');
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize MindAR system immediately for Android compatibility
+        setTimeout(() => {
+            initializeMindAR();
+        }, 1000);
         
-        // Automatically display the AR scene
-        arScene.style.display = 'block';
-        
-        // Don't initialize hotspots immediately - let intro video control this
-        // The intro video will call initializeHotspots() when it's closed
+        // Set up other event listeners here...
+        setupEventListeners();
     });
     </script>
 </body>

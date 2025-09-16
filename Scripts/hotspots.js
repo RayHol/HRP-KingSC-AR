@@ -2299,4 +2299,47 @@ document.addEventListener("DOMContentLoaded", function() {
     setTimeout(() => {
         initializeMindAR();
     }, 1000);
-}); 
+});
+
+// Update the original DOMContentLoaded listener to NOT initialize MindAR immediately
+document.addEventListener('DOMContentLoaded', function() {
+    // ... existing code ...
+    
+    // Don't initialize MindAR here - only when hotspot is clicked
+    // Remove this line:
+    // initializeMindAR();
+});
+
+// Update showMindARScene function to initialize MindAR when needed
+function showMindARScene() {
+    const mindarScene = document.getElementById('mindar-scene');
+    if (mindarScene) {
+        // Initialize MindAR when showing the scene
+        initializeMindAR();
+        mindarScene.style.display = 'block';
+    }
+}
+
+// Update hideMindARScene function
+function hideMindARScene() {
+    const mindarScene = document.getElementById('mindar-scene');
+    if (mindarScene) {
+        mindarScene.style.display = 'none';
+    }
+}
+
+// Update showMindARScene function
+function showMindARScene() {
+    const mindarScene = document.getElementById('mindar-scene');
+    if (mindarScene) {
+        mindarScene.style.visibility = 'visible';
+    }
+}
+
+// Update hideMindARScene function
+function hideMindARScene() {
+    const mindarScene = document.getElementById('mindar-scene');
+    if (mindarScene) {
+        mindarScene.style.visibility = 'hidden';
+    }
+} 

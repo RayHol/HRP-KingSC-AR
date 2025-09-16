@@ -2177,3 +2177,48 @@ body {
         padding: 8px 16px;
     }
 } 
+
+/* MindAR Scanning Overlay */
+#mindar-scanning-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2500;
+}
+
+#mindar-scanning-overlay.hidden {
+    display: none;
+}
+
+#scanning-icon-wrapper {
+    position: relative;
+    width: 200px;
+    height: 200px;
+}
+
+#scanning-icon-wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+#scanning-moving-line {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, #00ff00, transparent);
+    animation: scanning-move 2s linear infinite;
+}
+
+@keyframes scanning-move {
+    0% { transform: translateY(-100px); }
+    100% { transform: translateY(100px); }
+} 

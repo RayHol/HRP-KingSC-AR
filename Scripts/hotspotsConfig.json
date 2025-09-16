@@ -144,7 +144,7 @@
             "scale": "30 30 1",
             "rotation": "0 0 0",
             "fixedAngleDegrees": 35.85,
-            "initialY": -10.14,
+            "initialY": 10.14,
             "initialZ": -38.94
         },
         "media": [
