@@ -2219,17 +2219,11 @@ function hideTargetFoundIndicator() {
 // Modified activateHotspot function to trigger MindAR
 function activateHotspotWithMindAR(hotspotId, entity) {
     if (activatedHotspots.has(hotspotId)) {
-        return; // Already activated
+        console.log(`Hotspot ${hotspotId} already activated - skipping`);
+        return; // Already activated - don't allow repeat detection
     }
     
     console.log(`Activating MindAR for hotspot: ${hotspotId}`);
-    
-    // Stop any currently playing video before starting new one
-    if (currentMindarVideo) {
-        currentMindarVideo.pause();
-        currentMindarVideo.currentTime = 0;
-        console.log('Stopped previous video before starting new one');
-    }
     
     // Set the current active hotspot ID
     currentActiveHotspotId = hotspotId;
@@ -2251,17 +2245,14 @@ function activateHotspotWithMindAR(hotspotId, entity) {
     
     // Set up target detection handler
     if (targetEntity) {
-        console.log(`🎯 Setting up target detection for hotspot: ${hotspotId}`);
         targetEntity.addEventListener('targetFound', () => {
-            console.log(`🎯 Target found event fired for hotspot: ${hotspotId}`);
+            console.log(`Target found event fired for hotspot: ${hotspotId}`);
             handleMindarTargetFound(hotspotId);
         });
         
         targetEntity.addEventListener('targetLost', () => {
-            console.log(`🎯 Target lost event fired for hotspot: ${hotspotId}`);
+            console.log(`Target lost event fired for hotspot: ${hotspotId}`);
         });
-    } else {
-        console.error(`❌ No target entity found for hotspot: ${hotspotId}`);
     }
 }
 
