@@ -1287,7 +1287,7 @@ function playVideo() {
             video.muted = true;
             video.play().then(() => {
                 // Once playing, unmute
-                video.muted = false;
+                video.muted = true;
             }).catch(err => {
                 console.error('Video play failed even with muted:', err);
             });
