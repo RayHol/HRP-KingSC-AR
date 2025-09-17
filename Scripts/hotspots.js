@@ -1247,7 +1247,7 @@ function initializeIntroVideo() {
     video.addEventListener('loadedmetadata', function() {
         // Set video properties for iOS compatibility
         video.muted = false;
-        video.playsInline = false; // Allow fullscreen
+        video.playsInline = true; // Allow fullscreen
     });
     
     // Force video to load and show preview immediately
