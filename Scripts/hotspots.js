@@ -1969,21 +1969,18 @@ function handleMindarTargetFound(hotspotId) {
             // Reset video to beginning
             video.currentTime = 0;
             
-            if (hasUserInteracted) {
-                // User has already interacted, so we can play with audio
-                video.muted = false;
-                video.volume = 1.0;
-                console.log(`Attempting to play video with audio for hotspot: ${hotspotId}`);
-            } else {
-                // No user interaction yet, play muted
-                video.muted = true;
-                video.volume = 0;
-                console.log(`Playing video muted for hotspot: ${hotspotId}`);
-            }
+            // iOS requires fresh user interaction for each video
+            // Always start muted and try to unmute after play starts
+            video.muted = true;
+            video.volume = 0;
+            console.log(`Starting video muted for iOS compatibility: ${hotspotId}`);
             
             // Try to play the video
             console.log(`Calling video.play() for ${hotspotId}...`);
             const playPromise = video.play();
+            
+            // Add tap-to-play fallback for iOS
+            addTapToPlayFallback(video, hotspotId);
             
             if (playPromise !== undefined) {
                 playPromise.then(() => {
@@ -1991,6 +1988,15 @@ function handleMindarTargetFound(hotspotId) {
                     console.log(`Video is now playing: ${!video.paused}`);
                     console.log(`Video muted: ${video.muted}`);
                     console.log(`Video volume: ${video.volume}`);
+                    
+                    // Try to unmute after video starts playing (iOS workaround)
+                    if (hasUserInteracted) {
+                        setTimeout(() => {
+                            video.muted = false;
+                            video.volume = 1.0;
+                            console.log(`Video unmuted after play start for: ${hotspotId}`);
+                        }, 100);
+                    }
                     
                     // Update debug UI
                     updateMindarDebugUI(hotspotId, video, hasUserInteracted ? 'Playing with audio' : 'Playing muted');
@@ -2151,6 +2157,29 @@ function activateHotspotWithMindAR(hotspotId, entity) {
             console.log(`Target lost event fired for hotspot: ${hotspotId}`);
         });
     }
+}
+
+// Add tap-to-play fallback for iOS
+function addTapToPlayFallback(video, hotspotId) {
+    const tapHandler = () => {
+        console.log(`Tap detected - attempting to play video for ${hotspotId}`);
+        video.muted = false;
+        video.volume = 1.0;
+        video.play().then(() => {
+            console.log(`Video playing after tap for ${hotspotId}`);
+            document.removeEventListener('touchstart', tapHandler);
+        }).catch(error => {
+            console.error(`Tap play failed for ${hotspotId}:`, error);
+        });
+    };
+    
+    // Add touch event listener
+    document.addEventListener('touchstart', tapHandler, { once: true });
+    
+    // Remove listener after 5 seconds
+    setTimeout(() => {
+        document.removeEventListener('touchstart', tapHandler);
+    }, 5000);
 }
 
 // Test function to manually test video playback
