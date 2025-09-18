@@ -564,7 +564,15 @@ function displayHotspotMedia(mediaItem, index, commonValues, currentPosition, cu
         }
 
         console.log('Hotspot intersected:', mediaItem.url);
-        entity.setAttribute('material', 'color', '#FBD86F');  // Change color on hover/tap to HRP yellow
+        
+        // Update opacity based on activation status (keep white color)
+        if (activatedHotspots.has(hotspotId)) {
+            entity.setAttribute('material', 'color', 'white'); // Keep white for activated
+            entity.setAttribute('material', 'opacity', '0.2'); // Keep 40% opacity for activated
+        } else {
+            entity.setAttribute('material', 'color', 'white'); // Keep white on hover
+            entity.setAttribute('material', 'opacity', '1.0'); // Full opacity on hover
+        }
 
         // Change crosshair to green when hovering over hotspot
         const centerTarget = document.getElementById('center-target');
@@ -583,11 +591,13 @@ function displayHotspotMedia(mediaItem, index, commonValues, currentPosition, cu
     entity.addEventListener('raycaster-intersected-cleared', function () {
         console.log('Hotspot no longer intersected:', mediaItem.url);
         
-        // Reset to appropriate state based on activation status
+        // Reset to appropriate state based on activation status (keep white color)
         if (activatedHotspots.has(hotspotId)) {
-            entity.setAttribute('material', 'color', '#FBD86F'); // Keep yellow for activated
+            entity.setAttribute('material', 'color', 'white'); // Keep white for activated
+            entity.setAttribute('material', 'opacity', '0.2'); // Keep 40% opacity for activated
         } else {
-            entity.setAttribute('material', 'color', 'white'); // Reset to white for inactive
+            entity.setAttribute('material', 'color', 'white'); // Keep white for inactive
+            entity.setAttribute('material', 'opacity', '1.0'); // Keep 100% opacity for active
         }
 
         // Change crosshair back to yellow when no longer hovering over hotspot
@@ -618,42 +628,6 @@ function fadeOutElement(element) {
     element.emit("startFadeOut");
 }
 
-// REMOVED: This function was creating duplicate hotspots at origin (0,0,0)
-// which caused conflicts with the correctly positioned hotspots from initializeHotspots
-// This was the root cause of the X-axis scaling jitter
-// 
-// For static AR hotspots, media changing is not needed - all hotspots are displayed at once
-
-// function createLookImages() {
-//     let scene = document.querySelector("a-scene");
-
-//     lookImages.forEach((lookImage) => {
-//         if (lookImage.parentNode) {
-//             lookImage.parentNode.removeChild(lookImage);
-//         }
-//     });
-//     lookImages = [];
-
-//     const angles = [90, 180, 270];
-//     angles.forEach((angle) => {
-//         const radians = ((fixedAngleDegrees + angle) * Math.PI) / 180;
-//         const lookX = -currentZoom * Math.sin(radians);
-//         const lookZ = -currentZoom * Math.cos(radians);
-
-//         const lookImage = document.createElement("a-image");
-//         lookImage.setAttribute("src", "./Assets/look-for1.png");
-//         lookImage.setAttribute("position", { x: lookX, y: 0, z: lookZ });
-//         lookImage.setAttribute("rotation", {
-//             x: 0,
-//             y: angle + fixedAngleDegrees,
-//             z: 0,
-//         });
-//         lookImage.setAttribute("scale", "14 4 1");
-//         lookImage.setAttribute("visible", "true");
-//         scene.appendChild(lookImage);
-//         lookImages.push(lookImage);
-//     });
-// }
 
 function isIOS() {
     return /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
@@ -663,101 +637,7 @@ function isAndroid() {
     return /Android/.test(navigator.userAgent);
 }
 
-// DISABLED: Touch handlers were causing conflicts with static hotspots
-// These handlers were designed for movable media, not static AR hotspots
-/*
-document.addEventListener("touchstart", function (e) {
-    e.preventDefault(); // Prevent default touch actions
-    if (e.touches.length === 2) {
-        initialPinchDistance = getPinchDistance(e);
-        isPinching = true; // Set the flag to indicate a pinch gesture
-    } else if (e.touches.length === 1) {
-        isDragging = true;
-        initialTouchX = e.touches[0].pageX;
-        initialTouchY = e.touches[0].pageY;
-        initialFixedAngle = fixedAngleDegrees;
-        if (mediaEntity) {
-            currentY = mediaEntity.getAttribute("position").y;
-        }
-        dragAxis = null; // Reset drag axis
-    }
-});
-*/
 
-// DISABLED: Touch handlers were causing conflicts with static hotspots
-/*
-document.addEventListener("touchmove", function (e) {
-    if (e.touches.length === 2 && initialPinchDistance !== null) {
-        e.preventDefault();
-        const currentPinchDistance = getPinchDistance(e);
-        updateZoom(currentPinchDistance);
-    } else if (isDragging && e.touches.length === 1 && !isPinching) {
-        e.preventDefault();
-        const currentTouchX = e.touches[0].pageX;
-        const currentTouchY = e.touches[0].pageY;
-        const deltaX = currentTouchX - initialTouchX;
-        const deltaY = currentTouchY - initialTouchY;
-
-        if (dragAxis === null) {
-            dragAxis = Math.abs(deltaX) > Math.abs(deltaY) ? "x" : "y";
-        }
-
-        if (mediaEntity) {
-            let position = mediaEntity.getAttribute("position");
-
-            if (dragAxis === "x") {
-                fixedAngleDegrees = initialFixedAngle - deltaX * dragSpeedX;
-
-                const radians = (fixedAngleDegrees * Math.PI) / 180;
-                const x = -currentZoom * Math.sin(radians);
-                const z = -currentZoom * Math.cos(radians);
-
-                mediaEntity.setAttribute("position", { x, y: position.y, z });
-                mediaEntity.setAttribute("rotation", `0 ${fixedAngleDegrees} 0`);
-
-                if (frameEntity) {
-                    frameEntity.setAttribute("position", { x, y: position.y, z });
-                    frameEntity.setAttribute("rotation", `0 ${fixedAngleDegrees} 0`);
-                }
-
-                lookImages.forEach((lookImage, index) => {
-                    const angle = (index + 1) * 90;
-                    const lookRadians = ((fixedAngleDegrees + angle) * Math.PI) / 180;
-                    const lookX = -currentZoom * Math.sin(lookRadians);
-                    const lookZ = -currentZoom * Math.cos(lookRadians);
-                    lookImage.setAttribute("position", { x: lookX, y: 0, z: lookZ });
-                    lookImage.setAttribute("rotation", { x: 0, y: angle + fixedAngleDegrees, z: 0 });
-                });
-            } else if (dragAxis === "y") {
-                const adjustedDragSpeedY = dragSpeedY * (currentZoom / 45);
-                const newY = position.y - deltaY * adjustedDragSpeedY;
-                const clampedY = Math.max(minY, Math.min(maxY, newY));
-
-                mediaEntity.setAttribute("position", { x: position.x, y: clampedY, z: position.z });
-
-                if (frameEntity) {
-                    frameEntity.setAttribute("position", { x: position.x, y: clampedY, z: position.z });
-                }
-            }
-
-            initialMediaState.position = { ...mediaEntity.getAttribute("position") };
-            initialMediaState.rotation = { ...mediaEntity.getAttribute("rotation") };
-
-            updateCurrentValues();
-        }
-    }
-}, { passive: false });
-*/
-
-// DISABLED: Touch handlers were causing conflicts with static hotspots
-/*
-document.addEventListener("touchend", function () {
-    initialPinchDistance = null;
-    isDragging = false;
-    isPinching = false;
-    dragAxis = null;
-});
-*/
 
 function getPinchDistance(e) {
     const dx = e.touches[0].pageX - e.touches[1].pageX;
@@ -905,20 +785,20 @@ function updateHotspotVisualState(entity, hotspotId, hotspotIndex) {
     removeHotspotHalo(entity);
     
     if (activatedHotspots.has(hotspotId)) {
-        // Activated hotspot: tinted yellow with full opacity
-        entity.setAttribute('material', 'color', '#FBD86F');
-        entity.setAttribute('material', 'opacity', '1.0');
-        console.log(`Hotspot ${hotspotId}: Activated (yellow, 100% opacity)`);
+        // Activated hotspot: white with 40% opacity
+        entity.setAttribute('material', 'color', 'white');
+        entity.setAttribute('material', 'opacity', '0.2');
+        console.log(`Hotspot ${hotspotId}: Activated (white, 20% opacity)`);
     } else if (canActivateHotspot(hotspotId)) {
-        // Next available hotspot: normal white with glow effect and full opacity
+        // Next available hotspot: normal white with rotating ring and 100% opacity
         entity.setAttribute('material', 'color', 'white');
         entity.setAttribute('material', 'opacity', '1.0');
-        createHotspotHalo(entity);
-        console.log(`Hotspot ${hotspotId}: Active (white, 100% opacity, GLOWING)`);
+        createHotspotRotatingRing(entity);
+        console.log(`Hotspot ${hotspotId}: Active (white, 100% opacity, ROTATING RING)`);
     } else {
-        // Future hotspot: 50% transparent white
+        // Future hotspot: 70% transparent white
         entity.setAttribute('material', 'color', 'white');
-        entity.setAttribute('material', 'opacity', '0.5');
+        entity.setAttribute('material', 'opacity', '0.2');
         console.log(`Hotspot ${hotspotId}: Future (white, 50% opacity)`);
     }
 }
@@ -936,7 +816,7 @@ function resetHotspotSequence() {
         // Remove halo effect and reset to initial state
         removeHotspotHalo(entity);
         entity.setAttribute('material', 'color', 'white');
-        entity.setAttribute('material', 'opacity', '1.0');
+        entity.setAttribute('material', 'opacity', '0.7'); // Reset to 70% opacity for future hotspots
     });
     
     // Re-apply visual states after reset
@@ -999,8 +879,8 @@ function testHotspotStates() {
 // Make test function globally accessible
 window.testHotspotStates = testHotspotStates;
 
-// Function to create animated halo effect around a hotspot
-function createHotspotHalo(entity) {
+// Function to create rotating ring effect around a hotspot
+function createHotspotRotatingRing(entity) {
     // Remove any existing halo first
     removeHotspotHalo(entity);
     
@@ -1008,45 +888,62 @@ function createHotspotHalo(entity) {
     const entityPosition = entity.getAttribute('position');
     const entityScale = entity.getAttribute('scale');
     
-    // Calculate proper halo size based on hotspot scale
-    // Use the actual hotspot dimensions for better matching
+    // Calculate proper ring size based on hotspot scale
     const hotspotSize = Math.max(entityScale.x, entityScale.y);
-    const outerRadius = hotspotSize * 0.55;  // Much smaller outer radius
+    const ringRadius = hotspotSize * 0.5; 
     
-    // Position halos slightly behind the hotspot to avoid Z-depth clashing
-    const haloPosition = {
+    // Position ring slightly in front of the hotspot
+    const ringPosition = {
         x: entityPosition.x,
         y: entityPosition.y,
-        z: entityPosition.z + 0.1  // Move 0.1 units behind the hotspot
+        z: entityPosition.z + 0.1  // Closer to the hotspot for better visibility
     };
     
-    // Create outer halo ring only
-    const outerHalo = document.createElement('a-ring');
-    outerHalo.setAttribute('radius-inner', outerRadius);
-    outerHalo.setAttribute('radius-outer', hotspotSize * 0.7); // Closer to hotspot size
-    outerHalo.setAttribute('position', haloPosition);
-    outerHalo.setAttribute('material', 'color', 'white'); // Changed to white
-    outerHalo.setAttribute('material', 'opacity', '0.5'); // Lower opacity for outer ring
-    outerHalo.setAttribute('material', 'transparent', 'true');
-    outerHalo.setAttribute('rotation', '0 0 90'); // Fixed: No rotation to match icons
-    outerHalo.setAttribute('animation', {
-        property: 'scale',
-        to: '1.08 1.08 1.08', // Even smaller scale animation
-        dur: 1000,
-        easing: 'easeInOutQuad',
-        loop: true,
-        dir: 'alternate'
-    });
-    outerHalo.setAttribute('data-halo-type', 'outer');
-    outerHalo.setAttribute('data-parent-hotspot', entity.getAttribute('data-hotspot-id'));
+    // Create gradient opacity effect using multiple ring segments
+    const segmentCount = 20; // Number of segments for smooth gradient
+    const gradientAngle = 288; // 80% of 360 degrees
     
-    // Add halo to scene
-    scene.appendChild(outerHalo);
+    // Create multiple ring segments for gradient effect
+    for (let i = 0; i < segmentCount; i++) {
+        const segment = document.createElement('a-ring');
+        const angleStart = (i / segmentCount) * gradientAngle;
+        const angleEnd = ((i + 1) / segmentCount) * gradientAngle;
+        
+        // Calculate opacity based on position (100% to 0% over 80% of ring)
+        const opacity = 1.0 - (i / segmentCount);
+        
+        segment.setAttribute('radius-inner', ringRadius * 0.9);
+        segment.setAttribute('radius-outer', ringRadius);
+        segment.setAttribute('position', ringPosition);
+        segment.setAttribute('material', 'color', 'white');
+        segment.setAttribute('material', 'opacity', opacity);
+        segment.setAttribute('material', 'transparent', 'true');
+        segment.setAttribute('rotation', `0 0 ${angleStart}`);
+        segment.setAttribute('theta-start', '0');
+        segment.setAttribute('theta-length', `${angleEnd - angleStart}`);
+        
+        // Add rotation animation to the segment (counter-clockwise)
+        segment.setAttribute('animation', {
+            property: 'rotation',
+            to: `0 0 ${-360 + angleStart}`,
+            dur: 2000,
+            easing: 'linear',
+            loop: true
+        });
+        
+        segment.setAttribute('data-halo-type', 'rotating-ring');
+        segment.setAttribute('data-parent-hotspot', entity.getAttribute('data-hotspot-id'));
+        
+        scene.appendChild(segment);
+        
+        // Store reference to segment
+        if (!entity.haloRings) {
+            entity.haloRings = [];
+        }
+        entity.haloRings.push(segment);
+    }
     
-    // Store reference to halo on the entity
-    entity.haloRings = [outerHalo];
-    
-    console.log(`Created white halo effect for hotspot ${entity.getAttribute('data-hotspot-id')} with size ${hotspotSize}`);
+    console.log(`Created gradient rotating ring effect for hotspot ${entity.getAttribute('data-hotspot-id')} with ${segmentCount} segments`);
 }
 
 // Function to remove halo effect from a hotspot
