@@ -329,10 +329,10 @@
                 <source src="./Assets/Videos/Caesar_a.webm" type="video/webm">
             </video>
 
-                       <!-- Video for target 2 (nero) -->
-                       <video id="video-nero" preload="auto" response-type="arraybuffer" crossorigin="anonymous" webkit-playsinline playsinline muted>
-                        <source src="./Assets/Videos/Nero.mp4" type="video/mp4">
-                    </video>
+            <!-- Video for target 2 (nero) -->
+            <video id="video-nero" preload="auto" response-type="arraybuffer" crossorigin="anonymous" webkit-playsinline playsinline muted>
+                    <source src="./Assets/Videos/Nero.mp4" type="video/mp4">
+            </video>
         
                 
                     <!-- Video for target 3 (silenus) -->
@@ -399,7 +399,7 @@
             <a-plane id="videooverlay-nero" 
                 material="shader: transparent-video; src: #video-nero; transparent: true; opacity: 0"
                 animation__fadein="startEvents: fadein-nero; property: material.opacity; from: 0; to: 1; dur: 500;" 
-                height="1.5" width="1.5"
+                height="1.4" width="0.8"
                 animation__fadeout="startEvents: fadeout-nero; property: material.opacity; from: 1; to: 0; dur: 500;">
             </a-plane>
         </a-entity>

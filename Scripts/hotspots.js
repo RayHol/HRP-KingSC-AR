@@ -2162,14 +2162,14 @@ function handleMindarTargetFound(hotspotId) {
             
             // Wait for video to be loaded
             video.addEventListener('loadeddata', () => {
-                console.log(`✅ Video loaded, calling playVideo function...`);
+                console.log(`Video loaded, calling playVideo function...`);
                 playVideo();
             }, { once: true });
             return;
         }
         
         // If video is ready, play immediately
-        console.log(`✅ Video is ready (readyState: ${video.readyState}), calling playVideo function...`);
+        console.log(`Video is ready (readyState: ${video.readyState}), calling playVideo function...`);
         playVideo();
     } else {
         console.error(`Video element not found for hotspot: ${hotspotId}`);
@@ -2258,26 +2258,26 @@ function activateHotspotWithMindAR(hotspotId, entity) {
 
 // Test function to manually test video playback
 function testVideoPlayback(hotspotId = 'romulus') {
-    console.log(`🧪 Testing video playback for: ${hotspotId}`);
+    console.log(`Testing video playback for: ${hotspotId}`);
     const videoId = `video-${hotspotId}`;
     const video = document.getElementById(videoId);
     
     if (video) {
-        console.log(`🧪 Video element found: ${videoId}`);
-        console.log(`🧪 Video readyState: ${video.readyState}`);
-        console.log(`🧪 Video paused: ${video.paused}`);
-        console.log(`🧪 Video muted: ${video.muted}`);
+        console.log(`Video element found: ${videoId}`);
+        console.log(`Video readyState: ${video.readyState}`);
+        console.log(`Video paused: ${video.paused}`);
+        console.log(`Video muted: ${video.muted}`);
         
         // Try to play the video
         video.currentTime = 0;
         video.muted = false;
         video.play().then(() => {
-            console.log(`🧪 ✅ Video play test successful!`);
+            console.log(`Video play test successful!`);
         }).catch(error => {
-            console.error(`🧪 ❌ Video play test failed:`, error);
+            console.error(`Video play test failed:`, error);
         });
     } else {
-        console.error(`🧪 ❌ Video element not found: ${videoId}`);
+        console.error(`Video element not found: ${videoId}`);
     }
 }
 
