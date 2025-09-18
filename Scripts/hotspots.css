@@ -407,20 +407,19 @@ body {
     pointer-events: none; /* Don't interfere with touch/click events */
 }
 
-/* Crosshair circle - smaller and simpler */
-.crosshair-circle {
-    width: 24px;
-    height: 24px;
-    border: 2px solid #FBD86F;
-    border-radius: 50%;
-    opacity: 0.8;
+/* Crosshair image - scanner icon */
+.crosshair-image {
+    width: 32px;
+    height: 32px;
+    opacity: 0.9;
     animation: targetPulse 2s ease-in-out infinite;
-    transition: border-color 0.3s ease; /* Smooth transition for color change */
+    transition: filter 0.3s ease; /* Smooth transition for color change */
+    filter: hue-rotate(45deg) saturate(1.2); /* Yellow tint for default state */
 }
 
 /* Green color when hovering over hotspots */
-.center-target.hotspot-hover .crosshair-circle {
-    border-color: #4CAF50; /* Green color */
+.center-target.hotspot-hover .crosshair-image {
+    filter: hue-rotate(120deg) saturate(1.5); /* Green tint when hovering */
 }
 
 /* Subtle pulse animation for the center target */
