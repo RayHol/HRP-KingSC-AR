@@ -1755,6 +1755,12 @@ function initializeMindAR() {
         hasUserInteracted = true;
         console.log('User interaction set for MindAR target detection');
 
+        // Create a synthetic user interaction event
+        const syntheticEvent = new Event('click', { bubbles: true });
+        document.body.dispatchEvent(syntheticEvent);
+        
+        console.log('Synthetic user interaction created for iOS video autoplay');
+
         const targetStatus = document.getElementById('mindar-target-status');
         if (targetStatus) {
             targetStatus.textContent = 'Yes';
