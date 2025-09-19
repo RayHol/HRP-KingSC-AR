@@ -1955,6 +1955,47 @@ function handleMindarTargetFound(hotspotId) {
         // Update debug UI with audio information
         updateMindarDebugUI(hotspotId, video);
         
+        // Adjust video plane dimensions for webm format on Android
+        const adjustVideoPlaneForFormat = (hotspotId, video) => {
+            const videoPlane = document.getElementById(`videooverlay-${hotspotId}`);
+            if (!videoPlane) return;
+            
+            // Check if video is webm format
+            const isWebm = video.src && video.src.includes('.webm');
+            const isAndroid = /Android/i.test(navigator.userAgent);
+            
+            if (isWebm && isAndroid) {
+                console.log(`📱 Adjusting video plane dimensions for webm on Android: ${hotspotId}`);
+                
+                // Store original dimensions
+                const originalWidth = videoPlane.getAttribute('width');
+                const originalHeight = videoPlane.getAttribute('height');
+                
+                // Apply webm-specific adjustments (increase width to compensate for squashing)
+                const webmWidth = parseFloat(originalWidth) * 1.3; // 30% wider
+                const webmHeight = originalHeight; // Keep height the same
+                
+                videoPlane.setAttribute('width', webmWidth);
+                videoPlane.setAttribute('height', webmHeight);
+                
+                console.log(`📱 Webm adjustment applied - Width: ${originalWidth} → ${webmWidth}, Height: ${originalHeight} → ${webmHeight}`);
+                
+                // Store original dimensions for restoration
+                videoPlane.setAttribute('data-original-width', originalWidth);
+                videoPlane.setAttribute('data-original-height', originalHeight);
+            } else if (!isWebm && isAndroid) {
+                // Restore original dimensions for mp4 on Android
+                const originalWidth = videoPlane.getAttribute('data-original-width');
+                const originalHeight = videoPlane.getAttribute('data-original-height');
+                
+                if (originalWidth && originalHeight) {
+                    videoPlane.setAttribute('width', originalWidth);
+                    videoPlane.setAttribute('height', originalHeight);
+                    console.log(`📱 Restored original dimensions for mp4: ${hotspotId}`);
+                }
+            }
+        };
+
         // Simple video playback function
         const playVideo = () => {
             console.log(`=== PLAYING VIDEO FOR ${hotspotId.toUpperCase()} ===`);
@@ -1965,6 +2006,9 @@ function handleMindarTargetFound(hotspotId) {
             console.log(`Video volume before play: ${video.volume}`);
             console.log(`Video duration: ${video.duration}`);
             console.log(`Video currentTime: ${video.currentTime}`);
+            
+            // Adjust video plane dimensions for webm format
+            adjustVideoPlaneForFormat(hotspotId, video);
             
             // Reset video to beginning
             video.currentTime = 0;
@@ -2083,6 +2127,19 @@ function handleMindarTargetFound(hotspotId) {
 // Handle video ended
 function handleVideoEnded(hotspotId) {
     console.log(`Video ended for hotspot: ${hotspotId}`);
+    
+    // Restore original video plane dimensions
+    const videoPlane = document.getElementById(`videooverlay-${hotspotId}`);
+    if (videoPlane) {
+        const originalWidth = videoPlane.getAttribute('data-original-width');
+        const originalHeight = videoPlane.getAttribute('data-original-height');
+        
+        if (originalWidth && originalHeight) {
+            videoPlane.setAttribute('width', originalWidth);
+            videoPlane.setAttribute('height', originalHeight);
+            console.log(`📱 Restored original video plane dimensions for: ${hotspotId}`);
+        }
+    }
     
     // Hide MindAR scene
     hideMindARScene();
