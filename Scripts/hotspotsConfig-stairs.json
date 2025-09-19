@@ -79,7 +79,7 @@
             }
         ]
     },
-    "furie": {
+    "furies": {
         "common": {
             "scale": "30 30 1",
             "rotation": "0 0 0",
@@ -92,7 +92,7 @@
                 "type": "image",
                 "url": "./Assets/hotspot-icons/Asset 10.png",
                 "frameUrl": "./Assets/hotspot-icons/Asset 10.png",
-                "info": "Furie",
+                "info": "Furies",
                 "audioUrl": "",
                 "link": "",
                 "description": ""

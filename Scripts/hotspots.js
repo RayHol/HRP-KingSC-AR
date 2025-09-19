@@ -1558,7 +1558,7 @@ const hotspotToBadgeMapping = {
     'caesar': 'caeser',
     'nero': 'nero',
     'silenus': 'silenus',
-    'furie': 'furies', // Note: config uses 'furie' but badge uses 'furies'
+    'furies': 'furies', // Note: config uses 'furie' but badge uses 'furies'
     'herakles': 'herakles',
     'alexander': 'alexander',
     'diana': 'diana'
@@ -1926,7 +1926,7 @@ function handleMindarTargetFound(hotspotId) {
         'caesar': 'video-caesar',
         'nero': 'video-nero',
         'silenus': 'video-silenus',
-        'furie': 'video-furies', // Config uses 'furie' but video element is 'furies'
+        'furies': 'video-furies', // Config uses 'furie' but video element is 'furies'
         'herakles': 'video-herakles',
         'alexander': 'video-alexander',
         'diana': 'video-diana'
