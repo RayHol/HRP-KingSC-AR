@@ -1781,6 +1781,9 @@ function initializeMindAR() {
 
 // Show MindAR scene and activate target detection
 function showMindARScene(hotspotId) {
+    hasUserInteracted = true;
+    console.log(`User interaction set for MindAR video: ${hotspotId}`);
+
     if (!mindarScene) {
         console.error('MindAR scene not initialized');
         return;
@@ -1804,8 +1807,6 @@ function showMindARScene(hotspotId) {
     mindarScene.classList.add('show');
     
     isMindarActive = true;
-    
-    // No loading indicator needed - MindAR will handle target detection automatically
     
     console.log(`MindAR scene activated for hotspot: ${hotspotId}`);
 }
