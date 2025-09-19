@@ -1750,6 +1750,11 @@ function initializeMindAR() {
     // Add MindAR event listeners for debugging
     mindarScene.addEventListener('targetFound', function(event) {
         console.log('MindAR target found:', event.detail);
+
+        // Set user interaction flag for iOS video autoplay
+        hasUserInteracted = true;
+        console.log('User interaction set for MindAR target detection');
+
         const targetStatus = document.getElementById('mindar-target-status');
         if (targetStatus) {
             targetStatus.textContent = 'Yes';
@@ -1781,9 +1786,7 @@ function initializeMindAR() {
 
 // Show MindAR scene and activate target detection
 function showMindARScene(hotspotId) {
-    hasUserInteracted = true;
-    console.log(`User interaction set for MindAR video: ${hotspotId}`);
-
+  
     if (!mindarScene) {
         console.error('MindAR scene not initialized');
         return;
