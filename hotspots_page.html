@@ -285,9 +285,7 @@
     </div>
 
     <!-- A-Frame Scene -->
-    <a-scene id="ar-scene" 
-         xr-mode-ui="enabled: false"
-       
+    <a-scene id="ar-scene" xr-mode-ui="enabled: false" 
          arjs="debugUIEnabled: false; far: 100000; near: 0.001; maxDetectionRate: 60; 
                 sourceWidth: 1920; sourceHeight: 1080; 
                 sourceType: webcam; 
@@ -314,7 +312,6 @@
         color-space="sRGB"
         renderer="colorManagement: true, physicallyCorrectLights"
         vr-mode-ui="enabled: false"
-        embedded="true"
         device-orientation-permission-ui="enabled: false"
         style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 2000;">
         
@@ -494,9 +491,50 @@
     <script>
     document.addEventListener("DOMContentLoaded", function() {
         const arScene = document.getElementById('ar-scene');
+        const mindarScene = document.getElementById('mindar-scene');
         
         // Automatically display the AR scene
         arScene.style.display = 'block';
+        
+        // Hide VR button on both scenes for Android compatibility
+        function hideVRButton(scene) {
+            if (scene) {
+                // Wait for A-Frame to fully initialize
+                scene.addEventListener('loaded', function() {
+                    // Remove VR button elements
+                    const vrButtons = scene.querySelectorAll('.a-enter-vr, [vr-mode-ui], a-entity[vr-mode-ui]');
+                    vrButtons.forEach(button => {
+                        if (button.parentNode) {
+                            button.parentNode.removeChild(button);
+                        }
+                    });
+                    
+                    // Also try to disable VR mode UI programmatically
+                    if (scene.components['vr-mode-ui']) {
+                        scene.components['vr-mode-ui'].enabled = false;
+                    }
+                });
+                
+                // Fallback: Check periodically for VR buttons and remove them
+                const checkAndRemoveVR = () => {
+                    const vrButtons = scene.querySelectorAll('.a-enter-vr, [vr-mode-ui], a-entity[vr-mode-ui]');
+                    vrButtons.forEach(button => {
+                        if (button.parentNode) {
+                            button.parentNode.removeChild(button);
+                        }
+                    });
+                };
+                
+                // Check immediately and then every 500ms for the first 5 seconds
+                checkAndRemoveVR();
+                const interval = setInterval(checkAndRemoveVR, 500);
+                setTimeout(() => clearInterval(interval), 5000);
+            }
+        }
+        
+        // Hide VR buttons on both scenes
+        hideVRButton(arScene);
+        hideVRButton(mindarScene);
         
         // Don't initialize hotspots immediately - let intro video control this
         // The intro video will call initializeHotspots() when it's closed
