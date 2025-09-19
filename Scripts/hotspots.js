@@ -1792,11 +1792,14 @@ function initializeMindAR() {
 
 // Show MindAR scene and activate target detection
 function showMindARScene(hotspotId) {
-  
     if (!mindarScene) {
         console.error('MindAR scene not initialized');
         return;
     }
+    
+    // Set user interaction flag for iOS video autoplay
+    hasUserInteracted = true;
+    console.log(`User interaction set for MindAR video: ${hotspotId}`);
     
     // Hide debug status (keep it hidden)
     const debugStatus = document.getElementById('mindar-debug-status');
@@ -1809,6 +1812,22 @@ function showMindARScene(hotspotId) {
     const mainScene = document.getElementById('ar-scene');
     if (mainScene) {
         mainScene.style.display = 'none';
+    }
+    
+    // Enable MindAR target detection
+    mindarScene.setAttribute('mindar-image', 'enabled', true);
+    
+    // Hide ALL target entities first
+    const allTargets = document.querySelectorAll('[mindar-image-target]');
+    allTargets.forEach(target => {
+        target.style.display = 'none';
+    });
+    
+    // Show ONLY the specific target for this hotspot
+    const targetEntity = document.getElementById(`target-${hotspotId}`);
+    if (targetEntity) {
+        targetEntity.style.display = 'block';
+        console.log(`Enabled target detection for: ${hotspotId}`);
     }
     
     // Show MindAR scene
