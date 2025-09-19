@@ -2303,3 +2303,24 @@ document.addEventListener("DOMContentLoaded", function() {
         initializeMindAR();
     }, 1000);
 }); 
+
+function recreateMindARScene() {
+    // Get the original MindAR scene HTML from the page
+    const originalScene = document.querySelector('#mindar-scene');
+    if (originalScene) {
+        // Clone the original scene
+        mindarScene = originalScene.cloneNode(true);
+        
+        // Add it back to the DOM
+        document.body.appendChild(mindarScene);
+        
+        // Reinitialize MindAR event listeners
+        initializeMindAR();
+        
+        console.log('MindAR scene recreated successfully');
+        return true;
+    }
+    
+    console.error('Could not recreate MindAR scene - original not found');
+    return false;
+}
