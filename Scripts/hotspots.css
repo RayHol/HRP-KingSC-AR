@@ -2176,32 +2176,3 @@ body {
         padding: 8px 16px;
     }
 }
-
-/* Hide VR button on Android devices */
-@media screen and (max-width: 1024px) {
-    a-scene[embedded] a-entity[vr-mode-ui] {
-        display: none !important;
-    }
-    
-    /* Alternative selector for VR button */
-    a-scene[embedded] .a-enter-vr-button {
-        display: none !important;
-    }
-    
-    /* Hide any VR-related UI elements */
-    a-scene[embedded] [vr-mode-ui] {
-        display: none !important;
-    }
-}
-
-/* Additional Android-specific VR button hiding */
-@media screen and (max-width: 1024px) and (orientation: portrait) {
-    a-scene[embedded] a-entity[vr-mode-ui],
-    a-scene[embedded] .a-enter-vr-button,
-    a-scene[embedded] [vr-mode-ui] {
-        display: none !important;
-        visibility: hidden !important;
-        opacity: 0 !important;
-        pointer-events: none !important;
-    }
-} 
