@@ -53,6 +53,21 @@ let currentFixedAngleDisplay;
 let currentYPositionDisplay;
 let currentZDepthDisplay;
 
+// Map your hotspot ids to MindAR target indices
+const targetIndexById = {
+    romulus: 0,
+    caesar: 1,
+    nero: 2,
+    silenus: 3,
+    furies: 4,
+    herakles: 5,
+    alexander: 6,
+    diana: 7
+  };
+  
+  // Track which indices are finished (optional, useful if you never want them again)
+  const completedTargets = new Set();
+
 function saveAngle(hotspot, angle) {
     const savedAngles = JSON.parse(localStorage.getItem('savedHotspotAngles')) || {};
     savedAngles[hotspot] = angle;
@@ -1749,24 +1764,37 @@ function initializeMindAR() {
     
     // Add MindAR event listeners for debugging
     mindarScene.addEventListener('targetFound', function(event) {
+        const expectedId = currentActiveHotspotId;
+        if (!expectedId) {
+            console.log('No active hotspot, ignoring target');
+            return;
+        }
+    
+        const targetEntity = document.querySelector(
+          `[mindar-image-target][data-hotspot-id="${expectedId}"]`
+        );
+        if (!targetEntity) {
+            console.log('Ignoring target, not the current hotspot');
+            return;
+        }
+    
+        // === existing logic runs only for the active hotspot ===
         console.log('MindAR target found:', event.detail);
-
-        // Set user interaction flag for iOS video autoplay
+    
         hasUserInteracted = true;
         console.log('User interaction set for MindAR target detection');
-
-        // Create a synthetic user interaction event
+    
         const syntheticEvent = new Event('click', { bubbles: true });
         document.body.dispatchEvent(syntheticEvent);
-        
         console.log('Synthetic user interaction created for iOS video autoplay');
-
+    
         const targetStatus = document.getElementById('mindar-target-status');
         if (targetStatus) {
             targetStatus.textContent = 'Yes';
             targetStatus.style.color = 'green';
         }
     });
+    
     
     mindarScene.addEventListener('targetLost', function(event) {
         console.log('MindAR target lost:', event.detail);
@@ -1793,6 +1821,7 @@ function initializeMindAR() {
 // Show MindAR scene and activate target detection
 function showMindARScene(hotspotId) {
     if (!mindarScene) {
+        currentActiveHotspotId = hotspotId;
         console.error('MindAR scene not initialized');
         return;
     }
@@ -1841,6 +1870,7 @@ function showMindARScene(hotspotId) {
 
 // Hide MindAR scene and return to main scene
 function hideMindARScene() {
+    currentActiveHotspotId = null;
     if (!mindarScene) {
         return;
     }
