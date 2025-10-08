@@ -1960,6 +1960,39 @@ function updateMindarDebugUI(hotspotId, video, status = null) {
     audioDebugElement.innerHTML = audioInfo;
 }
 
+// Prevent video loading for completed hotspots
+function preventVideoLoadingForCompletedHotspot(hotspotId) {
+    console.log(`🚫 Preventing future video loading for completed hotspot: ${hotspotId}`);
+    
+    // Map hotspot IDs to video element IDs
+    const videoIdMapping = {
+        'romulus': 'video-romulus',
+        'caesar': 'video-caesar',
+        'nero': 'video-nero',
+        'silenus': 'video-silenus',
+        'furies': 'video-furies',
+        'herakles': 'video-herakles',
+        'alexander': 'video-alexander',
+        'diana': 'video-diana'
+    };
+    
+    const videoId = videoIdMapping[hotspotId] || `video-${hotspotId}`;
+    const video = document.getElementById(videoId);
+    
+    if (video) {
+        // Change preload to none to prevent any future loading
+        video.setAttribute('preload', 'none');
+        console.log(`✅ Video preload disabled for ${hotspotId}`);
+        
+        // Also remove the video source to prevent any loading
+        const sources = video.querySelectorAll('source');
+        sources.forEach(source => {
+            source.remove();
+        });
+        console.log(`✅ Video sources removed for ${hotspotId}`);
+    }
+}
+
 // Handle MindAR target lost
 function handleMindarTargetLost(hotspotId) {
     console.log(`🎯 MindAR target lost for hotspot: ${hotspotId}`);
@@ -1994,6 +2027,12 @@ function handleMindarTargetLost(hotspotId) {
 // Handle MindAR target detection
 function handleMindarTargetFound(hotspotId) {
     console.log(`🎯 MindAR target detected for hotspot: ${hotspotId}`);
+    
+    // Check if this hotspot has already been completed
+    if (activatedHotspots.has(hotspotId)) {
+        console.log(`🚫 Hotspot ${hotspotId} already completed - preventing video loading and playback`);
+        return;
+    }
     
     // Map hotspot IDs to video element IDs (handle naming inconsistencies)
     const videoIdMapping = {
@@ -2232,6 +2271,9 @@ function handleVideoEnded(hotspotId) {
     activatedHotspots.add(hotspotId);
     console.log(`Hotspot ${hotspotId} marked as completed! Total activated: ${activatedHotspots.size}/${currentHotspotOrder.length}`);
     
+    // Prevent future video loading for this hotspot
+    preventVideoLoadingForCompletedHotspot(hotspotId);
+    
     // Refresh all hotspot visual states to show completed status
     refreshAllHotspotVisualStates();
     
@@ -2286,7 +2328,7 @@ function hideTargetFoundIndicator() {
 // Modified activateHotspot function to trigger MindAR
 function activateHotspotWithMindAR(hotspotId, entity) {
     if (activatedHotspots.has(hotspotId)) {
-        console.log(`Hotspot ${hotspotId} already activated - skipping`);
+        console.log(`Hotspot ${hotspotId} already activated - skipping MindAR activation`);
         return; // Already activated - don't allow repeat detection
     }
     
