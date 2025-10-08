@@ -417,6 +417,45 @@ body {
     filter: hue-rotate(45deg) saturate(1.2); /* Yellow tint for default state */
 }
 
+/* Loading ring around crosshair */
+.loading-ring {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 32px;
+    height: 32px;
+    transform: translate(-50%, -50%);
+    border: 3px solid transparent;
+    border-top: 3px solid rgba(255, 255, 255, 0.8);
+    border-radius: 50%;
+    animation: loadingSpin 1s linear infinite;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+}
+
+/* Show loading ring when loading and hide crosshair */
+.center-target.loading .loading-ring {
+    opacity: 1;
+}
+
+.center-target.loading .crosshair-image {
+    opacity: 0 !important;
+    display: none !important;
+}
+
+/* Hide crosshair during video playback */
+.center-target.video-playing .crosshair-image {
+    opacity: 0 !important;
+    display: none !important;
+}
+
+/* Loading ring animation */
+@keyframes loadingSpin {
+    0% { transform: translate(-50%, -50%) rotate(0deg); }
+    100% { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
 /* Green color when hovering over hotspots */
 .center-target.hotspot-hover .crosshair-image {
     filter: hue-rotate(120deg) saturate(1.5); /* Green tint when hovering */

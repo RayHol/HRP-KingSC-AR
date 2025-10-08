@@ -1960,6 +1960,48 @@ function updateMindarDebugUI(hotspotId, video, status = null) {
     audioDebugElement.innerHTML = audioInfo;
 }
 
+// Show loading ring around center target
+function showLoadingRing() {
+    const centerTarget = document.getElementById('center-target');
+    if (centerTarget) {
+        centerTarget.classList.add('loading');
+        console.log('🔄 Loading ring shown');
+    }
+}
+
+// Hide loading ring around center target
+function hideLoadingRing() {
+    const centerTarget = document.getElementById('center-target');
+    if (centerTarget) {
+        centerTarget.classList.remove('loading');
+        console.log('✅ Loading ring hidden');
+    }
+}
+
+// Show video playing state (hide crosshair)
+function showVideoPlaying() {
+    const centerTarget = document.getElementById('center-target');
+    if (centerTarget) {
+        centerTarget.classList.add('video-playing');
+        console.log('🎬 Video playing state shown - crosshair hidden');
+        console.log('🎬 Center target classes:', centerTarget.className);
+    } else {
+        console.error('❌ Center target element not found!');
+    }
+}
+
+// Hide video playing state (show crosshair)
+function hideVideoPlaying() {
+    const centerTarget = document.getElementById('center-target');
+    if (centerTarget) {
+        centerTarget.classList.remove('video-playing');
+        console.log('🎯 Video playing state hidden - crosshair shown');
+        console.log('🎯 Center target classes:', centerTarget.className);
+    } else {
+        console.error('❌ Center target element not found!');
+    }
+}
+
 // Prevent video loading for completed hotspots
 function preventVideoLoadingForCompletedHotspot(hotspotId) {
     console.log(`🚫 Preventing future video loading for completed hotspot: ${hotspotId}`);
@@ -2016,6 +2058,9 @@ function handleMindarTargetLost(hotspotId) {
         console.log(`⏸️ Pausing video for lost target: ${hotspotId}`);
         video.pause();
         
+        // Hide video playing state (show crosshair)
+        hideVideoPlaying();
+        
         // Trigger fade-out animation
         const videoOverlay = document.getElementById(`videooverlay-${hotspotId}`);
         if (videoOverlay) {
@@ -2068,6 +2113,12 @@ function handleMindarTargetFound(hotspotId) {
             video.play().then(() => {
                 console.log(`✅ Video resumed successfully for hotspot: ${hotspotId}`);
                 
+                // Hide loading ring when video resumes
+                hideLoadingRing();
+                
+                // Show video playing state (hide crosshair)
+                showVideoPlaying();
+                
                 // Trigger fade-in animation
                 const videoOverlay = document.getElementById(`videooverlay-${hotspotId}`);
                 if (videoOverlay) {
@@ -2075,6 +2126,8 @@ function handleMindarTargetFound(hotspotId) {
                 }
             }).catch(error => {
                 console.error(`❌ Video resume failed for ${hotspotId}:`, error);
+                // Hide loading ring on error
+                hideLoadingRing();
             });
             return;
         }
@@ -2172,6 +2225,12 @@ function handleMindarTargetFound(hotspotId) {
                     console.log(`Video muted: ${video.muted}`);
                     console.log(`Video volume: ${video.volume}`);
                     
+                    // Hide loading ring when video starts playing
+                    hideLoadingRing();
+                    
+                    // Show video playing state (hide crosshair)
+                    showVideoPlaying();
+                    
                     // Try to unmute after video starts playing (iOS workaround)
                     if (hasUserInteracted) {
                         setTimeout(() => {
@@ -2200,11 +2259,20 @@ function handleMindarTargetFound(hotspotId) {
                     console.error(`Error details:`, error.message);
                     updateMindarDebugUI(hotspotId, video, 'Play failed: ' + error.message);
                     
+                    // Hide loading ring on error
+                    hideLoadingRing();
+                    
                     // Try fallback: play muted first, then unmute if user has interacted
                     console.log('Trying fallback: play muted first');
                     video.muted = true;
                     video.play().then(() => {
                         console.log('Video playing muted, attempting to unmute...');
+                        
+                        // Hide loading ring when fallback succeeds
+                        hideLoadingRing();
+                        
+                        // Show video playing state (hide crosshair)
+                        showVideoPlaying();
                         
                         // Trigger fade-in animation
                         const videoOverlay = document.getElementById(`videooverlay-${hotspotId}`);
@@ -2241,6 +2309,9 @@ function handleMindarTargetFound(hotspotId) {
             }
         };
         
+        // Show loading ring while video is loading
+        showLoadingRing();
+        
         // Ensure video is loaded before playing
         if (video.readyState < 2) {
             console.log(`⏳ Video not ready (readyState: ${video.readyState}), loading...`);
@@ -2266,6 +2337,9 @@ function handleMindarTargetFound(hotspotId) {
 // Handle video ended
 function handleVideoEnded(hotspotId) {
     console.log(`Video ended for hotspot: ${hotspotId}`);
+    
+    // Hide video playing state (show crosshair)
+    hideVideoPlaying();
     
     // Mark the hotspot as completed immediately
     activatedHotspots.add(hotspotId);
