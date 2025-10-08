@@ -2523,7 +2523,15 @@ function handleMindarTargetFound(hotspotId) {
             console.log(`Calling video.play() for ${hotspotId}...`);
             const playPromise = video.play();
             
-            // Don't set up tap-to-play fallback automatically - only when play fails
+            // Set up tap-to-play fallback for iOS if video doesn't start automatically
+            if (isIOS) {
+                setTimeout(() => {
+                    if (video.paused) {
+                        console.log(`🍎 iOS: Video didn't start automatically - showing tap-to-play`);
+                        addTapToPlayFallback(video, hotspotId);
+                    }
+                }, 1500); // Wait 1.5 seconds to see if video starts automatically
+            }
             
             if (playPromise !== undefined) {
                 playPromise.then(() => {
@@ -2573,6 +2581,13 @@ function handleMindarTargetFound(hotspotId) {
                     
                     // Hide loading ring on error
                     hideLoadingRing();
+                    
+                    // On iOS, show tap-to-play when automatic play fails
+                    if (isIOS) {
+                        console.log(`🍎 iOS: Automatic play failed - showing tap-to-play`);
+                        addTapToPlayFallback(video, hotspotId);
+                        return; // Don't try muted fallback on iOS, let user tap
+                    }
                     
                     // Try fallback: play muted first, then unmute if user has interacted
                     console.log('Trying fallback: play muted first');
