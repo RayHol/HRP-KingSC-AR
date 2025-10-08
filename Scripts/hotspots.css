@@ -1842,11 +1842,24 @@ body {
     display: none !important;
 }
 
+/* Override for dynamically created transcript button in overlay */
+#ui-overlay .ui-button.transcript-button {
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+
 /* Show transcript button when .show class is added */
 .ui-button.transcript-button.show {
     display: flex !important;
     visibility: visible !important;
     opacity: 1 !important;
+}
+
+/* Hide original transcript button when cloned to overlay */
+.ui-button.transcript-button.cloned {
+    display: none !important;
+    visibility: hidden !important;
 }
 
 /* Ensure all UI buttons are always on top and clickable */
@@ -1978,16 +1991,29 @@ a-scene canvas {
     background: rgba(0, 0, 0, 0.8); /* Semi-transparent black like badges/help */
     color: white;
     padding: 20px;
-    margin: 20px;
-    border-radius: 12px; /* Match other overlays */
-    max-width: 90%;
-    max-height: 70%;
+    margin: 0; /* Remove margins for full width */
+    border-radius: 12px 12px 0 0; /* Rounded corners only on top */
+    width: 100%; /* Full width */
+    max-width: 100%; /* Override max-width */
+    max-height: 80%; /* Increase height since we have more space */
     overflow-y: auto;
     transform: translateY(100%);
     transition: transform 0.3s ease-out;
     position: relative;
     backdrop-filter: blur(10px); /* Match other overlays */
-    border: 1px solid rgba(255, 255, 255, 0.1); /* Subtle border like other overlays */
+    border: none; /* Remove border completely */
+}
+
+.transcript-title {
+    color: var(--foreground-primary-inverse, #FAFAFA);
+    font-family: "Open Sans Condensed", "Arial Narrow", Arial, sans-serif;
+    font-size: 24px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 130%; /* 31.2px */
+    text-transform: uppercase;
+    margin-bottom: 16px;
+    text-align: left;
 }
 
 .transcript-text {
@@ -2027,12 +2053,12 @@ a-scene canvas {
 /* Mobile responsive for transcript */
 @media (max-width: 768px) {
     .transcript-content {
-        margin: 10px;
-        max-width: 95%;
-        max-height: 80%;
+        margin: 0; /* Keep full width on mobile */
+        max-width: 100%; /* Full width on mobile */
+        max-height: 85%; /* Slightly more height on mobile */
         padding: 15px;
     }
-    
+
     .transcript-text {
         font-size: 14px;
     }

@@ -1513,8 +1513,10 @@ function showTranscriptOverlay(hotspotId) {
     
     // Update content
     const transcriptContent = transcriptOverlay.querySelector('.transcript-content');
+    const transcriptTitle = transcriptOverlay.querySelector('.transcript-title');
     const transcriptText = transcriptOverlay.querySelector('.transcript-text');
     
+    transcriptTitle.textContent = hotspotsConfig[hotspotId].media[0].info;
     transcriptText.textContent = description;
     
     // Show overlay with slide-up animation
@@ -1533,6 +1535,9 @@ function createTranscriptOverlay() {
     const content = document.createElement('div');
     content.className = 'transcript-content';
     
+    const title = document.createElement('div');
+    title.className = 'transcript-title';
+    
     const text = document.createElement('div');
     text.className = 'transcript-text';
     
@@ -1541,6 +1546,7 @@ function createTranscriptOverlay() {
     closeBtn.innerHTML = '✕';
     
     content.appendChild(closeBtn);
+    content.appendChild(title);
     content.appendChild(text);
     overlay.appendChild(content);
     document.body.appendChild(overlay);
@@ -1587,34 +1593,25 @@ function updateBadgesReplayButton(isHoveringHotspot) {
 
 // Show/hide transcript button
 function showTranscriptButton(show = true) {
-    const transcriptBtn = document.getElementById('transcript-btn');
-    console.log(`📝 showTranscriptButton called with show=${show}, button found:`, !!transcriptBtn);
-    if (transcriptBtn) {
-        // Try multiple approaches to ensure the button shows
-        if (show) {
-            transcriptBtn.style.setProperty('display', 'flex', 'important');
-            transcriptBtn.style.setProperty('visibility', 'visible', 'important');
-            transcriptBtn.style.setProperty('opacity', '1', 'important');
-            transcriptBtn.style.setProperty('z-index', '999999', 'important');
-            transcriptBtn.classList.add('show');
-        } else {
-            transcriptBtn.style.setProperty('display', 'none', 'important');
-            transcriptBtn.style.setProperty('visibility', 'hidden', 'important');
-            transcriptBtn.style.setProperty('opacity', '0', 'important');
-            transcriptBtn.classList.remove('show');
-        }
-        console.log(`📝 Transcript button ${show ? 'shown' : 'hidden'}`);
-        console.log(`📝 Button computed style:`, window.getComputedStyle(transcriptBtn).display);
-        console.log(`📝 Button visibility:`, window.getComputedStyle(transcriptBtn).visibility);
-        console.log(`📝 Button opacity:`, window.getComputedStyle(transcriptBtn).opacity);
-        
-        // If showing transcript button and MindAR is active, ensure it's cloned to overlay
-        if (show && isMindarActive) {
-            console.log('📝 MindAR is active, ensuring transcript button is cloned to overlay');
+    console.log(`📝 showTranscriptButton called with show=${show}, isMindarActive=${isMindarActive}`);
+    
+    if (show) {
+        console.log('📝 Creating transcript button in overlay');
+        // Small delay to ensure the overlay is ready
+        setTimeout(() => {
+            console.log('📝 Calling ensureUIButtonsOnTop to create transcript button');
             ensureUIButtonsOnTop();
-        }
+        }, 100);
     } else {
-        console.error('📝 Transcript button not found!');
+        // Hide transcript button in overlay when not needed
+        const uiOverlay = document.getElementById('ui-overlay');
+        if (uiOverlay) {
+            const transcriptButton = uiOverlay.querySelector('.transcript-button');
+            if (transcriptButton) {
+                transcriptButton.remove();
+                console.log('📝 Transcript button removed from overlay');
+            }
+        }
     }
 }
 
@@ -1634,6 +1631,13 @@ function ensureUIButtonsOnTop() {
         const helpBtn = document.getElementById('help-btn');
         const badgesBtn = document.getElementById('badges-replay-btn');
         const transcriptBtn = document.getElementById('transcript-btn');
+        
+        console.log('🔧 UI buttons found:', {
+            back: !!backBtn,
+            help: !!helpBtn,
+            badges: !!badgesBtn,
+            transcript: !!transcriptBtn
+        });
         
         // Clone buttons and copy event listeners properly
         if (backBtn) {
@@ -1672,25 +1676,32 @@ function ensureUIButtonsOnTop() {
             uiOverlay.appendChild(clonedBadges);
         }
         
-        if (transcriptBtn) {
-            // Make sure transcript button is visible before cloning
-            transcriptBtn.style.setProperty('display', 'flex', 'important');
-            transcriptBtn.style.setProperty('visibility', 'visible', 'important');
-            
-            const clonedTranscript = transcriptBtn.cloneNode(true);
-            clonedTranscript.style.cssText = 'position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%); width: 120px; height: 40px; z-index: 999999; pointer-events: auto; display: flex; background: rgba(255, 255, 255, 0.3); backdrop-filter: blur(10px); border: none; border-radius: 12px; cursor: pointer; align-items: center; justify-content: center;';
-            
-            // Copy all event listeners from original button
-            clonedTranscript.addEventListener('click', function() {
-                console.log('📝 Cloned transcript button clicked');
-                transcriptBtn.click();
-            });
-            
-            uiOverlay.appendChild(clonedTranscript);
-            console.log('📝 Transcript button cloned to overlay');
-        } else {
-            console.error('📝 Transcript button not found for cloning');
-        }
+               // Create transcript button directly in overlay (no original needed)
+               const transcriptButton = document.createElement('button');
+               transcriptButton.className = 'ui-button transcript-button';
+               transcriptButton.style.cssText = 'position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%); z-index: 999999; pointer-events: auto; display: inline-flex; padding: 8px; justify-content: center; align-items: center; gap: 8px; border-radius: 8px; background: rgba(250, 250, 250, 0.20); backdrop-filter: blur(16px); border: none; cursor: pointer; transition: all 0.3s ease;';
+               
+               // Set display properties separately to ensure they override any CSS
+               transcriptButton.style.setProperty('display', 'flex', 'important');
+               transcriptButton.style.setProperty('visibility', 'visible', 'important');
+               transcriptButton.style.setProperty('opacity', '1', 'important');
+               
+               // Add transcript button content
+               transcriptButton.innerHTML = `
+                   <img src="./Assets/UI/Transcript Button .png" alt="Transcript" class="ui-icon" style="display: flex; width: 24px; height: 24px; justify-content: center; align-items: center;">
+                   <span class="ui-text" style="color: #FAFAFA; text-align: center; font-family: 'Open Sans Condensed'; font-size: 16px; font-style: normal; font-weight: 700; line-height: 44px; text-transform: uppercase;">TRANSCRIPT</span>
+               `;
+               
+               // Add click event listener
+               transcriptButton.addEventListener('click', function() {
+                   console.log('📝 Transcript button clicked');
+                   handleTranscriptButton();
+               });
+               
+               uiOverlay.appendChild(transcriptButton);
+               console.log('📝 Transcript button created directly in overlay');
+               console.log('📝 Button added to overlay:', transcriptButton);
+               console.log('📝 Overlay children count:', uiOverlay.children.length);
         
         // Hide original buttons
         const originalButtons = document.querySelectorAll('.ui-button');
@@ -1726,10 +1737,11 @@ function restoreUIButtons() {
         // Reset overlay pointer events
         uiOverlay.style.setProperty('pointer-events', 'none', 'important');
         
-        // Show original buttons again
-        const originalButtons = document.querySelectorAll('.ui-button');
+        // Show original buttons again (except transcript button which is created dynamically)
+        const originalButtons = document.querySelectorAll('.ui-button:not(.transcript-button)');
         originalButtons.forEach(button => {
             button.style.display = '';
+            button.classList.remove('cloned'); // Remove cloned class
         });
         
         // Clear the overlay
@@ -1864,6 +1876,9 @@ function unlockBadge(badgeId) {
     if (badgeId && !unlockedBadges.has(badgeId)) {
         unlockedBadges.add(badgeId);
         console.log(`Badge unlocked: ${badgeId}`);
+        
+        // Hide transcript overlay when badge popup shows
+        hideTranscriptOverlay();
         
         // Show congratulations overlay with the unlocked badge
         showCongratulationsOverlay(badgeId);
@@ -2523,8 +2538,8 @@ function handleMindarTargetLost(hotspotId) {
     // Hide tap-to-play text when target is lost
     hideTapToPlayText();
     
-    // Hide transcript button when target is lost
-    showTranscriptButton(false);
+    // Don't hide transcript button on target lost - keep it visible during video playback
+    // showTranscriptButton(false);
     
     // Map hotspot IDs to video element IDs
     const videoIdMapping = {
@@ -2932,6 +2947,9 @@ function handleVideoEnded(hotspotId) {
     
     // Hide tap-to-play text when video ends
     hideTapToPlayText();
+    
+    // Hide transcript button when video ends
+    showTranscriptButton(false);
     
     // Hide video playing state (show crosshair)
     hideVideoPlaying();
