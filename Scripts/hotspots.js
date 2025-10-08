@@ -1431,33 +1431,6 @@ function setupUIButtonListeners() {
     if (transcriptBtn) {
         transcriptBtn.addEventListener('click', handleTranscriptButton);
     }
-    
-    // Transcript close button
-    const transcriptCloseBtn = document.getElementById('transcript-close-btn');
-    if (transcriptCloseBtn) {
-        transcriptCloseBtn.addEventListener('click', hideTranscriptOverlay);
-    }
-    
-    // Ensure UI elements can receive events even when A-Frame is active
-    ensureUIElementsClickable();
-    
-    // Re-apply clickability when MindAR scene becomes active
-    const mindarScene = document.getElementById('mindar-scene');
-    if (mindarScene) {
-        // Watch for when MindAR scene becomes visible
-        const observer = new MutationObserver(function(mutations) {
-            mutations.forEach(function(mutation) {
-                if (mutation.type === 'attributes' && mutation.attributeName === 'style') {
-                    const isVisible = mindarScene.style.display !== 'none';
-                    if (isVisible) {
-                        console.log('🎯 MindAR scene became active - ensuring UI clickability');
-                        ensureUIElementsClickable();
-                    }
-                }
-            });
-        });
-        observer.observe(mindarScene, { attributes: true, attributeFilter: ['style'] });
-    }
 }
 
 // Back button handler
@@ -1490,7 +1463,8 @@ function handleBadgesReplayButton() {
 // Transcript button handler
 function handleTranscriptButton() {
     console.log('Transcript button clicked');
-    showTranscriptOverlay();
+    // TODO: Open transcript panel (to be implemented later)
+    alert('Transcript panel will be implemented later');
 }
 
 // Update badges/replay button state
@@ -1511,9 +1485,6 @@ function updateBadgesReplayButton(isHoveringHotspot) {
     }
 }
 
-// Track current hotspot for transcript
-let currentHotspotId = null;
-
 // Show/hide transcript button
 function showTranscriptButton(show = true) {
     const transcriptBtn = document.getElementById('transcript-btn');
@@ -1521,101 +1492,6 @@ function showTranscriptButton(show = true) {
         transcriptBtn.style.setProperty('display', show ? 'flex' : 'none', 'important');
         console.log(`📝 Transcript button ${show ? 'shown' : 'hidden'}`);
     }
-}
-
-// Show transcript overlay
-function showTranscriptOverlay() {
-    if (!currentHotspotId) {
-        console.log('No current hotspot for transcript');
-        return;
-    }
-    
-    const transcriptOverlay = document.getElementById('transcript-overlay');
-    const transcriptTitle = document.getElementById('transcript-title');
-    const transcriptText = document.getElementById('transcript-text');
-    
-    if (transcriptOverlay && transcriptTitle && transcriptText) {
-        // Get transcript data from config
-        const hotspotData = hotspotsConfig[currentHotspotId];
-        if (hotspotData && hotspotData.media && hotspotData.media[0]) {
-            const title = hotspotData.media[0].info || currentHotspotId;
-            const description = hotspotData.media[0].description || 'No transcript available.';
-            
-            transcriptTitle.textContent = title;
-            transcriptText.textContent = description;
-            
-            transcriptOverlay.style.display = 'flex';
-            console.log(`📖 Showing transcript for ${currentHotspotId}: ${title}`);
-        } else {
-            console.log(`No transcript data found for ${currentHotspotId}`);
-        }
-    }
-}
-
-// Hide transcript overlay
-function hideTranscriptOverlay() {
-    const transcriptOverlay = document.getElementById('transcript-overlay');
-    if (transcriptOverlay) {
-        transcriptOverlay.style.display = 'none';
-        console.log('📖 Transcript overlay hidden');
-    }
-}
-
-// Ensure UI elements can receive events even when A-Frame is active
-function ensureUIElementsClickable() {
-    // Get all UI buttons and overlays
-    const uiButtons = document.querySelectorAll('.ui-button');
-    const uiOverlays = document.querySelectorAll('.help-overlay, .badges-overlay, .transcript-overlay, .congrats-overlay');
-    
-    // Configure UI buttons
-    uiButtons.forEach(button => {
-        // Force pointer events and high z-index
-        button.style.setProperty('pointer-events', 'auto', 'important');
-        button.style.setProperty('z-index', '99999', 'important');
-        button.style.setProperty('position', 'fixed', 'important');
-        
-        // Remove any existing event listeners to avoid duplicates
-        button.removeEventListener('touchstart', handleUITouch);
-        button.removeEventListener('touchend', handleUITouch);
-        button.removeEventListener('click', handleUIClick);
-        
-        // Add new event listeners
-        button.addEventListener('touchstart', handleUITouch, { passive: false });
-        button.addEventListener('touchend', handleUITouch, { passive: false });
-        button.addEventListener('click', handleUIClick, { passive: false });
-    });
-    
-    // Configure UI overlays
-    uiOverlays.forEach(overlay => {
-        overlay.style.setProperty('pointer-events', 'auto', 'important');
-        overlay.style.setProperty('z-index', '99999', 'important');
-    });
-    
-    console.log('🔧 UI elements configured for clickability');
-    
-    // Set up periodic check to ensure UI elements stay clickable
-    if (!window.uiClickabilityInterval) {
-        window.uiClickabilityInterval = setInterval(() => {
-            const mindarScene = document.getElementById('mindar-scene');
-            if (mindarScene && mindarScene.style.display !== 'none') {
-                // MindAR is active, ensure UI elements are clickable
-                ensureUIElementsClickable();
-            }
-        }, 1000); // Check every second
-    }
-}
-
-// Handle UI touch events
-function handleUITouch(e) {
-    e.stopPropagation();
-    e.preventDefault();
-    console.log('UI element touch:', e.type, e.target.id);
-}
-
-// Handle UI click events
-function handleUIClick(e) {
-    e.stopPropagation();
-    console.log('UI element click:', e.target.id);
 }
 
 // Help overlay functions
@@ -2396,10 +2272,8 @@ function handleMindarTargetLost(hotspotId) {
     // Hide tap-to-play text when target is lost
     hideTapToPlayText();
     
-    // Clear current hotspot and hide transcript button when target is lost
-    currentHotspotId = null;
+    // Hide transcript button when target is lost
     showTranscriptButton(false);
-    hideTranscriptOverlay();
     
     // Map hotspot IDs to video element IDs
     const videoIdMapping = {
@@ -2774,9 +2648,6 @@ function handleMindarTargetFound(hotspotId) {
         // Show loading ring while video is loading
         showLoadingRing();
         
-        // Track current hotspot for transcript
-        currentHotspotId = hotspotId;
-        
         // Show transcript button when hotspot is found
         showTranscriptButton(true);
         
@@ -2838,10 +2709,8 @@ function handleVideoEnded(hotspotId) {
     // Hide MindAR scene
     hideMindARScene();
     
-    // Clear current hotspot and hide transcript button when badge popup appears
-    currentHotspotId = null;
+    // Hide transcript button when badge popup appears
     showTranscriptButton(false);
-    hideTranscriptOverlay();
     
     // Show congratulations overlay
     const badgeId = hotspotToBadgeMapping[hotspotId];

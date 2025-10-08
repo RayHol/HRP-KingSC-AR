@@ -1721,7 +1721,7 @@ body {
 }
 
 .ui-button {
-    position: fixed !important;
+    position: absolute !important;
     background: rgba(255, 255, 255, 0.3) !important;
     backdrop-filter: blur(10px) !important;
     border: none !important;
@@ -1734,7 +1734,6 @@ body {
     gap: 8px !important;
     transition: all 0.3s ease !important;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
-    z-index: 999999 !important;
 }
 
 .ui-button:hover {
@@ -1830,9 +1829,6 @@ body {
     align-items: center !important;
     justify-content: center !important;
     display: flex !important;
-    z-index: 999999 !important;
-    position: fixed !important;
-    pointer-events: auto !important;
 }
 
 .ui-button.transcript-button .ui-icon {
@@ -1843,77 +1839,6 @@ body {
 /* Hide transcript button by default (will show when video is playing) */
 .ui-button.transcript-button {
     display: none !important;
-}
-
-/* Ensure A-Frame canvas doesn't interfere with UI elements */
-#mindar-scene {
-    pointer-events: none !important;
-}
-
-#mindar-scene canvas {
-    pointer-events: none !important;
-}
-
-/* Re-enable pointer events for A-Frame entities that need interaction */
-#mindar-scene a-entity {
-    pointer-events: auto !important;
-}
-
-/* Transcript Overlay */
-.transcript-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.8);
-    display: none;
-    z-index: 10000;
-    justify-content: center;
-    align-items: flex-end;
-    padding-bottom: 20px;
-}
-
-.transcript-content {
-    background: rgba(255, 255, 255, 0.95);
-    border-radius: 15px;
-    padding: 20px;
-    max-width: 90%;
-    max-height: 70%;
-    overflow-y: auto;
-    position: relative;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-}
-
-.transcript-close-btn {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    background: none;
-    border: none;
-    cursor: pointer;
-    padding: 5px;
-    border-radius: 50%;
-    background-color: rgba(0, 0, 0, 0.1);
-}
-
-.transcript-close-btn:hover {
-    background-color: rgba(0, 0, 0, 0.2);
-}
-
-.transcript-title {
-    color: #333;
-    font-size: 18px;
-    font-weight: bold;
-    margin: 0 0 15px 0;
-    padding-right: 40px;
-}
-
-.transcript-text {
-    color: #555;
-    font-size: 14px;
-    line-height: 1.6;
-    text-align: left;
 }
 
 /* Responsive adjustments */
