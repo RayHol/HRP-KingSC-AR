@@ -1489,7 +1489,8 @@ function updateBadgesReplayButton(isHoveringHotspot) {
 function showTranscriptButton(show = true) {
     const transcriptBtn = document.getElementById('transcript-btn');
     if (transcriptBtn) {
-        transcriptBtn.style.display = show ? 'flex' : 'none';
+        transcriptBtn.style.setProperty('display', show ? 'flex' : 'none', 'important');
+        console.log(`📝 Transcript button ${show ? 'shown' : 'hidden'}`);
     }
 }
 
@@ -2271,6 +2272,9 @@ function handleMindarTargetLost(hotspotId) {
     // Hide tap-to-play text when target is lost
     hideTapToPlayText();
     
+    // Hide transcript button when target is lost
+    showTranscriptButton(false);
+    
     // Map hotspot IDs to video element IDs
     const videoIdMapping = {
         'romulus': 'video-romulus',
@@ -2644,6 +2648,9 @@ function handleMindarTargetFound(hotspotId) {
         // Show loading ring while video is loading
         showLoadingRing();
         
+        // Show transcript button when hotspot is found
+        showTranscriptButton(true);
+        
         // Ensure video is loaded before playing
         if (video.readyState < 2) {
             console.log(`⏳ Video not ready (readyState: ${video.readyState}), loading...`);
@@ -2701,6 +2708,9 @@ function handleVideoEnded(hotspotId) {
     
     // Hide MindAR scene
     hideMindARScene();
+    
+    // Hide transcript button when badge popup appears
+    showTranscriptButton(false);
     
     // Show congratulations overlay
     const badgeId = hotspotToBadgeMapping[hotspotId];
