@@ -2564,19 +2564,24 @@ function handleMindarTargetFound(hotspotId) {
                     // Update debug UI
                     updateMindarDebugUI(hotspotId, video, hasUserInteracted ? 'Playing with audio' : 'Playing muted');
                     
-                    // Trigger fade-in animation with iOS-specific timing
+                    // Trigger fade-in animation after ensuring video is ready
                     const videoOverlay = document.getElementById(`videooverlay-${hotspotId}`);
                     if (videoOverlay) {
-                        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-                        if (isIOS) {
-                            // iOS needs a small delay to ensure video is ready
-                            setTimeout(() => {
-                                console.log(`🍎 iOS: Triggering fade-in animation for ${hotspotId}`);
-                                videoOverlay.emit('fadein-' + hotspotId);
-                            }, 100);
-                        } else {
-                            console.log(`🤖 Non-iOS: Triggering fade-in animation for ${hotspotId}`);
+                        // Ensure video is ready before triggering animation
+                        if (video.readyState >= 3) {
+                            console.log(`✅ Video ready, triggering fade-in for ${hotspotId}`);
                             videoOverlay.emit('fadein-' + hotspotId);
+                        } else {
+                            console.log(`⏳ Video not ready (${video.readyState}), waiting...`);
+                            const waitForReady = () => {
+                                if (video.readyState >= 3) {
+                                    console.log(`✅ Video now ready, triggering fade-in for ${hotspotId}`);
+                                    videoOverlay.emit('fadein-' + hotspotId);
+                                } else {
+                                    setTimeout(waitForReady, 100);
+                                }
+                            };
+                            setTimeout(waitForReady, 100);
                         }
                     }
                     
@@ -2617,19 +2622,24 @@ function handleMindarTargetFound(hotspotId) {
                         // Show video playing state (hide crosshair)
                         showVideoPlaying();
                         
-                        // Trigger fade-in animation with iOS-specific timing
+                        // Trigger fade-in animation after ensuring video is ready
                         const videoOverlay = document.getElementById(`videooverlay-${hotspotId}`);
                         if (videoOverlay) {
-                            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-                            if (isIOS) {
-                                // iOS needs a small delay to ensure video is ready
-                                setTimeout(() => {
-                                    console.log(`🍎 iOS: Triggering fallback fade-in animation for ${hotspotId}`);
-                                    videoOverlay.emit('fadein-' + hotspotId);
-                                }, 100);
-                            } else {
-                                console.log(`🤖 Non-iOS: Triggering fallback fade-in animation for ${hotspotId}`);
+                            // Ensure video is ready before triggering animation
+                            if (video.readyState >= 3) {
+                                console.log(`✅ Video ready, triggering fallback fade-in for ${hotspotId}`);
                                 videoOverlay.emit('fadein-' + hotspotId);
+                            } else {
+                                console.log(`⏳ Video not ready (${video.readyState}), waiting...`);
+                                const waitForReady = () => {
+                                    if (video.readyState >= 3) {
+                                        console.log(`✅ Video now ready, triggering fallback fade-in for ${hotspotId}`);
+                                        videoOverlay.emit('fadein-' + hotspotId);
+                                    } else {
+                                        setTimeout(waitForReady, 100);
+                                    }
+                                };
+                                setTimeout(waitForReady, 100);
                             }
                         }
                         
@@ -2725,16 +2735,13 @@ function handleVideoEnded(hotspotId) {
     // Hide MindAR scene
     hideMindARScene();
     
-    // Show congratulations overlay with iOS-specific timing
+    // Show congratulations overlay with a small delay to ensure animations complete
     const badgeId = hotspotToBadgeMapping[hotspotId];
     if (badgeId) {
-        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-        const delay = isIOS ? 800 : 500; // iOS needs more time for animations
-        
-        console.log(`🎉 Showing congratulations overlay for ${hotspotId} after ${delay}ms delay (iOS: ${isIOS})`);
+        console.log(`🎉 Unlocking badge for ${hotspotId}: ${badgeId}`);
         setTimeout(() => {
             unlockBadge(badgeId);
-        }, delay);
+        }, 300);
     }
 }
 
