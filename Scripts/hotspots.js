@@ -1960,10 +1960,40 @@ function updateMindarDebugUI(hotspotId, video, status = null) {
     audioDebugElement.innerHTML = audioInfo;
 }
 
+// Handle MindAR target lost
+function handleMindarTargetLost(hotspotId) {
+    console.log(`🎯 MindAR target lost for hotspot: ${hotspotId}`);
+    
+    // Map hotspot IDs to video element IDs
+    const videoIdMapping = {
+        'romulus': 'video-romulus',
+        'caesar': 'video-caesar',
+        'nero': 'video-nero',
+        'silenus': 'video-silenus',
+        'furies': 'video-furies',
+        'herakles': 'video-herakles',
+        'alexander': 'video-alexander',
+        'diana': 'video-diana'
+    };
+    
+    const videoId = videoIdMapping[hotspotId] || `video-${hotspotId}`;
+    const video = document.getElementById(videoId);
+    
+    if (video && !video.paused) {
+        console.log(`⏸️ Pausing video for lost target: ${hotspotId}`);
+        video.pause();
+        
+        // Trigger fade-out animation
+        const videoOverlay = document.getElementById(`videooverlay-${hotspotId}`);
+        if (videoOverlay) {
+            videoOverlay.emit('fadeout-' + hotspotId);
+        }
+    }
+}
+
 // Handle MindAR target detection
 function handleMindarTargetFound(hotspotId) {
     console.log(`🎯 MindAR target detected for hotspot: ${hotspotId}`);
-    console.log(`🔍 Starting video playback process...`);
     
     // Map hotspot IDs to video element IDs (handle naming inconsistencies)
     const videoIdMapping = {
@@ -1986,6 +2016,31 @@ function handleMindarTargetFound(hotspotId) {
     if (video) {
         console.log(`✅ Video element found: ${videoId}`);
         currentMindarVideo = video;
+        
+        // Check if video is already playing - if so, just resume
+        if (!video.paused) {
+            console.log(`▶️ Video already playing for ${hotspotId}, no action needed`);
+            return;
+        }
+        
+        // Check if video has been started before (has currentTime > 0)
+        if (video.currentTime > 0) {
+            console.log(`▶️ Resuming video from ${video.currentTime}s for ${hotspotId}`);
+            video.play().then(() => {
+                console.log(`✅ Video resumed successfully for hotspot: ${hotspotId}`);
+                
+                // Trigger fade-in animation
+                const videoOverlay = document.getElementById(`videooverlay-${hotspotId}`);
+                if (videoOverlay) {
+                    videoOverlay.emit('fadein-' + hotspotId);
+                }
+            }).catch(error => {
+                console.error(`❌ Video resume failed for ${hotspotId}:`, error);
+            });
+            return;
+        }
+        
+        console.log(`🔍 Starting video playback process for first time...`);
         
         // Additional debugging for video element
         console.log(`📹 Video readyState: ${video.readyState} (0=no data, 1=metadata, 2=current data, 3=future data, 4=enough data)`);
@@ -2264,6 +2319,7 @@ function activateHotspotWithMindAR(hotspotId, entity) {
         
         targetEntity.addEventListener('targetLost', () => {
             console.log(`Target lost event fired for hotspot: ${hotspotId}`);
+            handleMindarTargetLost(hotspotId);
         });
     }
 }
