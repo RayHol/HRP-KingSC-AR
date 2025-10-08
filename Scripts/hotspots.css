@@ -1348,7 +1348,7 @@ body {
     height: 100%;
     background: rgba(0, 0, 0, 0.5);
     backdrop-filter: blur(15px);
-    z-index: 2000;
+    z-index: 1000001;
     display: none;
     opacity: 0;
     transition: all 0.3s ease;
@@ -1842,11 +1842,51 @@ body {
     display: none !important;
 }
 
-/* Override for dynamically created transcript button in overlay */
+/* Override for dynamically created buttons in overlay */
+#ui-overlay .ui-button.transcript-button,
+#ui-overlay .ui-button.close-button,
+#ui-overlay .ui-button.replay-button,
+#ui-overlay .ui-button.mute-button {
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+
+/* More specific override for transcript button in overlay */
 #ui-overlay .ui-button.transcript-button {
     display: flex !important;
     visibility: visible !important;
     opacity: 1 !important;
+}
+
+/* Force all buttons in overlay to be visible */
+#ui-overlay .ui-button {
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+
+/* MindAR button styles */
+.mindar-button {
+    position: absolute !important;
+    background: rgba(250, 250, 250, 0.20) !important;
+    backdrop-filter: blur(16px) !important;
+    border: none !important;
+    border-radius: 8px !important;
+    cursor: pointer !important;
+    pointer-events: auto !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    z-index: 999999 !important;
+    gap: 8px !important;
+    transition: all 0.3s ease !important;
+    color: #FAFAFA !important;
+    font-family: 'Open Sans Condensed', Arial, sans-serif !important;
+    font-size: 16px !important;
+    font-weight: 700 !important;
+    text-transform: uppercase !important;
+    padding: 8px !important;
 }
 
 /* Show transcript button when .show class is added */

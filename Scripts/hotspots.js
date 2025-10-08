@@ -194,17 +194,12 @@ function getConfigFileName() {
     const urlParams = new URLSearchParams(window.location.search);
     const location = urlParams.get('location');
     
-    console.log(`Location parameter detected: ${location}`);
-    
     switch(location) {
         case 'stairs':
-            console.log('Loading stairs configuration');
             return './Scripts/hotspotsConfig-stairs.json';
         case 'balcony':
-            console.log('Loading balcony configuration'); 
             return './Scripts/hotspotsConfig-balcony.json';
         default:
-            console.log('Loading default configuration');
             return './Scripts/hotspotsConfig.json'; // Default fallback
     }
 }
@@ -240,8 +235,6 @@ function preloadAllHotspotImages(hotspotsConfigData) {
 function initializeHotspots() {
     const configFile = getConfigFileName();
     
-    console.log(`Attempting to load config file: ${configFile}`);
-    
     fetch(configFile)
         .then((response) => {
             if (!response.ok) {
@@ -254,22 +247,16 @@ function initializeHotspots() {
             hotspots = Object.keys(data);
             currentHotspotOrder = [...hotspots];
             
-            console.log(`Successfully loaded ${hotspots.length} hotspots from ${configFile}`);
-            console.log('Hotspot order:', currentHotspotOrder);
-            
             // Ensure crosshair starts in default yellow state
             const centerTarget = document.getElementById('center-target');
             if (centerTarget) {
                 centerTarget.classList.remove('hotspot-hover');
-                console.log('Crosshair initialized in default yellow state');
             }
 
             // PASS the already loaded data instead of fetching again
             return preloadAllHotspotImages(data);
         })
         .then(() => {
-            console.log('All images preloaded, creating hotspot entities...');
-            
             // Wait for A-Frame scene to be ready
             const scene = document.querySelector("a-scene");
             if (!scene) {
@@ -299,8 +286,6 @@ function initializeHotspots() {
                 // FIXED: Use consistent rotation for all hotspots - NO fixedAngleDegrees in rotation
                 const rotation = { x: 0, y: 0, z: 0 }; // All icons face the same direction
 
-                console.log(`Creating hotspot ${hotspotId} at position:`, position);
-
                 // Loop through each media item and only display 'image' media
                 mediaArray
                     .filter(mediaItem => mediaItem.type === "image") // Filter only image type media
@@ -311,7 +296,6 @@ function initializeHotspots() {
             
             // After all hotspots are created, refresh their visual states to ensure proper initialization
             setTimeout(() => {
-                console.log('Refreshing all hotspot visual states...');
                 refreshAllHotspotVisualStates();
             }, 100);
         })
@@ -528,8 +512,6 @@ function displayHotspotMedia(mediaItem, index, commonValues, currentPosition, cu
         console.error("A-Frame scene not found!");
         return;
     }
-    
-    console.log(`Creating hotspot entity for ${hotspotId} at position:`, currentPosition);
 
     // Create the entity for the image
     let entity = document.createElement("a-image");
@@ -569,8 +551,6 @@ function displayHotspotMedia(mediaItem, index, commonValues, currentPosition, cu
 
     // Add the entity to the scene
     scene.appendChild(entity);
-    console.log(`Hotspot entity ${hotspotId} added to scene successfully`);
-
     // Add a raycaster event to show the hotspot modal when the image is hovered (intersected)
     entity.addEventListener('raycaster-intersected', function () {
         // Check if this hotspot can be activated (sequential order)
@@ -578,8 +558,6 @@ function displayHotspotMedia(mediaItem, index, commonValues, currentPosition, cu
             return; // Don't allow activation if not in sequence
         }
 
-        console.log('Hotspot intersected:', mediaItem.url);
-        
         // DON'T change opacity on hover - maintain original visual state
         // Only change crosshair and button states
 
@@ -598,8 +576,6 @@ function displayHotspotMedia(mediaItem, index, commonValues, currentPosition, cu
     });
 
     entity.addEventListener('raycaster-intersected-cleared', function () {
-        console.log('Hotspot no longer intersected:', mediaItem.url);
-        
         // DON'T change opacity - maintain original visual state
         // Only reset crosshair and button states
 
@@ -607,7 +583,6 @@ function displayHotspotMedia(mediaItem, index, commonValues, currentPosition, cu
         const centerTarget = document.getElementById('center-target');
         if (centerTarget) {
             centerTarget.classList.remove('hotspot-hover');
-            console.log('Crosshair returned to yellow (hotspot-hover class removed)');
         }
 
         // Reset badges/replay button back to badges mode
@@ -690,7 +665,6 @@ function resetCrosshairToDefault() {
     const centerTarget = document.getElementById('center-target');
     if (centerTarget) {
         centerTarget.classList.remove('hotspot-hover');
-        console.log('Crosshair reset to default yellow state');
     }
 }
 
@@ -761,8 +735,6 @@ function activateHotspot(hotspotId, entity) {
     // Add to activated set
     activatedHotspots.add(hotspotId);
     
-    console.log(`Hotspot ${hotspotId} activated! Total activated: ${activatedHotspots.size}/${currentHotspotOrder.length}`);
-    
     // Use MindAR integration if available, otherwise fallback to original behavior
     if (typeof activateHotspotWithMindAR === 'function') {
         activateHotspotWithMindAR(hotspotId, entity);
@@ -771,9 +743,7 @@ function activateHotspot(hotspotId, entity) {
         const badgeId = hotspotToBadgeMapping[hotspotId];
         if (badgeId) {
             unlockBadge(badgeId);
-            console.log(`Badge unlocked: ${badgeId}`);
         } else {
-            console.log(`No badge mapping found for hotspot: ${hotspotId}`);
         }
     }
     
@@ -782,7 +752,6 @@ function activateHotspot(hotspotId, entity) {
     
     // Check if all hotspots are activated
     if (activatedHotspots.size === currentHotspotOrder.length) {
-        console.log('All hotspots activated! Experience complete!');
         // You could add a completion celebration here
     }
 }
@@ -796,26 +765,21 @@ function updateHotspotVisualState(entity, hotspotId, hotspotIndex) {
         // Activated hotspot: white with 40% opacity
         entity.setAttribute('material', 'color', 'white');
         entity.setAttribute('material', 'opacity', '0.2');
-        console.log(`Hotspot ${hotspotId}: Activated (white, 20% opacity)`);
     } else if (canActivateHotspot(hotspotId)) {
         // Next available hotspot: normal white with rotating ring and 100% opacity
         entity.setAttribute('material', 'color', 'white');
         entity.setAttribute('material', 'opacity', '1.0');
         createHotspotRotatingRing(entity);
-        console.log(`Hotspot ${hotspotId}: Active (white, 100% opacity, ROTATING RING)`);
     } else {
         // Future hotspot: 70% transparent white
         entity.setAttribute('material', 'color', 'white');
         entity.setAttribute('material', 'opacity', '0.2');
-        console.log(`Hotspot ${hotspotId}: Future (white, 50% opacity)`);
     }
 }
 
 // Function to reset hotspot sequence (useful for testing or restarting)
 function resetHotspotSequence() {
     activatedHotspots.clear();
-    console.log('Hotspot sequence reset. All hotspots are now inactive.');
-    
     // Refresh all hotspot visual states
     const scene = document.querySelector("a-scene");
     const hotspotEntities = scene.querySelectorAll('.clickable');
@@ -847,22 +811,15 @@ function refreshAllHotspotVisualStates() {
     const scene = document.querySelector("a-scene");
     const hotspotEntities = scene.querySelectorAll('.clickable');
     
-    console.log(`Refreshing ${hotspotEntities.length} hotspot entities...`);
-    console.log('Current activated hotspots:', Array.from(activatedHotspots));
-    console.log('Current hotspot order:', currentHotspotOrder);
-    
     hotspotEntities.forEach(entity => {
         const hotspotId = entity.getAttribute('data-hotspot-id');
         if (hotspotId) {
             const hotspotIndex = currentHotspotOrder.indexOf(hotspotId);
-            console.log(`Processing entity for hotspot ${hotspotId} at index ${hotspotIndex}`);
             updateHotspotVisualState(entity, hotspotId, hotspotIndex);
         } else {
-            console.log('Entity missing data-hotspot-id attribute');
         }
     });
     
-    console.log('All hotspot visual states refreshed');
 }
 
 // Make refresh function globally accessible for testing
@@ -870,18 +827,11 @@ window.refreshAllHotspotVisualStates = refreshAllHotspotVisualStates;
 
 // Function to manually test hotspot states (for debugging)
 function testHotspotStates() {
-    console.log('=== HOTSPOT STATE TEST ===');
-    console.log('Total hotspots:', currentHotspotOrder.length);
-    console.log('Activated hotspots:', Array.from(activatedHotspots));
-    console.log('Current order:', currentHotspotOrder);
-    
     currentHotspotOrder.forEach((hotspotId, index) => {
         const canActivate = canActivateHotspot(hotspotId);
         const isActivated = activatedHotspots.has(hotspotId);
-        console.log(`${index}: ${hotspotId} - Can activate: ${canActivate}, Activated: ${isActivated}`);
     });
     
-    console.log('=== END TEST ===');
 }
 
 // Make test function globally accessible
@@ -951,7 +901,6 @@ function createHotspotRotatingRing(entity) {
         entity.haloRings.push(segment);
     }
     
-    console.log(`Created gradient rotating ring effect for hotspot ${entity.getAttribute('data-hotspot-id')} with ${segmentCount} segments`);
 }
 
 // Function to remove halo effect from a hotspot
@@ -1003,27 +952,21 @@ function initializeSafetyWarning() {
     
     // OK button click handler - THIS IS THE KEY USER INTERACTION
     okBtn.addEventListener('click', function() {
-        console.log('Warning button clicked!');
         if (!okBtn.disabled) {
             // Mark that user has interacted (for iOS audio)
             hasUserInteracted = true;
-            console.log('User interaction recorded - iOS audio context established');
-            
             // Create and establish audio context for video playback
             try {
                 const audioContext = new (window.AudioContext || window.webkitAudioContext)();
                 if (audioContext.state === 'suspended') {
                     audioContext.resume().then(() => {
-                        console.log('Audio context resumed for iOS compatibility');
                         // Test audio context with a silent audio buffer
                         const buffer = audioContext.createBuffer(1, 1, 22050);
                         const source = audioContext.createBufferSource();
                         source.buffer = buffer;
                         source.connect(audioContext.destination);
                         source.start();
-                        console.log('Audio context test completed successfully');
                     }).catch((e) => {
-                        console.log('Audio context resume failed:', e);
                     });
                 } else {
                     // Test audio context with a silent audio buffer
@@ -1032,10 +975,8 @@ function initializeSafetyWarning() {
                     source.buffer = buffer;
                     source.connect(audioContext.destination);
                     source.start();
-                    console.log('Audio context test completed successfully');
                 }
             } catch (e) {
-                console.log('Audio context creation failed:', e);
             }
             
             closeSafetyWarning();
@@ -1064,11 +1005,9 @@ function closeSafetyWarning() {
         const audioContext = new (window.AudioContext || window.webkitAudioContext)();
         if (audioContext.state === 'suspended') {
             audioContext.resume().then(() => {
-                console.log('Audio context resumed for video playback');
             });
         }
     } catch (e) {
-        console.log('Audio context creation failed:', e);
     }
     
     // Initialize intro video after warning is closed
@@ -1161,7 +1100,6 @@ function initializeIntroVideo() {
     // Additional event to ensure first frame is loaded
     video.addEventListener('loadeddata', function() {
         // Video first frame is loaded, should show preview
-        console.log('Video first frame loaded, preview should be visible');
     });
 }
 
@@ -1170,18 +1108,14 @@ function playVideo() {
     if (video) {
         // Mark that user has interacted (for iOS audio)
         hasUserInteracted = true;
-        console.log('Intro video play - User interaction recorded for iOS audio');
-        
         // Create a silent audio context to establish user interaction
         try {
             const audioContext = new (window.AudioContext || window.webkitAudioContext)();
             if (audioContext.state === 'suspended') {
                 audioContext.resume().then(() => {
-                    console.log('Audio context resumed for iOS compatibility');
                 });
             }
         } catch (e) {
-            console.log('Audio context creation failed:', e);
         }
         
         // For iOS, we need to ensure the video can play with sound
@@ -1435,14 +1369,12 @@ function setupUIButtonListeners() {
 
 // Back button handler
 function handleBackButton() {
-    console.log('Back button clicked');
     // Navigate back to index page with current location
     window.location.href = `index.html?location=${currentLocation}`;
 }
 
 // Help button handler
 function handleHelpButton() {
-    console.log('Help button clicked');
     showHelpOverlay();
 }
 
@@ -1451,19 +1383,15 @@ function handleBadgesReplayButton() {
     const isReplayMode = document.getElementById('badges-replay-text').textContent === 'REPLAY';
     
     if (isReplayMode) {
-        console.log('Replay button clicked');
         // TODO: Replay current hotspot video (to be implemented later)
         alert('Replay functionality will be implemented later');
     } else {
-        console.log('Badges button clicked');
         showBadgesOverlay();
     }
 }
 
 // Transcript button handler
 function handleTranscriptButton() {
-    console.log('Transcript button clicked');
-    
     // Get the current hotspot ID from the active MindAR target
     const currentHotspotId = getCurrentActiveHotspot();
     if (!currentHotspotId) {
@@ -1490,8 +1418,6 @@ function getCurrentActiveHotspot() {
 
 // Show transcript overlay with hotspot description
 function showTranscriptOverlay(hotspotId) {
-    console.log(`📝 Showing transcript for hotspot: ${hotspotId}`);
-    
     // Get hotspot config
     const hotspotConfig = hotspotsConfig[hotspotId];
     if (!hotspotConfig || !hotspotConfig.media || !hotspotConfig.media[0]) {
@@ -1523,8 +1449,7 @@ function showTranscriptOverlay(hotspotId) {
     transcriptOverlay.style.display = 'flex';
     transcriptOverlay.classList.add('show');
     
-    console.log(`📝 Transcript shown for ${hotspotId}`);
-}
+    }
 
 // Create transcript overlay element
 function createTranscriptOverlay() {
@@ -1582,24 +1507,18 @@ function updateBadgesReplayButton(isHoveringHotspot) {
         // Switch to replay mode
         icon.src = './Assets/UI/Play, Repeat, Circle.png';
         text.textContent = 'REPLAY';
-        console.log('Badges button switched to REPLAY mode');
     } else {
         // Switch to badges mode
         icon.src = './Assets/UI/crown-square-icon.png';
         text.textContent = 'BADGES';
-        console.log('Badges button switched to BADGES mode');
     }
 }
 
 // Show/hide transcript button
 function showTranscriptButton(show = true) {
-    console.log(`📝 showTranscriptButton called with show=${show}, isMindarActive=${isMindarActive}`);
-    
     if (show) {
-        console.log('📝 Creating transcript button in overlay');
         // Small delay to ensure the overlay is ready
         setTimeout(() => {
-            console.log('📝 Calling ensureUIButtonsOnTop to create transcript button');
             ensureUIButtonsOnTop();
         }, 100);
     } else {
@@ -1609,8 +1528,7 @@ function showTranscriptButton(show = true) {
             const transcriptButton = uiOverlay.querySelector('.transcript-button');
             if (transcriptButton) {
                 transcriptButton.remove();
-                console.log('📝 Transcript button removed from overlay');
-            }
+                }
         }
     }
 }
@@ -1619,113 +1537,112 @@ function showTranscriptButton(show = true) {
 function ensureUIButtonsOnTop() {
     const uiOverlay = document.getElementById('ui-overlay');
     
-    if (uiOverlay) {
-        // Enable pointer events on overlay
-        uiOverlay.style.setProperty('pointer-events', 'auto', 'important');
-        
-        // Clear any existing buttons in overlay
-        uiOverlay.innerHTML = '';
+        if (uiOverlay) {
+            // Enable pointer events on overlay
+            uiOverlay.style.setProperty('pointer-events', 'auto', 'important');
+            
+            // Clear any existing buttons in overlay
+            uiOverlay.innerHTML = '';
         
         // Get all UI buttons
         const backBtn = document.getElementById('back-btn');
         const helpBtn = document.getElementById('help-btn');
         const badgesBtn = document.getElementById('badges-replay-btn');
-        const transcriptBtn = document.getElementById('transcript-btn');
+    const transcriptBtn = document.getElementById('transcript-btn');
         
-        console.log('🔧 UI buttons found:', {
-            back: !!backBtn,
-            help: !!helpBtn,
-            badges: !!badgesBtn,
-            transcript: !!transcriptBtn
+        // Create MindAR-specific buttons instead of cloning originals
+        // Create Close Button (replaces back button)
+        const closeBtn = document.createElement('button');
+        closeBtn.className = 'mindar-button close-button';
+        closeBtn.style.cssText = 'position: absolute; top: 15px; left: 15px; width: 40px; height: 40px; z-index: 999999; pointer-events: auto; display: flex; padding: 8px; justify-content: center; align-items: center; gap: 8px; border-radius: 8px; background: rgba(250, 250, 250, 0.20); backdrop-filter: blur(16px); border: none; cursor: pointer; transition: all 0.3s ease;';
+        
+        // Set display properties separately to ensure they override any CSS
+        closeBtn.style.setProperty('display', 'flex', 'important');
+        closeBtn.style.setProperty('visibility', 'visible', 'important');
+        closeBtn.style.setProperty('opacity', '1', 'important');
+        
+        closeBtn.innerHTML = `✕`;
+        closeBtn.addEventListener('click', function() {
+            exitMindARMode();
         });
+        uiOverlay.appendChild(closeBtn);
+
+        // Create Replay Button (replaces badges button)
+        const replayBtn = document.createElement('button');
+        replayBtn.className = 'mindar-button replay-button';
+        replayBtn.style.cssText = 'position: absolute; top: 15px; right: 115px; z-index: 999999; pointer-events: auto; display: flex; padding: 8px; justify-content: center; align-items: center; gap: 8px; border-radius: 8px; background: rgba(250, 250, 250, 0.20); backdrop-filter: blur(16px); border: none; cursor: pointer; transition: all 0.3s ease;';
         
-        // Clone buttons and copy event listeners properly
-        if (backBtn) {
-            const clonedBack = backBtn.cloneNode(true);
-            clonedBack.style.cssText = 'position: absolute; top: 15px; left: 15px; width: 40px; height: 40px; z-index: 999999; pointer-events: auto; display: flex; background: rgba(255, 255, 255, 0.3); backdrop-filter: blur(10px); border: none; border-radius: 12px; cursor: pointer; align-items: center; justify-content: center;';
-            
-            // Copy all event listeners from original button
-            clonedBack.addEventListener('click', function() {
-                backBtn.click();
-            });
-            
-            uiOverlay.appendChild(clonedBack);
-        }
+        // Set display properties separately to ensure they override any CSS
+        replayBtn.style.setProperty('display', 'flex', 'important');
+        replayBtn.style.setProperty('visibility', 'visible', 'important');
+        replayBtn.style.setProperty('opacity', '1', 'important');
         
-        if (helpBtn) {
-            const clonedHelp = helpBtn.cloneNode(true);
-            clonedHelp.style.cssText = 'position: absolute; top: 15px; right: 15px; width: 40px; height: 40px; z-index: 999999; pointer-events: auto; display: flex; background: rgba(255, 255, 255, 0.3); backdrop-filter: blur(10px); border: none; border-radius: 12px; cursor: pointer; align-items: center; justify-content: center;';
-            
-            // Copy all event listeners from original button
-            clonedHelp.addEventListener('click', function() {
-                helpBtn.click();
-            });
-            
-            uiOverlay.appendChild(clonedHelp);
-        }
+        replayBtn.innerHTML = `REPLAY`;
+        replayBtn.addEventListener('click', function() {
+            restartCurrentVideo();
+        });
+        uiOverlay.appendChild(replayBtn);
+
+        // Create Mute/Unmute Button
+        const muteBtn = document.createElement('button');
+        muteBtn.className = 'mindar-button mute-button';
+        muteBtn.style.cssText = 'position: absolute; top: 15px; right: 65px; width: 40px; height: 40px; z-index: 999999; pointer-events: auto; display: flex; padding: 8px; justify-content: center; align-items: center; gap: 8px; border-radius: 8px; background: rgba(250, 250, 250, 0.20); backdrop-filter: blur(16px); border: none; cursor: pointer; transition: all 0.3s ease;';
         
-        if (badgesBtn) {
-            const clonedBadges = badgesBtn.cloneNode(true);
-            clonedBadges.style.cssText = 'position: absolute; top: 15px; right: 65px; width: 100px; height: 40px; z-index: 999999; pointer-events: auto; display: flex; background: rgba(255, 255, 255, 0.3); backdrop-filter: blur(10px); border: none; border-radius: 12px; cursor: pointer; align-items: center; justify-content: center;';
-            
-            // Copy all event listeners from original button
-            clonedBadges.addEventListener('click', function() {
-                badgesBtn.click();
-            });
-            
-            uiOverlay.appendChild(clonedBadges);
-        }
+        // Set display properties separately to ensure they override any CSS
+        muteBtn.style.setProperty('display', 'flex', 'important');
+        muteBtn.style.setProperty('visibility', 'visible', 'important');
+        muteBtn.style.setProperty('opacity', '1', 'important');
+        
+        muteBtn.innerHTML = `<img src="./Assets/UI/Volume Full.png" alt="Mute" style="width: 24px; height: 24px;">`;
+        muteBtn.addEventListener('click', function() {
+            toggleVideoMute();
+        });
+        uiOverlay.appendChild(muteBtn);
+
+        // Create Help Button
+        const mindarHelpBtn = document.createElement('button');
+        mindarHelpBtn.className = 'mindar-button help-button';
+        mindarHelpBtn.style.cssText = 'position: absolute; top: 15px; right: 15px; width: 40px; height: 40px; z-index: 999999; pointer-events: auto; display: flex; padding: 8px; justify-content: center; align-items: center; gap: 8px; border-radius: 8px; background: rgba(250, 250, 250, 0.20); backdrop-filter: blur(16px); border: none; cursor: pointer; transition: all 0.3s ease;';
+        
+        // Set display properties separately to ensure they override any CSS
+        mindarHelpBtn.style.setProperty('display', 'flex', 'important');
+        mindarHelpBtn.style.setProperty('visibility', 'visible', 'important');
+        mindarHelpBtn.style.setProperty('opacity', '1', 'important');
+        
+        mindarHelpBtn.innerHTML = `<img src="./Assets/UI/help-icon.png" alt="Help" style="width: 24px; height: 24px;">`;
+        mindarHelpBtn.addEventListener('click', function() {
+            showHelpOverlay();
+        });
+        uiOverlay.appendChild(mindarHelpBtn);
         
                // Create transcript button directly in overlay (no original needed)
                const transcriptButton = document.createElement('button');
-               transcriptButton.className = 'ui-button transcript-button';
-               transcriptButton.style.cssText = 'position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%); z-index: 999999; pointer-events: auto; display: inline-flex; padding: 8px; justify-content: center; align-items: center; gap: 8px; border-radius: 8px; background: rgba(250, 250, 250, 0.20); backdrop-filter: blur(16px); border: none; cursor: pointer; transition: all 0.3s ease;';
+               transcriptButton.className = 'mindar-button transcript-button';
+               transcriptButton.style.cssText = 'position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%); z-index: 999999; pointer-events: auto; display: flex; padding: 8px; justify-content: center; align-items: center; gap: 8px; border-radius: 8px; background: rgba(250, 250, 250, 0.20); backdrop-filter: blur(16px); border: none; cursor: pointer; transition: all 0.3s ease;';
                
                // Set display properties separately to ensure they override any CSS
                transcriptButton.style.setProperty('display', 'flex', 'important');
                transcriptButton.style.setProperty('visibility', 'visible', 'important');
                transcriptButton.style.setProperty('opacity', '1', 'important');
                
-               // Add transcript button content
-               transcriptButton.innerHTML = `
-                   <img src="./Assets/UI/Transcript Button .png" alt="Transcript" class="ui-icon" style="display: flex; width: 24px; height: 24px; justify-content: center; align-items: center;">
-                   <span class="ui-text" style="color: #FAFAFA; text-align: center; font-family: 'Open Sans Condensed'; font-size: 16px; font-style: normal; font-weight: 700; line-height: 44px; text-transform: uppercase;">TRANSCRIPT</span>
-               `;
+               // Add transcript button content with icon
+               transcriptButton.innerHTML = `<img src="./Assets/UI/Transcript Button .png" alt="Transcript" style="width: 24px; height: 24px;"> TRANSCRIPT`;
                
                // Add click event listener
                transcriptButton.addEventListener('click', function() {
-                   console.log('📝 Transcript button clicked');
                    handleTranscriptButton();
                });
                
                uiOverlay.appendChild(transcriptButton);
-               console.log('📝 Transcript button created directly in overlay');
-               console.log('📝 Button added to overlay:', transcriptButton);
-               console.log('📝 Overlay children count:', uiOverlay.children.length);
-        
-        // Hide original buttons
-        const originalButtons = document.querySelectorAll('.ui-button');
+               
+               // Hide original buttons when MindAR is active
+        const originalButtons = document.querySelectorAll('.ui-button:not(.transcript-button)');
         originalButtons.forEach(button => {
-            button.style.display = 'none';
+            button.style.setProperty('display', 'none', 'important');
+            button.style.setProperty('visibility', 'hidden', 'important');
         });
         
-        console.log('🔧 UI buttons cloned to overlay:', {
-            back: !!backBtn,
-            help: !!helpBtn,
-            badges: !!badgesBtn,
-            transcript: !!transcriptBtn
-        });
         
-        // Debug: Check if transcript button exists and is visible
-        if (transcriptBtn) {
-            console.log('📝 Transcript button found:', {
-                id: transcriptBtn.id,
-                display: transcriptBtn.style.display,
-                visible: transcriptBtn.offsetParent !== null
-            });
-        } else {
-            console.error('📝 Transcript button not found in DOM');
-        }
     }
 }
 
@@ -1740,14 +1657,72 @@ function restoreUIButtons() {
         // Show original buttons again (except transcript button which is created dynamically)
         const originalButtons = document.querySelectorAll('.ui-button:not(.transcript-button)');
         originalButtons.forEach(button => {
-            button.style.display = '';
+            button.style.setProperty('display', '', 'important');
+            button.style.setProperty('visibility', '', 'important');
             button.classList.remove('cloned'); // Remove cloned class
         });
         
         // Clear the overlay
         uiOverlay.innerHTML = '';
         
-        console.log('🔧 UI buttons restored to original positions');
+        }
+}
+
+// Exit MindAR mode and return to main scene
+function exitMindARMode() {
+    // Hide MindAR scene
+    hideMindARScene();
+    
+    // Restore original UI buttons
+    restoreUIButtons();
+    
+    // Reset MindAR active state
+    isMindarActive = false;
+    
+    }
+
+// Restart current video from beginning
+function restartCurrentVideo() {
+    if (!currentActiveHotspotId) {
+        return;
+    }
+    
+    const video = document.getElementById(`video-${currentActiveHotspotId}`);
+    if (video) {
+        video.currentTime = 0;
+        video.play().then(() => {
+            }).catch(error => {
+            console.error('🔄 Failed to restart video:', error);
+        });
+    }
+}
+
+// Toggle video mute state
+function toggleVideoMute() {
+    if (!currentActiveHotspotId) {
+        return;
+    }
+    
+    const video = document.getElementById(`video-${currentActiveHotspotId}`);
+    if (video) {
+        video.muted = !video.muted;
+        
+        // Update mute button icon
+        const muteBtn = document.querySelector('.mute-button');
+        if (muteBtn) {
+            const icon = muteBtn.querySelector('img');
+            if (icon) {
+                if (video.muted) {
+                    // Muted state - show Volume Off icon
+                    icon.src = './Assets/UI/Volume Off.png';
+                    icon.alt = 'Unmute';
+                } else {
+                    // Unmuted state - show Volume Full icon
+                    icon.src = './Assets/UI/Volume Full.png';
+                    icon.alt = 'Mute';
+                }
+            }
+        }
     }
 }
 
@@ -1875,8 +1850,6 @@ function populateBadgesGrid() {
 function unlockBadge(badgeId) {
     if (badgeId && !unlockedBadges.has(badgeId)) {
         unlockedBadges.add(badgeId);
-        console.log(`Badge unlocked: ${badgeId}`);
-        
         // Hide transcript overlay when badge popup shows
         hideTranscriptOverlay();
         
@@ -1918,7 +1891,6 @@ function showCongratulationsOverlay(badgeId) {
             congratsOverlay.offsetHeight; // Trigger reflow
             congratsOverlay.classList.add('show');
             
-            console.log(`Congratulations overlay shown for badge: ${badgeId}`);
         } else {
             console.error(`Badge configuration not found for ID: ${badgeId}`);
         }
@@ -1936,7 +1908,6 @@ function hideCongratulationsOverlay() {
             if (currentMindarVideo) {
                 currentMindarVideo.pause();
                 currentMindarVideo.currentTime = 0;
-                console.log('Video stopped when congratulations popup was closed');
             }
             
             // Clear the current active hotspot ID (hotspot already marked as completed in handleVideoEnded)
@@ -1945,8 +1916,6 @@ function hideCongratulationsOverlay() {
             }
             
             // Return to hotspot finding mode (main AR scene should already be visible)
-            console.log('Returned to hotspot finding mode');
-            
         }, 300); // Match the CSS transition duration
     }
 }
@@ -1958,18 +1927,14 @@ function testUnlockBadges() {
     unlockBadge('peacock');
     unlockBadge('three-graces');
     unlockBadge('alexander');
-    console.log('Test badges unlocked for demonstration');
 }
 
 // Test function to simulate hotspot activation (for testing badge unlocking)
 function testHotspotActivation() {
     // Simulate activating some hotspots to test badge unlocking
-    console.log('Testing hotspot activation and badge unlocking...');
-    
     // Simulate activating romulus hotspot
     setTimeout(() => {
         if (typeof activateHotspot === 'function') {
-            console.log('Simulating romulus hotspot activation...');
             // Note: This won't work without a real entity, but shows the concept
             // In real usage, this would be called from the raycaster-intersected event
         }
@@ -2003,16 +1968,10 @@ let isPreloading = false;
 
 // Start intelligent video preloading system
 function startIntelligentVideoPreloading() {
-    console.log('🚀 Starting intelligent video preloading system...');
-    
     // Check if we're on iOS
     const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-    console.log(`📱 Device: ${isIOS ? 'iOS' : 'Non-iOS'}`);
-    
     // Get all video elements
     const videoElements = document.querySelectorAll('video[id^="video-"]');
-    console.log(`📹 Found ${videoElements.length} video elements to preload`);
-    
     // Add videos to preload queue
     videoElements.forEach(video => {
         const videoId = video.id;
@@ -2020,7 +1979,6 @@ function startIntelligentVideoPreloading() {
         
         // Skip if hotspot is already completed
         if (activatedHotspots.has(hotspotId)) {
-            console.log(`⏭️ Skipping preload for completed hotspot: ${hotspotId}`);
             return;
         }
         
@@ -2035,14 +1993,10 @@ function startIntelligentVideoPreloading() {
     // Sort by priority (first hotspot has highest priority)
     preloadQueue.sort((a, b) => a.priority - b.priority);
     
-    console.log(`📋 Preload queue created with ${preloadQueue.length} videos`);
-    
     if (isIOS) {
-        console.log('🍎 iOS detected - using iOS-compatible preloading strategy');
         // On iOS, we'll preload only metadata, not the full video
         startIOSPreloadProcess();
     } else {
-        console.log('🤖 Non-iOS device - using full preloading');
         // Start preloading
         startPreloadProcess();
     }
@@ -2057,11 +2011,7 @@ function getVideoPriority(hotspotId) {
 
 // iOS-specific preloading (metadata only)
 function startIOSPreloadProcess() {
-    console.log('🍎 Starting iOS-compatible preloading (metadata only)...');
-    
     preloadQueue.forEach(({ video, videoId, hotspotId }) => {
-        console.log(`📱 iOS preloading metadata for: ${videoId}`);
-        
         // Set preload to metadata only (iOS compatible)
         video.setAttribute('preload', 'metadata');
         
@@ -2070,11 +2020,9 @@ function startIOSPreloadProcess() {
         
         // Set up event listeners for when video is actually needed
         video.addEventListener('loadstart', () => {
-            console.log(`📱 iOS video load started: ${videoId}`);
-        });
+            });
         
         video.addEventListener('loadedmetadata', () => {
-            console.log(`📱 iOS video metadata loaded: ${videoId}`);
             videoPreloadStatus.set(videoId, 'metadata-loaded');
         });
         
@@ -2084,8 +2032,7 @@ function startIOSPreloadProcess() {
         });
     });
     
-    console.log('🍎 iOS preloading setup complete - videos will load on demand');
-}
+    }
 
 // Start the preload process
 function startPreloadProcess() {
@@ -2094,8 +2041,6 @@ function startPreloadProcess() {
     }
     
     isPreloading = true;
-    console.log('🔄 Starting video preload process...');
-    
     // Preload videos one by one to avoid overwhelming the network
     preloadNextVideo();
 }
@@ -2104,17 +2049,13 @@ function startPreloadProcess() {
 function preloadNextVideo() {
     if (preloadQueue.length === 0) {
         isPreloading = false;
-        console.log('✅ All videos preloaded successfully');
         return;
     }
     
     const { video, videoId, hotspotId } = preloadQueue.shift();
     
-    console.log(`📥 Preloading video: ${videoId} (hotspot: ${hotspotId})`);
-    
     // Set up preload event listeners
     const onCanPlayThrough = () => {
-        console.log(`✅ Video preloaded successfully: ${videoId}`);
         videoPreloadStatus.set(videoId, 'ready');
         video.removeEventListener('canplaythrough', onCanPlayThrough);
         video.removeEventListener('error', onError);
@@ -2199,16 +2140,14 @@ function showTapToPlayText() {
     
     // Show the text
     tapText.style.opacity = '1';
-    console.log('📱 Tap to play text shown');
-}
+    }
 
 // Hide tap-to-play text
 function hideTapToPlayText() {
     const tapText = document.getElementById('tap-to-play-text');
     if (tapText) {
         tapText.style.opacity = '0';
-        console.log('📱 Tap to play text hidden');
-    }
+        }
 }
 
 // Make preload status available globally for debugging
@@ -2239,7 +2178,6 @@ function initializeMindAR() {
     mindarScene.addEventListener('targetFound', function(event) {
         const expectedId = currentActiveHotspotId;
         if (!expectedId) {
-            console.log('No active hotspot, ignoring target');
             return;
         }
     
@@ -2247,20 +2185,13 @@ function initializeMindAR() {
           `[mindar-image-target][data-hotspot-id="${expectedId}"]`
         );
         if (!targetEntity) {
-            console.log('Ignoring target, not the current hotspot');
             return;
         }
     
         // === existing logic runs only for the active hotspot ===
-        console.log('MindAR target found:', event.detail);
-    
         hasUserInteracted = true;
-        console.log('User interaction set for MindAR target detection');
-    
         const syntheticEvent = new Event('click', { bubbles: true });
         document.body.dispatchEvent(syntheticEvent);
-        console.log('Synthetic user interaction created for iOS video autoplay');
-    
         const targetStatus = document.getElementById('mindar-target-status');
         if (targetStatus) {
             targetStatus.textContent = 'Yes';
@@ -2270,7 +2201,6 @@ function initializeMindAR() {
     
     
     mindarScene.addEventListener('targetLost', function(event) {
-        console.log('MindAR target lost:', event.detail);
         const targetStatus = document.getElementById('mindar-target-status');
         if (targetStatus) {
             targetStatus.textContent = 'No';
@@ -2280,12 +2210,8 @@ function initializeMindAR() {
     
     // Add scene ready event listener
     mindarScene.addEventListener('loaded', function() {
-        console.log('MindAR scene loaded and ready');
     });
     
-    console.log('MindAR system initialized with event listeners');
-    console.log('MindAR scene element:', mindarScene);
-    console.log('MindAR scene attributes:', mindarScene.getAttribute('mindar-image'));
     return true;
 }
 
@@ -2301,8 +2227,6 @@ function showMindARScene(hotspotId) {
     
     // Set user interaction flag for iOS video autoplay
     hasUserInteracted = true;
-    console.log(`User interaction set for MindAR video: ${hotspotId}`);
-    
     // Hide debug status (keep it hidden)
     const debugStatus = document.getElementById('mindar-debug-status');
     if (debugStatus) {
@@ -2310,10 +2234,14 @@ function showMindARScene(hotspotId) {
         debugStatus.style.visibility = 'hidden';
     }
     
-    // Hide main AR scene
+    // Fade out main AR scene
     const mainScene = document.getElementById('ar-scene');
     if (mainScene) {
+        mainScene.style.transition = 'opacity 0.5s ease-out';
+        mainScene.style.opacity = '0';
+        setTimeout(() => {
         mainScene.style.display = 'none';
+        }, 500);
     }
     
     // Enable MindAR target detection
@@ -2329,19 +2257,24 @@ function showMindARScene(hotspotId) {
     const targetEntity = document.getElementById(`target-${hotspotId}`);
     if (targetEntity) {
         targetEntity.style.display = 'block';
-        console.log(`Enabled target detection for: ${hotspotId}`);
     }
     
-    // Show MindAR scene
+    // Fade in MindAR scene
     mindarScene.style.display = 'block';
+    mindarScene.style.opacity = '0';
+    mindarScene.style.transition = 'opacity 0.5s ease-in';
     mindarScene.classList.add('show');
+    
+    // Trigger fade in after a brief delay
+    setTimeout(() => {
+        mindarScene.style.opacity = '1';
+    }, 50);
     
     // Ensure UI buttons stay on top when MindAR scene is active
     ensureUIButtonsOnTop();
     
     isMindarActive = true;
     
-    console.log(`MindAR scene activated for hotspot: ${hotspotId}`);
 }
 
 // Hide MindAR scene and return to main scene
@@ -2373,22 +2306,33 @@ function hideMindARScene() {
         video.muted = true; // Reset to muted state
     });
     
-    // Hide MindAR scene
-    mindarScene.style.display = 'none';
+    // Fade out MindAR scene
+    mindarScene.style.transition = 'opacity 0.5s ease-out';
+    mindarScene.style.opacity = '0';
     mindarScene.classList.remove('show');
+    
+    setTimeout(() => {
+        mindarScene.style.display = 'none';
+    }, 500);
     
     // Restore UI buttons to original positions
     restoreUIButtons();
     
-    // Show main AR scene
+    // Fade in main AR scene
     const mainScene = document.getElementById('ar-scene');
     if (mainScene) {
         mainScene.style.display = 'block';
+        mainScene.style.opacity = '0';
+        mainScene.style.transition = 'opacity 0.5s ease-in';
+        
+        // Trigger fade in after a brief delay
+        setTimeout(() => {
+            mainScene.style.opacity = '1';
+        }, 50);
     }
     
     isMindarActive = false;
     
-    console.log('MindAR scene deactivated and all videos reset');
 }
 
 // Show MindAR loading indicator
@@ -2458,8 +2402,7 @@ function showLoadingRing() {
     const centerTarget = document.getElementById('center-target');
     if (centerTarget) {
         centerTarget.classList.add('loading');
-        console.log('🔄 Loading ring shown');
-    }
+        }
 }
 
 // Hide loading ring around center target
@@ -2467,8 +2410,7 @@ function hideLoadingRing() {
     const centerTarget = document.getElementById('center-target');
     if (centerTarget) {
         centerTarget.classList.remove('loading');
-        console.log('✅ Loading ring hidden');
-    }
+        }
 }
 
 // Show video playing state (hide crosshair)
@@ -2476,9 +2418,7 @@ function showVideoPlaying() {
     const centerTarget = document.getElementById('center-target');
     if (centerTarget) {
         centerTarget.classList.add('video-playing');
-        console.log('🎬 Video playing state shown - crosshair hidden');
-        console.log('🎬 Center target classes:', centerTarget.className);
-    } else {
+        } else {
         console.error('❌ Center target element not found!');
     }
 }
@@ -2488,17 +2428,13 @@ function hideVideoPlaying() {
     const centerTarget = document.getElementById('center-target');
     if (centerTarget) {
         centerTarget.classList.remove('video-playing');
-        console.log('🎯 Video playing state hidden - crosshair shown');
-        console.log('🎯 Center target classes:', centerTarget.className);
-    } else {
+        } else {
         console.error('❌ Center target element not found!');
     }
 }
 
 // Prevent video loading for completed hotspots
 function preventVideoLoadingForCompletedHotspot(hotspotId) {
-    console.log(`🚫 Preventing future video loading for completed hotspot: ${hotspotId}`);
-    
     // Map hotspot IDs to video element IDs
     const videoIdMapping = {
         'romulus': 'video-romulus',
@@ -2517,15 +2453,11 @@ function preventVideoLoadingForCompletedHotspot(hotspotId) {
     if (video) {
         // Change preload to none to prevent any future loading
         video.setAttribute('preload', 'none');
-        console.log(`✅ Video preload disabled for ${hotspotId}`);
-        
         // Also remove the video source to prevent any loading
         const sources = video.querySelectorAll('source');
         sources.forEach(source => {
             source.remove();
         });
-        console.log(`✅ Video sources removed for ${hotspotId}`);
-        
         // Update preload status to indicate this video should not be loaded
         videoPreloadStatus.set(videoId, 'disabled');
     }
@@ -2533,8 +2465,6 @@ function preventVideoLoadingForCompletedHotspot(hotspotId) {
 
 // Handle MindAR target lost
 function handleMindarTargetLost(hotspotId) {
-    console.log(`🎯 MindAR target lost for hotspot: ${hotspotId}`);
-    
     // Hide tap-to-play text when target is lost
     hideTapToPlayText();
     
@@ -2557,7 +2487,6 @@ function handleMindarTargetLost(hotspotId) {
     const video = document.getElementById(videoId);
     
     if (video && !video.paused) {
-        console.log(`⏸️ Pausing video for lost target: ${hotspotId}`);
         video.pause();
         
         // Hide video playing state (show crosshair)
@@ -2573,11 +2502,8 @@ function handleMindarTargetLost(hotspotId) {
 
 // Handle MindAR target detection
 function handleMindarTargetFound(hotspotId) {
-    console.log(`🎯 MindAR target detected for hotspot: ${hotspotId}`);
-    
     // Check if this hotspot has already been completed
     if (activatedHotspots.has(hotspotId)) {
-        console.log(`🚫 Hotspot ${hotspotId} already completed - preventing video loading and playback`);
         return;
     }
     
@@ -2594,27 +2520,19 @@ function handleMindarTargetFound(hotspotId) {
     };
     
     const videoId = videoIdMapping[hotspotId] || `video-${hotspotId}`;
-    console.log(`🔍 Looking for video element: ${videoId}`);
-    console.log(`🔍 Hotspot ID: ${hotspotId}, Mapped to video ID: ${videoId}`);
-    
     // Get the video element
     const video = document.getElementById(videoId);
     if (video) {
-        console.log(`✅ Video element found: ${videoId}`);
         currentMindarVideo = video;
         
         // Check if video is already playing - if so, just resume
         if (!video.paused) {
-            console.log(`▶️ Video already playing for ${hotspotId}, no action needed`);
             return;
         }
         
         // Check if video has been started before (has currentTime > 0)
         if (video.currentTime > 0) {
-            console.log(`▶️ Resuming video from ${video.currentTime}s for ${hotspotId}`);
             video.play().then(() => {
-                console.log(`✅ Video resumed successfully for hotspot: ${hotspotId}`);
-                
                 // Hide loading ring when video resumes
                 hideLoadingRing();
                 
@@ -2634,34 +2552,19 @@ function handleMindarTargetFound(hotspotId) {
             return;
         }
         
-        console.log(`🔍 Starting video playback process for first time...`);
-        
         // Check if video is preloaded
         const isPreloaded = isVideoPreloaded(videoId);
-        console.log(`📥 Video preload status: ${isPreloaded ? 'Ready' : 'Not ready'}`);
-        
         // Additional debugging for video element
-        console.log(`📹 Video readyState: ${video.readyState} (0=no data, 1=metadata, 2=current data, 3=future data, 4=enough data)`);
-        console.log(`📹 Video paused: ${video.paused}`);
-        console.log(`📹 Video muted: ${video.muted}`);
-        console.log(`📹 Video src: ${video.src || video.currentSrc}`);
-        console.log(`📹 Video duration: ${video.duration}`);
-        console.log(`📹 Video currentTime: ${video.currentTime}`);
-        console.log(`📹 Video autoplay: ${video.autoplay}`);
-        console.log(`📹 Video playsinline: ${video.playsInline}`);
-        
         // Update debug UI with audio information
         updateMindarDebugUI(hotspotId, video);
         
         // If video is not preloaded, show loading ring and wait
         if (!isPreloaded) {
-            console.log(`⏳ Video not preloaded, showing loading ring and waiting...`);
             showLoadingRing();
             
             // For iOS, we need to trigger video loading with user interaction
             const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
             if (isIOS) {
-                console.log(`🍎 iOS detected - triggering video load with user interaction`);
                 // Force video to start loading
                 video.load();
             }
@@ -2669,11 +2572,9 @@ function handleMindarTargetFound(hotspotId) {
             // Wait for video to be ready
             const waitForVideoReady = () => {
                 if (video.readyState >= 3) { // HAVE_FUTURE_DATA or HAVE_ENOUGH_DATA
-                    console.log(`✅ Video is now ready to play`);
                     hideLoadingRing();
                     playVideo();
                 } else {
-                    console.log(`⏳ Video still loading, readyState: ${video.readyState}`);
                     setTimeout(waitForVideoReady, 500);
                 }
             };
@@ -2699,12 +2600,9 @@ function handleMindarTargetFound(hotspotId) {
                 const originalHeight = videoPlane.getAttribute('height');
                 videoPlane.setAttribute('data-original-width', originalWidth);
                 videoPlane.setAttribute('data-original-height', originalHeight);
-                console.log(`📱 Stored original dimensions for ${hotspotId}: ${originalWidth}x${originalHeight}`);
-            }
+                }
             
             if (isWebm && isAndroid) {
-                console.log(`📱 Adjusting video plane dimensions for webm on Android: ${hotspotId}`);
-                
                 // Get original dimensions
                 const originalWidth = videoPlane.getAttribute('data-original-width');
                 const originalHeight = videoPlane.getAttribute('data-original-height');
@@ -2716,9 +2614,7 @@ function handleMindarTargetFound(hotspotId) {
                 videoPlane.setAttribute('width', webmWidth);
                 videoPlane.setAttribute('height', webmHeight);
                 
-                console.log(`📱 Webm adjustment applied - Width: ${originalWidth} → ${webmWidth}, Height: ${originalHeight} → ${webmHeight}`);
-            } else if (isIOS) {
-                console.log(`🍎 iOS video plane adjustment for: ${hotspotId}`);
+                } else if (isIOS) {
                 // Ensure iOS videos have proper dimensions
                 const originalWidth = videoPlane.getAttribute('data-original-width');
                 const originalHeight = videoPlane.getAttribute('data-original-height');
@@ -2726,8 +2622,7 @@ function handleMindarTargetFound(hotspotId) {
                 if (originalWidth && originalHeight) {
                     videoPlane.setAttribute('width', originalWidth);
                     videoPlane.setAttribute('height', originalHeight);
-                    console.log(`🍎 iOS: Set video plane dimensions to ${originalWidth}x${originalHeight}`);
-                }
+                    }
             } else if (!isWebm && isAndroid) {
                 // Restore original dimensions for mp4 on Android
                 const originalWidth = videoPlane.getAttribute('data-original-width');
@@ -2736,22 +2631,12 @@ function handleMindarTargetFound(hotspotId) {
                 if (originalWidth && originalHeight) {
                     videoPlane.setAttribute('width', originalWidth);
                     videoPlane.setAttribute('height', originalHeight);
-                    console.log(`📱 Restored original dimensions for mp4: ${hotspotId}`);
                 }
             }
         };
 
         // Simple video playback function
         const playVideo = () => {
-            console.log(`=== PLAYING VIDEO FOR ${hotspotId.toUpperCase()} ===`);
-            console.log(`hasUserInteracted: ${hasUserInteracted}`);
-            console.log(`Video readyState before play: ${video.readyState}`);
-            console.log(`Video paused before play: ${video.paused}`);
-            console.log(`Video muted before play: ${video.muted}`);
-            console.log(`Video volume before play: ${video.volume}`);
-            console.log(`Video duration: ${video.duration}`);
-            console.log(`Video currentTime: ${video.currentTime}`);
-            
             // Check if we're on iOS
             const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
             
@@ -2762,23 +2647,19 @@ function handleMindarTargetFound(hotspotId) {
             video.currentTime = 0;
             
             if (isIOS) {
-                console.log(`🍎 iOS video playback - trying automatic playback first`);
                 // For iOS, try to play with sound if user has interacted, otherwise muted
                 if (hasUserInteracted) {
                     video.muted = false;
                     video.volume = 1.0;
-                    console.log(`🍎 iOS: Attempting to play with sound (user has interacted)`);
-                } else {
-                    video.muted = true;
-                    video.volume = 0;
-                    console.log(`🍎 iOS: Attempting to play muted (no user interaction yet)`);
-                }
+                    } else {
+            video.muted = true;
+            video.volume = 0;
+                    }
                 
                 // Ensure video has the right attributes for iOS
                 video.setAttribute('playsinline', 'true');
                 video.setAttribute('webkit-playsinline', 'true');
             } else {
-                console.log(`🤖 Non-iOS video playback`);
                 // For non-iOS, we can try to play with sound if user has interacted
                 if (hasUserInteracted) {
                     video.muted = false;
@@ -2790,26 +2671,19 @@ function handleMindarTargetFound(hotspotId) {
             }
             
             // Try to play the video
-            console.log(`Calling video.play() for ${hotspotId}...`);
             const playPromise = video.play();
             
             // Set up tap-to-play fallback for iOS if video doesn't start automatically
             if (isIOS) {
                 setTimeout(() => {
                     if (video.paused) {
-                        console.log(`🍎 iOS: Video didn't start automatically - showing tap-to-play`);
-                        addTapToPlayFallback(video, hotspotId);
+            addTapToPlayFallback(video, hotspotId);
                     }
                 }, 1500); // Wait 1.5 seconds to see if video starts automatically
             }
             
             if (playPromise !== undefined) {
                 playPromise.then(() => {
-                    console.log(`✅ Video playing successfully for hotspot: ${hotspotId}`);
-                    console.log(`Video is now playing: ${!video.paused}`);
-                    console.log(`Video muted: ${video.muted}`);
-                    console.log(`Video volume: ${video.volume}`);
-                    
                     // Hide loading ring when video starts playing
                     hideLoadingRing();
                     
@@ -2824,7 +2698,6 @@ function handleMindarTargetFound(hotspotId) {
                         setTimeout(() => {
                             video.muted = false;
                             video.volume = 1.0;
-                            console.log(`Video unmuted after play start for: ${hotspotId}`);
                         }, 100);
                     }
                     
@@ -2854,17 +2727,13 @@ function handleMindarTargetFound(hotspotId) {
                     
                     // On iOS, show tap-to-play when automatic play fails
                     if (isIOS) {
-                        console.log(`🍎 iOS: Automatic play failed - showing tap-to-play`);
                         addTapToPlayFallback(video, hotspotId);
                         return; // Don't try muted fallback on iOS, let user tap
                     }
                     
                     // Try fallback: play muted first, then unmute if user has interacted
-                    console.log('Trying fallback: play muted first');
                     video.muted = true;
                     video.play().then(() => {
-                        console.log('Video playing muted, attempting to unmute...');
-                        
                         // Hide loading ring when fallback succeeds
                         hideLoadingRing();
                         
@@ -2885,7 +2754,6 @@ function handleMindarTargetFound(hotspotId) {
                             setTimeout(() => {
                                 video.muted = false;
                                 video.volume = 1.0;
-                                console.log('Video unmuted successfully');
                             }, 100);
                         }
                         
@@ -2921,19 +2789,16 @@ function handleMindarTargetFound(hotspotId) {
         
         // Ensure video is loaded before playing
         if (video.readyState < 2) {
-            console.log(`⏳ Video not ready (readyState: ${video.readyState}), loading...`);
             video.load();
             
             // Wait for video to be loaded
             video.addEventListener('loadeddata', () => {
-                console.log(`Video loaded, calling playVideo function...`);
                 playVideo();
             }, { once: true });
             return;
         }
         
         // If video is ready, play immediately
-        console.log(`Video is ready (readyState: ${video.readyState}), calling playVideo function...`);
         playVideo();
     } else {
         console.error(`Video element not found for hotspot: ${hotspotId}`);
@@ -2943,8 +2808,6 @@ function handleMindarTargetFound(hotspotId) {
 
 // Handle video ended
 function handleVideoEnded(hotspotId) {
-    console.log(`Video ended for hotspot: ${hotspotId}`);
-    
     // Hide tap-to-play text when video ends
     hideTapToPlayText();
     
@@ -2956,8 +2819,6 @@ function handleVideoEnded(hotspotId) {
     
     // Mark the hotspot as completed immediately
     activatedHotspots.add(hotspotId);
-    console.log(`Hotspot ${hotspotId} marked as completed! Total activated: ${activatedHotspots.size}/${currentHotspotOrder.length}`);
-    
     // Prevent future video loading for this hotspot
     preventVideoLoadingForCompletedHotspot(hotspotId);
     
@@ -2973,7 +2834,6 @@ function handleVideoEnded(hotspotId) {
         if (originalWidth && originalHeight) {
             videoPlane.setAttribute('width', originalWidth);
             videoPlane.setAttribute('height', originalHeight);
-            console.log(`📱 Restored original video plane dimensions for: ${hotspotId}`);
         }
     }
     
@@ -3018,11 +2878,8 @@ function hideTargetFoundIndicator() {
 // Modified activateHotspot function to trigger MindAR
 function activateHotspotWithMindAR(hotspotId, entity) {
     if (activatedHotspots.has(hotspotId)) {
-        console.log(`Hotspot ${hotspotId} already activated - skipping MindAR activation`);
         return; // Already activated - don't allow repeat detection
     }
-    
-    console.log(`Activating MindAR for hotspot: ${hotspotId}`);
     
     // Set the current active hotspot ID
     currentActiveHotspotId = hotspotId;
@@ -3031,7 +2888,6 @@ function activateHotspotWithMindAR(hotspotId, entity) {
     const targetEntity = document.getElementById(`target-${hotspotId}`);
     if (targetEntity) {
         targetEntity.style.display = 'block';
-        console.log(`Showing MindAR target for: ${hotspotId}`);
     } else {
         console.error(`No MindAR target found for hotspot: ${hotspotId}`);
         // Fallback to original activation
@@ -3045,12 +2901,10 @@ function activateHotspotWithMindAR(hotspotId, entity) {
     // Set up target detection handler
     if (targetEntity) {
         targetEntity.addEventListener('targetFound', () => {
-            console.log(`Target found event fired for hotspot: ${hotspotId}`);
             handleMindarTargetFound(hotspotId);
         });
         
         targetEntity.addEventListener('targetLost', () => {
-            console.log(`Target lost event fired for hotspot: ${hotspotId}`);
             handleMindarTargetLost(hotspotId);
         });
     }
@@ -3058,14 +2912,10 @@ function activateHotspotWithMindAR(hotspotId, entity) {
 
 // Add tap-to-play fallback for iOS
 function addTapToPlayFallback(video, hotspotId) {
-    console.log(`🍎 Setting up tap-to-play fallback for ${hotspotId}`);
-    
     // Show tap-to-play text
     showTapToPlayText();
     
     const tapHandler = (event) => {
-        console.log(`Tap detected - attempting to play video for ${hotspotId}`);
-        
         // Hide tap-to-play text
         hideTapToPlayText();
         
@@ -3077,7 +2927,6 @@ function addTapToPlayFallback(video, hotspotId) {
         video.volume = 1.0;
         
         video.play().then(() => {
-            console.log(`Video playing after tap for ${hotspotId}`);
             document.removeEventListener('touchstart', tapHandler);
             document.removeEventListener('click', tapHandler);
             
@@ -3107,8 +2956,6 @@ function addTapToPlayFallback(video, hotspotId) {
             // Try muted as fallback
             video.muted = true;
             video.play().then(() => {
-                console.log(`Video playing muted after tap for ${hotspotId}`);
-                
                 // Hide loading ring when fallback succeeds
                 hideLoadingRing();
                 
@@ -3152,21 +2999,14 @@ function addTapToPlayFallback(video, hotspotId) {
 
 // Test function to manually test video playback
 function testVideoPlayback(hotspotId = 'romulus') {
-    console.log(`Testing video playback for: ${hotspotId}`);
     const videoId = `video-${hotspotId}`;
     const video = document.getElementById(videoId);
     
     if (video) {
-        console.log(`Video element found: ${videoId}`);
-        console.log(`Video readyState: ${video.readyState}`);
-        console.log(`Video paused: ${video.paused}`);
-        console.log(`Video muted: ${video.muted}`);
-        
         // Try to play the video
         video.currentTime = 0;
         video.muted = false;
         video.play().then(() => {
-            console.log(`Video play test successful!`);
         }).catch(error => {
             console.error(`Video play test failed:`, error);
         });
@@ -3199,7 +3039,6 @@ function recreateMindARScene() {
         // Reinitialize MindAR event listeners
         initializeMindAR();
         
-        console.log('MindAR scene recreated successfully');
         return true;
     }
     
