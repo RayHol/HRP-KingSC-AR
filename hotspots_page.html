@@ -305,6 +305,11 @@
         <div>Hotspot ID: <span id="mindar-hotspot-id">None</span></div>
     </div>
 
+    <!-- UI Overlay - Always on top of A-Frame -->
+    <div id="ui-overlay" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 999999; pointer-events: none;">
+        <!-- UI buttons will be moved here dynamically -->
+    </div>
+
     <!-- MindAR Scene Overlay (initially hidden) -->
     <a-scene id="mindar-scene" 
         loading-screen="enabled: false"
@@ -313,7 +318,8 @@
         renderer="colorManagement: true, physicallyCorrectLights"
         vr-mode-ui="enabled: false"
         device-orientation-permission-ui="enabled: false"
-        style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 2000;">
+        style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1;">
+        
         
         <!-- MindAR Video Assets -->
         <a-assets>

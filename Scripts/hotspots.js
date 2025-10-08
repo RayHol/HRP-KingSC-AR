@@ -1463,8 +1463,108 @@ function handleBadgesReplayButton() {
 // Transcript button handler
 function handleTranscriptButton() {
     console.log('Transcript button clicked');
-    // TODO: Open transcript panel (to be implemented later)
-    alert('Transcript panel will be implemented later');
+    
+    // Get the current hotspot ID from the active MindAR target
+    const currentHotspotId = getCurrentActiveHotspot();
+    if (!currentHotspotId) {
+        console.error('No active hotspot found for transcript');
+        return;
+    }
+    
+    // Show transcript overlay
+    showTranscriptOverlay(currentHotspotId);
+}
+
+// Get the currently active hotspot ID
+function getCurrentActiveHotspot() {
+    // Check which hotspot is currently active in MindAR
+    const activeTargets = document.querySelectorAll('[mindar-image-target]');
+    for (let target of activeTargets) {
+        if (target.style.display !== 'none') {
+            const hotspotId = target.id.replace('target-', '');
+            return hotspotId;
+        }
+    }
+    return null;
+}
+
+// Show transcript overlay with hotspot description
+function showTranscriptOverlay(hotspotId) {
+    console.log(`📝 Showing transcript for hotspot: ${hotspotId}`);
+    
+    // Get hotspot config
+    const hotspotConfig = hotspotsConfig[hotspotId];
+    if (!hotspotConfig || !hotspotConfig.media || !hotspotConfig.media[0]) {
+        console.error(`No config found for hotspot: ${hotspotId}`);
+        return;
+    }
+    
+    const description = hotspotConfig.media[0].description;
+    if (!description) {
+        console.error(`No description found for hotspot: ${hotspotId}`);
+        return;
+    }
+    
+    // Create or get transcript overlay
+    let transcriptOverlay = document.getElementById('transcript-overlay');
+    if (!transcriptOverlay) {
+        transcriptOverlay = createTranscriptOverlay();
+    }
+    
+    // Update content
+    const transcriptContent = transcriptOverlay.querySelector('.transcript-content');
+    const transcriptText = transcriptOverlay.querySelector('.transcript-text');
+    
+    transcriptText.textContent = description;
+    
+    // Show overlay with slide-up animation
+    transcriptOverlay.style.display = 'flex';
+    transcriptOverlay.classList.add('show');
+    
+    console.log(`📝 Transcript shown for ${hotspotId}`);
+}
+
+// Create transcript overlay element
+function createTranscriptOverlay() {
+    const overlay = document.createElement('div');
+    overlay.id = 'transcript-overlay';
+    overlay.className = 'transcript-overlay';
+    
+    const content = document.createElement('div');
+    content.className = 'transcript-content';
+    
+    const text = document.createElement('div');
+    text.className = 'transcript-text';
+    
+    const closeBtn = document.createElement('button');
+    closeBtn.className = 'transcript-close-btn';
+    closeBtn.innerHTML = '✕';
+    
+    content.appendChild(closeBtn);
+    content.appendChild(text);
+    overlay.appendChild(content);
+    document.body.appendChild(overlay);
+    
+    // Add event listeners
+    closeBtn.addEventListener('click', hideTranscriptOverlay);
+    overlay.addEventListener('click', function(e) {
+        if (e.target === overlay) {
+            hideTranscriptOverlay();
+        }
+    });
+    
+    return overlay;
+}
+
+// Hide transcript overlay
+function hideTranscriptOverlay() {
+    const transcriptOverlay = document.getElementById('transcript-overlay');
+    if (transcriptOverlay) {
+        transcriptOverlay.classList.remove('show');
+        setTimeout(() => {
+            transcriptOverlay.style.display = 'none';
+        }, 300);
+    }
 }
 
 // Update badges/replay button state
@@ -1495,6 +1595,7 @@ function showTranscriptButton(show = true) {
             transcriptBtn.style.setProperty('display', 'flex', 'important');
             transcriptBtn.style.setProperty('visibility', 'visible', 'important');
             transcriptBtn.style.setProperty('opacity', '1', 'important');
+            transcriptBtn.style.setProperty('z-index', '999999', 'important');
             transcriptBtn.classList.add('show');
         } else {
             transcriptBtn.style.setProperty('display', 'none', 'important');
@@ -1506,8 +1607,135 @@ function showTranscriptButton(show = true) {
         console.log(`📝 Button computed style:`, window.getComputedStyle(transcriptBtn).display);
         console.log(`📝 Button visibility:`, window.getComputedStyle(transcriptBtn).visibility);
         console.log(`📝 Button opacity:`, window.getComputedStyle(transcriptBtn).opacity);
+        
+        // If showing transcript button and MindAR is active, ensure it's cloned to overlay
+        if (show && isMindarActive) {
+            console.log('📝 MindAR is active, ensuring transcript button is cloned to overlay');
+            ensureUIButtonsOnTop();
+        }
     } else {
         console.error('📝 Transcript button not found!');
+    }
+}
+
+// Function to ensure UI buttons are always on top
+function ensureUIButtonsOnTop() {
+    const uiOverlay = document.getElementById('ui-overlay');
+    
+    if (uiOverlay) {
+        // Enable pointer events on overlay
+        uiOverlay.style.setProperty('pointer-events', 'auto', 'important');
+        
+        // Clear any existing buttons in overlay
+        uiOverlay.innerHTML = '';
+        
+        // Get all UI buttons
+        const backBtn = document.getElementById('back-btn');
+        const helpBtn = document.getElementById('help-btn');
+        const badgesBtn = document.getElementById('badges-replay-btn');
+        const transcriptBtn = document.getElementById('transcript-btn');
+        
+        // Clone buttons and copy event listeners properly
+        if (backBtn) {
+            const clonedBack = backBtn.cloneNode(true);
+            clonedBack.style.cssText = 'position: absolute; top: 15px; left: 15px; width: 40px; height: 40px; z-index: 999999; pointer-events: auto; display: flex; background: rgba(255, 255, 255, 0.3); backdrop-filter: blur(10px); border: none; border-radius: 12px; cursor: pointer; align-items: center; justify-content: center;';
+            
+            // Copy all event listeners from original button
+            clonedBack.addEventListener('click', function() {
+                backBtn.click();
+            });
+            
+            uiOverlay.appendChild(clonedBack);
+        }
+        
+        if (helpBtn) {
+            const clonedHelp = helpBtn.cloneNode(true);
+            clonedHelp.style.cssText = 'position: absolute; top: 15px; right: 15px; width: 40px; height: 40px; z-index: 999999; pointer-events: auto; display: flex; background: rgba(255, 255, 255, 0.3); backdrop-filter: blur(10px); border: none; border-radius: 12px; cursor: pointer; align-items: center; justify-content: center;';
+            
+            // Copy all event listeners from original button
+            clonedHelp.addEventListener('click', function() {
+                helpBtn.click();
+            });
+            
+            uiOverlay.appendChild(clonedHelp);
+        }
+        
+        if (badgesBtn) {
+            const clonedBadges = badgesBtn.cloneNode(true);
+            clonedBadges.style.cssText = 'position: absolute; top: 15px; right: 65px; width: 100px; height: 40px; z-index: 999999; pointer-events: auto; display: flex; background: rgba(255, 255, 255, 0.3); backdrop-filter: blur(10px); border: none; border-radius: 12px; cursor: pointer; align-items: center; justify-content: center;';
+            
+            // Copy all event listeners from original button
+            clonedBadges.addEventListener('click', function() {
+                badgesBtn.click();
+            });
+            
+            uiOverlay.appendChild(clonedBadges);
+        }
+        
+        if (transcriptBtn) {
+            // Make sure transcript button is visible before cloning
+            transcriptBtn.style.setProperty('display', 'flex', 'important');
+            transcriptBtn.style.setProperty('visibility', 'visible', 'important');
+            
+            const clonedTranscript = transcriptBtn.cloneNode(true);
+            clonedTranscript.style.cssText = 'position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%); width: 120px; height: 40px; z-index: 999999; pointer-events: auto; display: flex; background: rgba(255, 255, 255, 0.3); backdrop-filter: blur(10px); border: none; border-radius: 12px; cursor: pointer; align-items: center; justify-content: center;';
+            
+            // Copy all event listeners from original button
+            clonedTranscript.addEventListener('click', function() {
+                console.log('📝 Cloned transcript button clicked');
+                transcriptBtn.click();
+            });
+            
+            uiOverlay.appendChild(clonedTranscript);
+            console.log('📝 Transcript button cloned to overlay');
+        } else {
+            console.error('📝 Transcript button not found for cloning');
+        }
+        
+        // Hide original buttons
+        const originalButtons = document.querySelectorAll('.ui-button');
+        originalButtons.forEach(button => {
+            button.style.display = 'none';
+        });
+        
+        console.log('🔧 UI buttons cloned to overlay:', {
+            back: !!backBtn,
+            help: !!helpBtn,
+            badges: !!badgesBtn,
+            transcript: !!transcriptBtn
+        });
+        
+        // Debug: Check if transcript button exists and is visible
+        if (transcriptBtn) {
+            console.log('📝 Transcript button found:', {
+                id: transcriptBtn.id,
+                display: transcriptBtn.style.display,
+                visible: transcriptBtn.offsetParent !== null
+            });
+        } else {
+            console.error('📝 Transcript button not found in DOM');
+        }
+    }
+}
+
+// Function to restore UI buttons to original positions
+function restoreUIButtons() {
+    const uiOverlay = document.getElementById('ui-overlay');
+    
+    if (uiOverlay) {
+        // Reset overlay pointer events
+        uiOverlay.style.setProperty('pointer-events', 'none', 'important');
+        
+        // Show original buttons again
+        const originalButtons = document.querySelectorAll('.ui-button');
+        originalButtons.forEach(button => {
+            button.style.display = '';
+        });
+        
+        // Clear the overlay
+        uiOverlay.innerHTML = '';
+        
+        console.log('🔧 UI buttons restored to original positions');
     }
 }
 
@@ -2093,6 +2321,9 @@ function showMindARScene(hotspotId) {
     mindarScene.style.display = 'block';
     mindarScene.classList.add('show');
     
+    // Ensure UI buttons stay on top when MindAR scene is active
+    ensureUIButtonsOnTop();
+    
     isMindarActive = true;
     
     console.log(`MindAR scene activated for hotspot: ${hotspotId}`);
@@ -2130,6 +2361,9 @@ function hideMindARScene() {
     // Hide MindAR scene
     mindarScene.style.display = 'none';
     mindarScene.classList.remove('show');
+    
+    // Restore UI buttons to original positions
+    restoreUIButtons();
     
     // Show main AR scene
     const mainScene = document.getElementById('ar-scene');
@@ -2829,11 +3063,14 @@ function addTapToPlayFallback(video, hotspotId) {
             document.removeEventListener('touchstart', tapHandler);
             document.removeEventListener('click', tapHandler);
             
-            // Hide loading ring when video starts playing
-            hideLoadingRing();
-            
-            // Show video playing state (hide crosshair)
-            showVideoPlaying();
+                    // Hide loading ring when video starts playing
+                    hideLoadingRing();
+                    
+                    // Show video playing state (hide crosshair)
+                    showVideoPlaying();
+                    
+                    // Ensure UI buttons stay on top during video playback
+                    ensureUIButtonsOnTop();
             
             // Trigger fade-in animation
             const videoOverlay = document.getElementById(`videooverlay-${hotspotId}`);

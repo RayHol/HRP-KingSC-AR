@@ -1731,6 +1731,7 @@ body {
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
+    z-index: 99999 !important;
     gap: 8px !important;
     transition: all 0.3s ease !important;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
@@ -1848,6 +1849,63 @@ body {
     opacity: 1 !important;
 }
 
+/* Ensure all UI buttons are always on top and clickable */
+.ui-button.back-button,
+.ui-button.help-button,
+.ui-button.badges-replay-button,
+.ui-button.transcript-button {
+    z-index: 99999 !important;
+    pointer-events: auto !important;
+    position: fixed !important;
+}
+
+/* Ensure A-Frame elements don't interfere with UI buttons */
+a-scene {
+    z-index: 1 !important;
+}
+
+a-entity {
+    z-index: 2 !important;
+}
+
+a-plane {
+    z-index: 3 !important;
+}
+
+/* Force A-Frame canvas to stay below UI elements */
+a-scene canvas {
+    z-index: 1 !important;
+    position: relative !important;
+}
+
+/* Ensure UI buttons are above A-Frame canvas */
+.ui-button {
+    z-index: 99999 !important;
+    position: fixed !important;
+    pointer-events: auto !important;
+}
+
+/* Force A-Frame scene to not interfere with HTML elements */
+#mindar-scene {
+    z-index: 1 !important;
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+}
+
+/* Ensure UI buttons are always on top of everything */
+.ui-button.back-button,
+.ui-button.help-button,
+.ui-button.badges-replay-button,
+.ui-button.transcript-button {
+    z-index: 999999 !important;
+    position: fixed !important;
+    pointer-events: auto !important;
+    isolation: isolate !important;
+}
+
 /* Responsive adjustments */
 @media (max-width: 768px) {
     .back-button,
@@ -1894,6 +1952,89 @@ body {
     .badges-replay-button .ui-icon {
         width: 18px;
         height: 18px;
+    }
+}
+
+/* Transcript Overlay */
+.transcript-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: transparent; /* Remove dark background */
+    z-index: 1000000; /* Higher than everything else */
+    display: none;
+    justify-content: center;
+    align-items: flex-end;
+    pointer-events: auto;
+}
+
+.transcript-overlay.show .transcript-content {
+    transform: translateY(0);
+}
+
+.transcript-content {
+    background: rgba(0, 0, 0, 0.8); /* Semi-transparent black like badges/help */
+    color: white;
+    padding: 20px;
+    margin: 20px;
+    border-radius: 12px; /* Match other overlays */
+    max-width: 90%;
+    max-height: 70%;
+    overflow-y: auto;
+    transform: translateY(100%);
+    transition: transform 0.3s ease-out;
+    position: relative;
+    backdrop-filter: blur(10px); /* Match other overlays */
+    border: 1px solid rgba(255, 255, 255, 0.1); /* Subtle border like other overlays */
+}
+
+.transcript-text {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif; /* Match system fonts */
+    font-size: 16px;
+    line-height: 1.5;
+    text-align: left;
+    padding-right: 30px; /* Space for close button */
+    font-weight: 400; /* Match other overlays */
+    letter-spacing: 0.01em; /* Subtle letter spacing */
+}
+
+.transcript-close-btn {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    background: rgba(255, 255, 255, 0.1); /* Subtle background like other buttons */
+    border: none;
+    color: white;
+    font-size: 20px;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 6px; /* Rounded corners like other buttons */
+    transition: all 0.2s ease; /* Smooth transitions */
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.transcript-close-btn:hover {
+    background: rgba(255, 255, 255, 0.2); /* Hover effect */
+    transform: scale(1.05); /* Subtle scale on hover */
+}
+
+/* Mobile responsive for transcript */
+@media (max-width: 768px) {
+    .transcript-content {
+        margin: 10px;
+        max-width: 95%;
+        max-height: 80%;
+        padding: 15px;
+    }
+    
+    .transcript-text {
+        font-size: 14px;
     }
 }
 
