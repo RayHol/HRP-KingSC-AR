@@ -1911,36 +1911,34 @@ function getPreloadStatus() {
 
 // Show tap-to-play text for iOS
 function showTapToPlayText() {
-    const centerTarget = document.getElementById('center-target');
-    if (centerTarget) {
-        // Create tap-to-play text if it doesn't exist
-        let tapText = document.getElementById('tap-to-play-text');
-        if (!tapText) {
-            tapText = document.createElement('div');
-            tapText.id = 'tap-to-play-text';
-            tapText.textContent = 'Tap to play';
-            tapText.style.cssText = `
-                position: fixed;
-                top: 80px;
-                left: 50%;
-                transform: translateX(-50%);
-                color: white;
-                font-size: 14px;
-                font-weight: normal;
-                text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
-                z-index: 99999;
-                pointer-events: none;
-                opacity: 0;
-                transition: opacity 0.3s ease;
-                font-family: Arial, sans-serif;
-            `;
-            centerTarget.appendChild(tapText);
-        }
-        
-        // Show the text
-        tapText.style.opacity = '1';
-        console.log('📱 Tap to play text shown');
+    // Create tap-to-play text if it doesn't exist
+    let tapText = document.getElementById('tap-to-play-text');
+    if (!tapText) {
+        tapText = document.createElement('div');
+        tapText.id = 'tap-to-play-text';
+        tapText.textContent = 'Tap to play';
+        tapText.style.cssText = `
+            position: fixed;
+            top: 60px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: white;
+            font-size: 14px;
+            font-weight: normal;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+            z-index: 99999;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            font-family: Arial, sans-serif;
+        `;
+        // Append to body instead of center-target to ensure it's 2D
+        document.body.appendChild(tapText);
     }
+    
+    // Show the text
+    tapText.style.opacity = '1';
+    console.log('📱 Tap to play text shown');
 }
 
 // Hide tap-to-play text
