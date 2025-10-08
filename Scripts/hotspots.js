@@ -1744,6 +1744,10 @@ let isPreloading = false;
 function startIntelligentVideoPreloading() {
     console.log('🚀 Starting intelligent video preloading system...');
     
+    // Check if we're on iOS
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+    console.log(`📱 Device: ${isIOS ? 'iOS' : 'Non-iOS'}`);
+    
     // Get all video elements
     const videoElements = document.querySelectorAll('video[id^="video-"]');
     console.log(`📹 Found ${videoElements.length} video elements to preload`);
@@ -1772,8 +1776,15 @@ function startIntelligentVideoPreloading() {
     
     console.log(`📋 Preload queue created with ${preloadQueue.length} videos`);
     
-    // Start preloading
-    startPreloadProcess();
+    if (isIOS) {
+        console.log('🍎 iOS detected - using iOS-compatible preloading strategy');
+        // On iOS, we'll preload only metadata, not the full video
+        startIOSPreloadProcess();
+    } else {
+        console.log('🤖 Non-iOS device - using full preloading');
+        // Start preloading
+        startPreloadProcess();
+    }
 }
 
 // Get video priority based on hotspot order
@@ -1781,6 +1792,38 @@ function getVideoPriority(hotspotId) {
     const priorityOrder = ['romulus', 'caesar', 'nero', 'silenus', 'furies', 'herakles', 'alexander', 'diana'];
     const index = priorityOrder.indexOf(hotspotId);
     return index === -1 ? 999 : index; // Unknown hotspots get lowest priority
+}
+
+// iOS-specific preloading (metadata only)
+function startIOSPreloadProcess() {
+    console.log('🍎 Starting iOS-compatible preloading (metadata only)...');
+    
+    preloadQueue.forEach(({ video, videoId, hotspotId }) => {
+        console.log(`📱 iOS preloading metadata for: ${videoId}`);
+        
+        // Set preload to metadata only (iOS compatible)
+        video.setAttribute('preload', 'metadata');
+        
+        // Mark as ready for metadata preloading
+        videoPreloadStatus.set(videoId, 'metadata-ready');
+        
+        // Set up event listeners for when video is actually needed
+        video.addEventListener('loadstart', () => {
+            console.log(`📱 iOS video load started: ${videoId}`);
+        });
+        
+        video.addEventListener('loadedmetadata', () => {
+            console.log(`📱 iOS video metadata loaded: ${videoId}`);
+            videoPreloadStatus.set(videoId, 'metadata-loaded');
+        });
+        
+        video.addEventListener('error', (error) => {
+            console.warn(`📱 iOS video error: ${videoId}`, error);
+            videoPreloadStatus.set(videoId, 'error');
+        });
+    });
+    
+    console.log('🍎 iOS preloading setup complete - videos will load on demand');
 }
 
 // Start the preload process
@@ -1853,7 +1896,8 @@ function preloadNextVideo() {
 
 // Check if video is preloaded
 function isVideoPreloaded(videoId) {
-    return videoPreloadStatus.get(videoId) === 'ready';
+    const status = videoPreloadStatus.get(videoId);
+    return status === 'ready' || status === 'metadata-ready' || status === 'metadata-loaded';
 }
 
 // Get preload status for debugging
@@ -2300,6 +2344,14 @@ function handleMindarTargetFound(hotspotId) {
             console.log(`⏳ Video not preloaded, showing loading ring and waiting...`);
             showLoadingRing();
             
+            // For iOS, we need to trigger video loading with user interaction
+            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+            if (isIOS) {
+                console.log(`🍎 iOS detected - triggering video load with user interaction`);
+                // Force video to start loading
+                video.load();
+            }
+            
             // Wait for video to be ready
             const waitForVideoReady = () => {
                 if (video.readyState >= 3) { // HAVE_FUTURE_DATA or HAVE_ENOUGH_DATA
@@ -2369,24 +2421,46 @@ function handleMindarTargetFound(hotspotId) {
             console.log(`Video duration: ${video.duration}`);
             console.log(`Video currentTime: ${video.currentTime}`);
             
+            // Check if we're on iOS
+            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+            
             // Adjust video plane dimensions for webm format
             adjustVideoPlaneForFormat(hotspotId, video);
             
             // Reset video to beginning
             video.currentTime = 0;
             
-            // iOS requires fresh user interaction for each video
-            // Always start muted and try to unmute after play starts
-            video.muted = true;
-            video.volume = 0;
-            console.log(`Starting video muted for iOS compatibility: ${hotspotId}`);
+            if (isIOS) {
+                console.log(`🍎 iOS video playback - using iOS-specific approach`);
+                // iOS requires fresh user interaction for each video
+                // Always start muted and try to unmute after play starts
+                video.muted = true;
+                video.volume = 0;
+                console.log(`Starting video muted for iOS compatibility: ${hotspotId}`);
+                
+                // Ensure video has the right attributes for iOS
+                video.setAttribute('playsinline', 'true');
+                video.setAttribute('webkit-playsinline', 'true');
+            } else {
+                console.log(`🤖 Non-iOS video playback`);
+                // For non-iOS, we can try to play with sound if user has interacted
+                if (hasUserInteracted) {
+                    video.muted = false;
+                    video.volume = 1.0;
+                } else {
+                    video.muted = true;
+                    video.volume = 0;
+                }
+            }
             
             // Try to play the video
             console.log(`Calling video.play() for ${hotspotId}...`);
             const playPromise = video.play();
             
             // Add tap-to-play fallback for iOS
-            addTapToPlayFallback(video, hotspotId);
+            if (isIOS) {
+                addTapToPlayFallback(video, hotspotId);
+            }
             
             if (playPromise !== undefined) {
                 playPromise.then(() => {
