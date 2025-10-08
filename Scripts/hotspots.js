@@ -1919,7 +1919,7 @@ function showTapToPlayText() {
         tapText.textContent = 'Tap to play';
         tapText.style.cssText = `
             position: fixed;
-            top: 60px;
+            top: 90px;
             left: 50%;
             transform: translateX(-50%);
             color: white;
@@ -2421,13 +2421,23 @@ function handleMindarTargetFound(hotspotId) {
             // Check if video is webm format
             const isWebm = video.src && video.src.includes('.webm');
             const isAndroid = /Android/i.test(navigator.userAgent);
+            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+            
+            // Store original dimensions if not already stored
+            if (!videoPlane.getAttribute('data-original-width')) {
+                const originalWidth = videoPlane.getAttribute('width');
+                const originalHeight = videoPlane.getAttribute('height');
+                videoPlane.setAttribute('data-original-width', originalWidth);
+                videoPlane.setAttribute('data-original-height', originalHeight);
+                console.log(`📱 Stored original dimensions for ${hotspotId}: ${originalWidth}x${originalHeight}`);
+            }
             
             if (isWebm && isAndroid) {
                 console.log(`📱 Adjusting video plane dimensions for webm on Android: ${hotspotId}`);
                 
-                // Store original dimensions
-                const originalWidth = videoPlane.getAttribute('width');
-                const originalHeight = videoPlane.getAttribute('height');
+                // Get original dimensions
+                const originalWidth = videoPlane.getAttribute('data-original-width');
+                const originalHeight = videoPlane.getAttribute('data-original-height');
                 
                 // Apply webm-specific adjustments (increase width to compensate for squashing)
                 const webmWidth = parseFloat(originalWidth) * 1.3; // 30% wider
@@ -2437,10 +2447,17 @@ function handleMindarTargetFound(hotspotId) {
                 videoPlane.setAttribute('height', webmHeight);
                 
                 console.log(`📱 Webm adjustment applied - Width: ${originalWidth} → ${webmWidth}, Height: ${originalHeight} → ${webmHeight}`);
+            } else if (isIOS) {
+                console.log(`🍎 iOS video plane adjustment for: ${hotspotId}`);
+                // Ensure iOS videos have proper dimensions
+                const originalWidth = videoPlane.getAttribute('data-original-width');
+                const originalHeight = videoPlane.getAttribute('data-original-height');
                 
-                // Store original dimensions for restoration
-                videoPlane.setAttribute('data-original-width', originalWidth);
-                videoPlane.setAttribute('data-original-height', originalHeight);
+                if (originalWidth && originalHeight) {
+                    videoPlane.setAttribute('width', originalWidth);
+                    videoPlane.setAttribute('height', originalHeight);
+                    console.log(`🍎 iOS: Set video plane dimensions to ${originalWidth}x${originalHeight}`);
+                }
             } else if (!isWebm && isAndroid) {
                 // Restore original dimensions for mp4 on Android
                 const originalWidth = videoPlane.getAttribute('data-original-width');
@@ -2547,10 +2564,20 @@ function handleMindarTargetFound(hotspotId) {
                     // Update debug UI
                     updateMindarDebugUI(hotspotId, video, hasUserInteracted ? 'Playing with audio' : 'Playing muted');
                     
-                    // Trigger fade-in animation
+                    // Trigger fade-in animation with iOS-specific timing
                     const videoOverlay = document.getElementById(`videooverlay-${hotspotId}`);
                     if (videoOverlay) {
-                        videoOverlay.emit('fadein-' + hotspotId);
+                        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+                        if (isIOS) {
+                            // iOS needs a small delay to ensure video is ready
+                            setTimeout(() => {
+                                console.log(`🍎 iOS: Triggering fade-in animation for ${hotspotId}`);
+                                videoOverlay.emit('fadein-' + hotspotId);
+                            }, 100);
+                        } else {
+                            console.log(`🤖 Non-iOS: Triggering fade-in animation for ${hotspotId}`);
+                            videoOverlay.emit('fadein-' + hotspotId);
+                        }
                     }
                     
                     // Set up video end handler
@@ -2590,10 +2617,20 @@ function handleMindarTargetFound(hotspotId) {
                         // Show video playing state (hide crosshair)
                         showVideoPlaying();
                         
-                        // Trigger fade-in animation
+                        // Trigger fade-in animation with iOS-specific timing
                         const videoOverlay = document.getElementById(`videooverlay-${hotspotId}`);
                         if (videoOverlay) {
-                            videoOverlay.emit('fadein-' + hotspotId);
+                            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+                            if (isIOS) {
+                                // iOS needs a small delay to ensure video is ready
+                                setTimeout(() => {
+                                    console.log(`🍎 iOS: Triggering fallback fade-in animation for ${hotspotId}`);
+                                    videoOverlay.emit('fadein-' + hotspotId);
+                                }, 100);
+                            } else {
+                                console.log(`🤖 Non-iOS: Triggering fallback fade-in animation for ${hotspotId}`);
+                                videoOverlay.emit('fadein-' + hotspotId);
+                            }
                         }
                         
                         // If user has interacted, try to unmute after a short delay
@@ -2688,10 +2725,16 @@ function handleVideoEnded(hotspotId) {
     // Hide MindAR scene
     hideMindARScene();
     
-    // Show congratulations overlay
+    // Show congratulations overlay with iOS-specific timing
     const badgeId = hotspotToBadgeMapping[hotspotId];
     if (badgeId) {
-        unlockBadge(badgeId);
+        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+        const delay = isIOS ? 800 : 500; // iOS needs more time for animations
+        
+        console.log(`🎉 Showing congratulations overlay for ${hotspotId} after ${delay}ms delay (iOS: ${isIOS})`);
+        setTimeout(() => {
+            unlockBadge(badgeId);
+        }, delay);
     }
 }
 
