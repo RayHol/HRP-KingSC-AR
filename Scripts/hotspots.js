@@ -1920,22 +1920,19 @@ function showTapToPlayText() {
             tapText.id = 'tap-to-play-text';
             tapText.textContent = 'Tap to play';
             tapText.style.cssText = `
-                position: absolute;
-                top: 30%;
+                position: fixed;
+                top: 80px;
                 left: 50%;
-                transform: translate(-50%, -50%);
+                transform: translateX(-50%);
                 color: white;
-                font-size: 18px;
-                font-weight: bold;
-                text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
-                z-index: 10000;
+                font-size: 14px;
+                font-weight: normal;
+                text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+                z-index: 99999;
                 pointer-events: none;
                 opacity: 0;
                 transition: opacity 0.3s ease;
-                background: rgba(0,0,0,0.5);
-                padding: 8px 16px;
-                border-radius: 8px;
-                border: 2px solid rgba(255,255,255,0.8);
+                font-family: Arial, sans-serif;
             `;
             centerTarget.appendChild(tapText);
         }
