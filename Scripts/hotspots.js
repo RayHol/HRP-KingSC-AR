@@ -2523,18 +2523,7 @@ function handleMindarTargetFound(hotspotId) {
             console.log(`Calling video.play() for ${hotspotId}...`);
             const playPromise = video.play();
             
-            // Add tap-to-play fallback for iOS (only if video doesn't start automatically)
-            if (isIOS) {
-                // Set up a timeout to check if video starts playing automatically
-                setTimeout(() => {
-                    if (video.paused) {
-                        console.log(`🍎 Video didn't start automatically on iOS - showing tap-to-play`);
-                        addTapToPlayFallback(video, hotspotId);
-                    } else {
-                        console.log(`🍎 Video started automatically on iOS - no tap needed`);
-                    }
-                }, 1000); // Wait 1 second to see if video starts automatically
-            }
+            // Don't set up tap-to-play fallback automatically - only when play fails
             
             if (playPromise !== undefined) {
                 playPromise.then(() => {
@@ -2564,25 +2553,10 @@ function handleMindarTargetFound(hotspotId) {
                     // Update debug UI
                     updateMindarDebugUI(hotspotId, video, hasUserInteracted ? 'Playing with audio' : 'Playing muted');
                     
-                    // Trigger fade-in animation after ensuring video is ready
+                    // Trigger fade-in animation
                     const videoOverlay = document.getElementById(`videooverlay-${hotspotId}`);
                     if (videoOverlay) {
-                        // Ensure video is ready before triggering animation
-                        if (video.readyState >= 3) {
-                            console.log(`✅ Video ready, triggering fade-in for ${hotspotId}`);
-                            videoOverlay.emit('fadein-' + hotspotId);
-                        } else {
-                            console.log(`⏳ Video not ready (${video.readyState}), waiting...`);
-                            const waitForReady = () => {
-                                if (video.readyState >= 3) {
-                                    console.log(`✅ Video now ready, triggering fade-in for ${hotspotId}`);
-                                    videoOverlay.emit('fadein-' + hotspotId);
-                                } else {
-                                    setTimeout(waitForReady, 100);
-                                }
-                            };
-                            setTimeout(waitForReady, 100);
-                        }
+                        videoOverlay.emit('fadein-' + hotspotId);
                     }
                     
                     // Set up video end handler
@@ -2600,13 +2574,6 @@ function handleMindarTargetFound(hotspotId) {
                     // Hide loading ring on error
                     hideLoadingRing();
                     
-                    // On iOS, show tap-to-play text when automatic play fails
-                    if (isIOS) {
-                        console.log(`🍎 iOS: Automatic play failed - showing tap-to-play`);
-                        addTapToPlayFallback(video, hotspotId);
-                        return; // Don't try fallback, let user tap
-                    }
-                    
                     // Try fallback: play muted first, then unmute if user has interacted
                     console.log('Trying fallback: play muted first');
                     video.muted = true;
@@ -2622,25 +2589,10 @@ function handleMindarTargetFound(hotspotId) {
                         // Show video playing state (hide crosshair)
                         showVideoPlaying();
                         
-                        // Trigger fade-in animation after ensuring video is ready
+                        // Trigger fade-in animation
                         const videoOverlay = document.getElementById(`videooverlay-${hotspotId}`);
                         if (videoOverlay) {
-                            // Ensure video is ready before triggering animation
-                            if (video.readyState >= 3) {
-                                console.log(`✅ Video ready, triggering fallback fade-in for ${hotspotId}`);
-                                videoOverlay.emit('fadein-' + hotspotId);
-                            } else {
-                                console.log(`⏳ Video not ready (${video.readyState}), waiting...`);
-                                const waitForReady = () => {
-                                    if (video.readyState >= 3) {
-                                        console.log(`✅ Video now ready, triggering fallback fade-in for ${hotspotId}`);
-                                        videoOverlay.emit('fadein-' + hotspotId);
-                                    } else {
-                                        setTimeout(waitForReady, 100);
-                                    }
-                                };
-                                setTimeout(waitForReady, 100);
-                            }
+                            videoOverlay.emit('fadein-' + hotspotId);
                         }
                         
                         // If user has interacted, try to unmute after a short delay
@@ -2735,13 +2687,10 @@ function handleVideoEnded(hotspotId) {
     // Hide MindAR scene
     hideMindARScene();
     
-    // Show congratulations overlay with a small delay to ensure animations complete
+    // Show congratulations overlay
     const badgeId = hotspotToBadgeMapping[hotspotId];
     if (badgeId) {
-        console.log(`🎉 Unlocking badge for ${hotspotId}: ${badgeId}`);
-        setTimeout(() => {
-            unlockBadge(badgeId);
-        }, 300);
+        unlockBadge(badgeId);
     }
 }
 
