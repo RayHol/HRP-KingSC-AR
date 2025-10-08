@@ -580,14 +580,8 @@ function displayHotspotMedia(mediaItem, index, commonValues, currentPosition, cu
 
         console.log('Hotspot intersected:', mediaItem.url);
         
-        // Update opacity based on activation status (keep white color)
-        if (activatedHotspots.has(hotspotId)) {
-            entity.setAttribute('material', 'color', 'white'); // Keep white for activated
-            entity.setAttribute('material', 'opacity', '0.2'); // Keep 40% opacity for activated
-        } else {
-            entity.setAttribute('material', 'color', 'white'); // Keep white on hover
-            entity.setAttribute('material', 'opacity', '1.0'); // Full opacity on hover
-        }
+        // DON'T change opacity on hover - maintain original visual state
+        // Only change crosshair and button states
 
         // Change crosshair to green when hovering over hotspot
         const centerTarget = document.getElementById('center-target');
@@ -606,14 +600,8 @@ function displayHotspotMedia(mediaItem, index, commonValues, currentPosition, cu
     entity.addEventListener('raycaster-intersected-cleared', function () {
         console.log('Hotspot no longer intersected:', mediaItem.url);
         
-        // Reset to appropriate state based on activation status (keep white color)
-        if (activatedHotspots.has(hotspotId)) {
-            entity.setAttribute('material', 'color', 'white'); // Keep white for activated
-            entity.setAttribute('material', 'opacity', '0.2'); // Keep 40% opacity for activated
-        } else {
-            entity.setAttribute('material', 'color', 'white'); // Keep white for inactive
-            entity.setAttribute('material', 'opacity', '1.0'); // Keep 100% opacity for active
-        }
+        // DON'T change opacity - maintain original visual state
+        // Only reset crosshair and button states
 
         // Change crosshair back to yellow when no longer hovering over hotspot
         const centerTarget = document.getElementById('center-target');
@@ -741,9 +729,14 @@ function showHotspotNotification(hotspotName) {
 
 // Function to check if a hotspot can be activated (sequential order)
 function canActivateHotspot(hotspotId) {
+    // If hotspot is already activated, it cannot be activated again
+    if (activatedHotspots.has(hotspotId)) {
+        return false;
+    }
+    
     const hotspotIndex = currentHotspotOrder.indexOf(hotspotId);
     
-    // First hotspot (index 0) can always be activated
+    // First hotspot (index 0) can always be activated (if not already activated)
     if (hotspotIndex === 0) {
         return true;
     }
@@ -1685,15 +1678,8 @@ function hideCongratulationsOverlay() {
                 console.log('Video stopped when congratulations popup was closed');
             }
             
-            // Mark the current hotspot as completed
+            // Clear the current active hotspot ID (hotspot already marked as completed in handleVideoEnded)
             if (currentActiveHotspotId) {
-                activatedHotspots.add(currentActiveHotspotId);
-                console.log(`Hotspot ${currentActiveHotspotId} marked as completed! Total activated: ${activatedHotspots.size}/${currentHotspotOrder.length}`);
-                
-                // Refresh all hotspot visual states to show completed status
-                refreshAllHotspotVisualStates();
-                
-                // Clear the current active hotspot ID
                 currentActiveHotspotId = null;
             }
             
@@ -2186,6 +2172,13 @@ function handleMindarTargetFound(hotspotId) {
 // Handle video ended
 function handleVideoEnded(hotspotId) {
     console.log(`Video ended for hotspot: ${hotspotId}`);
+    
+    // Mark the hotspot as completed immediately
+    activatedHotspots.add(hotspotId);
+    console.log(`Hotspot ${hotspotId} marked as completed! Total activated: ${activatedHotspots.size}/${currentHotspotOrder.length}`);
+    
+    // Refresh all hotspot visual states to show completed status
+    refreshAllHotspotVisualStates();
     
     // Restore original video plane dimensions
     const videoPlane = document.getElementById(`videooverlay-${hotspotId}`);
