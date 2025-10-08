@@ -1488,9 +1488,26 @@ function updateBadgesReplayButton(isHoveringHotspot) {
 // Show/hide transcript button
 function showTranscriptButton(show = true) {
     const transcriptBtn = document.getElementById('transcript-btn');
+    console.log(`📝 showTranscriptButton called with show=${show}, button found:`, !!transcriptBtn);
     if (transcriptBtn) {
-        transcriptBtn.style.setProperty('display', show ? 'flex' : 'none', 'important');
+        // Try multiple approaches to ensure the button shows
+        if (show) {
+            transcriptBtn.style.setProperty('display', 'flex', 'important');
+            transcriptBtn.style.setProperty('visibility', 'visible', 'important');
+            transcriptBtn.style.setProperty('opacity', '1', 'important');
+            transcriptBtn.classList.add('show');
+        } else {
+            transcriptBtn.style.setProperty('display', 'none', 'important');
+            transcriptBtn.style.setProperty('visibility', 'hidden', 'important');
+            transcriptBtn.style.setProperty('opacity', '0', 'important');
+            transcriptBtn.classList.remove('show');
+        }
         console.log(`📝 Transcript button ${show ? 'shown' : 'hidden'}`);
+        console.log(`📝 Button computed style:`, window.getComputedStyle(transcriptBtn).display);
+        console.log(`📝 Button visibility:`, window.getComputedStyle(transcriptBtn).visibility);
+        console.log(`📝 Button opacity:`, window.getComputedStyle(transcriptBtn).opacity);
+    } else {
+        console.error('📝 Transcript button not found!');
     }
 }
 
@@ -2648,8 +2665,10 @@ function handleMindarTargetFound(hotspotId) {
         // Show loading ring while video is loading
         showLoadingRing();
         
-        // Show transcript button when hotspot is found
-        showTranscriptButton(true);
+        // Show transcript button when hotspot is found (with a small delay to ensure it's visible)
+        setTimeout(() => {
+            showTranscriptButton(true);
+        }, 100);
         
         // Ensure video is loaded before playing
         if (video.readyState < 2) {

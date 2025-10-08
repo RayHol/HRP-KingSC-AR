@@ -1841,6 +1841,13 @@ body {
     display: none !important;
 }
 
+/* Show transcript button when .show class is added */
+.ui-button.transcript-button.show {
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+
 /* Responsive adjustments */
 @media (max-width: 768px) {
     .back-button,
