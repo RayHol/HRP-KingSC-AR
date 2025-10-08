@@ -1909,6 +1909,48 @@ function getPreloadStatus() {
     return status;
 }
 
+// Show tap-to-play text for iOS
+function showTapToPlayText() {
+    const centerTarget = document.getElementById('center-target');
+    if (centerTarget) {
+        // Create tap-to-play text if it doesn't exist
+        let tapText = document.getElementById('tap-to-play-text');
+        if (!tapText) {
+            tapText = document.createElement('div');
+            tapText.id = 'tap-to-play-text';
+            tapText.textContent = 'Tap to play';
+            tapText.style.cssText = `
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                color: white;
+                font-size: 16px;
+                font-weight: bold;
+                text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+                z-index: 1000;
+                pointer-events: none;
+                opacity: 0;
+                transition: opacity 0.3s ease;
+            `;
+            centerTarget.appendChild(tapText);
+        }
+        
+        // Show the text
+        tapText.style.opacity = '1';
+        console.log('📱 Tap to play text shown');
+    }
+}
+
+// Hide tap-to-play text
+function hideTapToPlayText() {
+    const tapText = document.getElementById('tap-to-play-text');
+    if (tapText) {
+        tapText.style.opacity = '0';
+        console.log('📱 Tap to play text hidden');
+    }
+}
+
 // Make preload status available globally for debugging
 window.getPreloadStatus = getPreloadStatus;
 window.isVideoPreloaded = isVideoPreloaded;
@@ -2227,6 +2269,9 @@ function preventVideoLoadingForCompletedHotspot(hotspotId) {
 function handleMindarTargetLost(hotspotId) {
     console.log(`🎯 MindAR target lost for hotspot: ${hotspotId}`);
     
+    // Hide tap-to-play text when target is lost
+    hideTapToPlayText();
+    
     // Map hotspot IDs to video element IDs
     const videoIdMapping = {
         'romulus': 'video-romulus',
@@ -2472,6 +2517,9 @@ function handleMindarTargetFound(hotspotId) {
                     // Hide loading ring when video starts playing
                     hideLoadingRing();
                     
+                    // Hide tap-to-play text when video starts playing
+                    hideTapToPlayText();
+                    
                     // Show video playing state (hide crosshair)
                     showVideoPlaying();
                     
@@ -2495,6 +2543,8 @@ function handleMindarTargetFound(hotspotId) {
                     
                     // Set up video end handler
                     video.addEventListener('ended', () => {
+                        // Hide tap-to-play text when video ends
+                        hideTapToPlayText();
                         handleVideoEnded(hotspotId);
                     }, { once: true });
                     
@@ -2514,6 +2564,9 @@ function handleMindarTargetFound(hotspotId) {
                         
                         // Hide loading ring when fallback succeeds
                         hideLoadingRing();
+                        
+                        // Hide tap-to-play text when video starts playing
+                        hideTapToPlayText();
                         
                         // Show video playing state (hide crosshair)
                         showVideoPlaying();
@@ -2535,6 +2588,8 @@ function handleMindarTargetFound(hotspotId) {
                         
                         // Set up video end handler
                         video.addEventListener('ended', () => {
+                            // Hide tap-to-play text when video ends
+                            hideTapToPlayText();
                             handleVideoEnded(hotspotId);
                         }, { once: true });
                         
@@ -2581,6 +2636,9 @@ function handleMindarTargetFound(hotspotId) {
 // Handle video ended
 function handleVideoEnded(hotspotId) {
     console.log(`Video ended for hotspot: ${hotspotId}`);
+    
+    // Hide tap-to-play text when video ends
+    hideTapToPlayText();
     
     // Hide video playing state (show crosshair)
     hideVideoPlaying();
@@ -2686,25 +2744,55 @@ function activateHotspotWithMindAR(hotspotId, entity) {
 
 // Add tap-to-play fallback for iOS
 function addTapToPlayFallback(video, hotspotId) {
-    const tapHandler = () => {
+    console.log(`🍎 Setting up tap-to-play fallback for ${hotspotId}`);
+    
+    // Show tap-to-play text
+    showTapToPlayText();
+    
+    const tapHandler = (event) => {
         console.log(`Tap detected - attempting to play video for ${hotspotId}`);
+        
+        // Hide tap-to-play text
+        hideTapToPlayText();
+        
+        // Mark user interaction for this video
+        hasUserInteracted = true;
+        
+        // Try to play with sound
         video.muted = false;
         video.volume = 1.0;
+        
         video.play().then(() => {
             console.log(`Video playing after tap for ${hotspotId}`);
             document.removeEventListener('touchstart', tapHandler);
+            document.removeEventListener('click', tapHandler);
         }).catch(error => {
             console.error(`Tap play failed for ${hotspotId}:`, error);
+            // Try muted as fallback
+            video.muted = true;
+            video.play().then(() => {
+                console.log(`Video playing muted after tap for ${hotspotId}`);
+                // Try to unmute after a short delay
+                setTimeout(() => {
+                    video.muted = false;
+                    video.volume = 1.0;
+                }, 100);
+            }).catch(fallbackError => {
+                console.error(`Even muted play failed for ${hotspotId}:`, fallbackError);
+            });
         });
     };
     
-    // Add touch event listener
+    // Add both touch and click event listeners for better compatibility
     document.addEventListener('touchstart', tapHandler, { once: true });
+    document.addEventListener('click', tapHandler, { once: true });
     
-    // Remove listener after 5 seconds
+    // Remove listeners after 10 seconds
     setTimeout(() => {
         document.removeEventListener('touchstart', tapHandler);
-    }, 5000);
+        document.removeEventListener('click', tapHandler);
+        hideTapToPlayText();
+    }, 10000);
 }
 
 // Test function to manually test video playback
