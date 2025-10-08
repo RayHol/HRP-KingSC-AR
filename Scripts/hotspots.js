@@ -1723,10 +1723,151 @@ document.addEventListener("DOMContentLoaded", function() {
     // Initialize hotspots after A-Frame scene is ready
     setTimeout(initializeHotspots, 500);
     
+    // Start intelligent video preloading
+    setTimeout(startIntelligentVideoPreloading, 1000);
+    
     // Uncomment the line below to test badge unlocking
     // setTimeout(testUnlockBadges, 2000);
     setTimeout(initializeMainUI, 200);
 });
+
+// ========================================
+// INTELLIGENT VIDEO PRELOADING
+// ========================================
+
+// Track video preloading status
+const videoPreloadStatus = new Map();
+const preloadQueue = [];
+let isPreloading = false;
+
+// Start intelligent video preloading system
+function startIntelligentVideoPreloading() {
+    console.log('🚀 Starting intelligent video preloading system...');
+    
+    // Get all video elements
+    const videoElements = document.querySelectorAll('video[id^="video-"]');
+    console.log(`📹 Found ${videoElements.length} video elements to preload`);
+    
+    // Add videos to preload queue
+    videoElements.forEach(video => {
+        const videoId = video.id;
+        const hotspotId = videoId.replace('video-', '');
+        
+        // Skip if hotspot is already completed
+        if (activatedHotspots.has(hotspotId)) {
+            console.log(`⏭️ Skipping preload for completed hotspot: ${hotspotId}`);
+            return;
+        }
+        
+        preloadQueue.push({
+            video: video,
+            videoId: videoId,
+            hotspotId: hotspotId,
+            priority: getVideoPriority(hotspotId)
+        });
+    });
+    
+    // Sort by priority (first hotspot has highest priority)
+    preloadQueue.sort((a, b) => a.priority - b.priority);
+    
+    console.log(`📋 Preload queue created with ${preloadQueue.length} videos`);
+    
+    // Start preloading
+    startPreloadProcess();
+}
+
+// Get video priority based on hotspot order
+function getVideoPriority(hotspotId) {
+    const priorityOrder = ['romulus', 'caesar', 'nero', 'silenus', 'furies', 'herakles', 'alexander', 'diana'];
+    const index = priorityOrder.indexOf(hotspotId);
+    return index === -1 ? 999 : index; // Unknown hotspots get lowest priority
+}
+
+// Start the preload process
+function startPreloadProcess() {
+    if (isPreloading || preloadQueue.length === 0) {
+        return;
+    }
+    
+    isPreloading = true;
+    console.log('🔄 Starting video preload process...');
+    
+    // Preload videos one by one to avoid overwhelming the network
+    preloadNextVideo();
+}
+
+// Preload the next video in the queue
+function preloadNextVideo() {
+    if (preloadQueue.length === 0) {
+        isPreloading = false;
+        console.log('✅ All videos preloaded successfully');
+        return;
+    }
+    
+    const { video, videoId, hotspotId } = preloadQueue.shift();
+    
+    console.log(`📥 Preloading video: ${videoId} (hotspot: ${hotspotId})`);
+    
+    // Set up preload event listeners
+    const onCanPlayThrough = () => {
+        console.log(`✅ Video preloaded successfully: ${videoId}`);
+        videoPreloadStatus.set(videoId, 'ready');
+        video.removeEventListener('canplaythrough', onCanPlayThrough);
+        video.removeEventListener('error', onError);
+        
+        // Continue with next video
+        setTimeout(() => preloadNextVideo(), 100);
+    };
+    
+    const onError = (error) => {
+        console.warn(`⚠️ Video preload failed: ${videoId}`, error);
+        videoPreloadStatus.set(videoId, 'error');
+        video.removeEventListener('canplaythrough', onCanPlayThrough);
+        video.removeEventListener('error', onError);
+        
+        // Continue with next video
+        setTimeout(() => preloadNextVideo(), 100);
+    };
+    
+    // Add event listeners
+    video.addEventListener('canplaythrough', onCanPlayThrough);
+    video.addEventListener('error', onError);
+    
+    // Start preloading by setting preload attribute
+    video.setAttribute('preload', 'auto');
+    
+    // Force load by setting currentTime to 0 (triggers loading)
+    video.currentTime = 0;
+    
+    // Set a timeout to prevent hanging
+    setTimeout(() => {
+        if (videoPreloadStatus.get(videoId) !== 'ready') {
+            console.warn(`⏰ Preload timeout for ${videoId}, continuing...`);
+            videoPreloadStatus.set(videoId, 'timeout');
+            video.removeEventListener('canplaythrough', onCanPlayThrough);
+            video.removeEventListener('error', onError);
+            preloadNextVideo();
+        }
+    }, 10000); // 10 second timeout
+}
+
+// Check if video is preloaded
+function isVideoPreloaded(videoId) {
+    return videoPreloadStatus.get(videoId) === 'ready';
+}
+
+// Get preload status for debugging
+function getPreloadStatus() {
+    const status = {};
+    videoPreloadStatus.forEach((value, key) => {
+        status[key] = value;
+    });
+    return status;
+}
+
+// Make preload status available globally for debugging
+window.getPreloadStatus = getPreloadStatus;
+window.isVideoPreloaded = isVideoPreloaded;
 
 // ========================================
 // MINDAR INTEGRATION
@@ -2032,6 +2173,9 @@ function preventVideoLoadingForCompletedHotspot(hotspotId) {
             source.remove();
         });
         console.log(`✅ Video sources removed for ${hotspotId}`);
+        
+        // Update preload status to indicate this video should not be loaded
+        videoPreloadStatus.set(videoId, 'disabled');
     }
 }
 
@@ -2134,6 +2278,10 @@ function handleMindarTargetFound(hotspotId) {
         
         console.log(`🔍 Starting video playback process for first time...`);
         
+        // Check if video is preloaded
+        const isPreloaded = isVideoPreloaded(videoId);
+        console.log(`📥 Video preload status: ${isPreloaded ? 'Ready' : 'Not ready'}`);
+        
         // Additional debugging for video element
         console.log(`📹 Video readyState: ${video.readyState} (0=no data, 1=metadata, 2=current data, 3=future data, 4=enough data)`);
         console.log(`📹 Video paused: ${video.paused}`);
@@ -2146,6 +2294,28 @@ function handleMindarTargetFound(hotspotId) {
         
         // Update debug UI with audio information
         updateMindarDebugUI(hotspotId, video);
+        
+        // If video is not preloaded, show loading ring and wait
+        if (!isPreloaded) {
+            console.log(`⏳ Video not preloaded, showing loading ring and waiting...`);
+            showLoadingRing();
+            
+            // Wait for video to be ready
+            const waitForVideoReady = () => {
+                if (video.readyState >= 3) { // HAVE_FUTURE_DATA or HAVE_ENOUGH_DATA
+                    console.log(`✅ Video is now ready to play`);
+                    hideLoadingRing();
+                    playVideo();
+                } else {
+                    console.log(`⏳ Video still loading, readyState: ${video.readyState}`);
+                    setTimeout(waitForVideoReady, 500);
+                }
+            };
+            
+            // Start waiting for video to be ready
+            setTimeout(waitForVideoReady, 100);
+            return;
+        }
         
         // Adjust video plane dimensions for webm format on Android
         const adjustVideoPlaneForFormat = (hotspotId, video) => {
