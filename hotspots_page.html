@@ -350,14 +350,14 @@
             <video id="video-furies" preload="auto" response-type="arraybuffer" crossorigin="anonymous" webkit-playsinline playsinline muted>
                 <source src="./Assets/Videos/Furies.mp4" type="video/mp4">
             </video>
-                    
-            <!-- Video for target 5 (herakles) swapping Alexander with Herakles-->
-            <video id="video-herakles" preload="auto" response-type="arraybuffer" crossorigin="anonymous" webkit-playsinline playsinline muted>
+
+            <!-- Video for target 5 (alexander) -->
+            <video id="video-alexander" preload="auto" response-type="arraybuffer" crossorigin="anonymous" webkit-playsinline playsinline muted>
                 <source src="./Assets/Videos/Alexander.mp4" type="video/mp4">
             </video>
-                    
-            <!-- Video for target 6 (alexander) -->
-            <video id="video-alexander" preload="auto" response-type="arraybuffer" crossorigin="anonymous" webkit-playsinline playsinline muted>
+            
+            <!-- Video for target 6 (herakles) swapping Alexander with Herakles-->
+            <video id="video-herakles" preload="auto" response-type="arraybuffer" crossorigin="anonymous" webkit-playsinline playsinline muted>
                 <source src="./Assets/Videos/Herakles.mp4" type="video/mp4">
             </video>
                     
@@ -436,8 +436,8 @@
             </a-plane>
         </a-entity>
         
-        <!-- MindAR Target 5 (herakles) - initially hidden -->
-        <a-entity id="target-herakles" mindar-image-target="targetIndex: 5" ar-controller
+        <!-- MindAR Target 6 (herakles) - initially hidden -->
+        <a-entity id="target-herakles" mindar-image-target="targetIndex: 6" ar-controller
             smooth-position="target: #videooverlay-herakles; factor: 0.1" style="display: none;">
             <a-plane id="videooverlay-herakles" 
                 material="shader: transparent-video; src: #video-herakles; transparent: true; opacity: 0"
@@ -448,8 +448,8 @@
             </a-plane>
         </a-entity>
         
-        <!-- MindAR Target 6 (alexander) - initially hidden -->
-        <a-entity id="target-alexander" mindar-image-target="targetIndex: 6" ar-controller
+        <!-- MindAR Target 5 (alexander) - initially hidden -->
+        <a-entity id="target-alexander" mindar-image-target="targetIndex: 5" ar-controller
             smooth-position="target: #videooverlay-alexander; factor: 0.1" style="display: none;">
             <a-plane id="videooverlay-alexander" 
                 material="shader: transparent-video; src: #video-alexander; transparent: true; opacity: 0"

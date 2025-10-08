@@ -99,26 +99,6 @@
             }
         ]
     },
-    "herakles": {
-        "common": {
-            "scale": "30 30 1",
-            "rotation": "0 0 0",
-            "fixedAngleDegrees": 2.80,
-            "initialY": 53.04,
-            "initialZ": -49.47
-        },
-        "media": [
-            {
-                "type": "image",
-                "url": "./Assets/hotspot-icons/Asset 11.png",
-                "frameUrl": "./Assets/hotspot-icons/Asset 11.png",
-                "info": "Herakles",
-                "audioUrl": "",
-                "link": "",
-                "description": "Back to today - William III does like to see himself as Herakles and Alexander. Herakles was famous for his super-human strength and Alexander for his military conquests – great attributes for a warrior king like William. But also, just like Alexander amidst all these Romans, William is a bit of an outsider. He is Dutch, but swept to power here in England with his English wife Queen Mary II during the Glorious Revolution of 1688. A spectacular painting like this might just be enough to convince some of our important guests here at Hampton Court of William and Mary’s entitlement to the crown. That they too deserve a seat at the table of the gods."
-            }
-        ]
-    },
     "alexander": {
         "common": {
             "scale": "30 30 1",
@@ -135,7 +115,27 @@
                 "info": "Alexander",
                 "audioUrl": "",
                 "link": "",
-                "description": "Here we have a figure, a little more separate from the rest of the group that the artist Verrio has paid plenty of attention to. Such prowess, such glory. This is the Macedonian emperor, Alexander the Great, who has arrived into the scene as the guest of his promoter Herakles, a hero from Greek mythology … Alexander ruled over an empire even larger, we’re told, than the Roman emperors. We can see the Winged figure of Victory swooping in to place a laurel wreath upon his head, in celebration of his victories. See now whether all these Romans can match this one Greek."
+                "description": "Here we have a figure, a little more separate from the rest of the group that the artist Verrio has paid plenty of attention to. Such prowess, such glory. This is the Macedonian emperor, Alexander the Great, who has arrived into the scene as the guest of his promoter Herakles, a hero from Greek mythology … Alexander ruled over an empire even larger, we're told, than the Roman emperors. We can see the Winged figure of Victory swooping in to place a laurel wreath upon his head, in celebration of his victories. See now whether all these Romans can match this one Greek."
+            }
+        ]
+    },
+    "herakles": {
+        "common": {
+            "scale": "30 30 1",
+            "rotation": "0 0 0",
+            "fixedAngleDegrees": 2.80,
+            "initialY": 53.04,
+            "initialZ": -49.47
+        },
+        "media": [
+            {
+                "type": "image",
+                "url": "./Assets/hotspot-icons/Asset 11.png",
+                "frameUrl": "./Assets/hotspot-icons/Asset 11.png",
+                "info": "Herakles",
+                "audioUrl": "",
+                "link": "",
+                "description": "Back to today - William III does like to see himself as Herakles and Alexander. Herakles was famous for his super-human strength and Alexander for his military conquests – great attributes for a warrior king like William. But also, just like Alexander amidst all these Romans, William is a bit of an outsider. He is Dutch, but swept to power here in England with his English wife Queen Mary II during the Glorious Revolution of 1688. A spectacular painting like this might just be enough to convince some of our important guests here at Hampton Court of William and Mary's entitlement to the crown. That they too deserve a seat at the table of the gods."
             }
         ]
     },
