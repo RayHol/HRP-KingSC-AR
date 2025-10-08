@@ -1921,17 +1921,21 @@ function showTapToPlayText() {
             tapText.textContent = 'Tap to play';
             tapText.style.cssText = `
                 position: absolute;
-                top: 50%;
+                top: 30%;
                 left: 50%;
                 transform: translate(-50%, -50%);
                 color: white;
-                font-size: 16px;
+                font-size: 18px;
                 font-weight: bold;
                 text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
-                z-index: 1000;
+                z-index: 10000;
                 pointer-events: none;
                 opacity: 0;
                 transition: opacity 0.3s ease;
+                background: rgba(0,0,0,0.5);
+                padding: 8px 16px;
+                border-radius: 8px;
+                border: 2px solid rgba(255,255,255,0.8);
             `;
             centerTarget.appendChild(tapText);
         }
@@ -2476,12 +2480,17 @@ function handleMindarTargetFound(hotspotId) {
             video.currentTime = 0;
             
             if (isIOS) {
-                console.log(`🍎 iOS video playback - using iOS-specific approach`);
-                // iOS requires fresh user interaction for each video
-                // Always start muted and try to unmute after play starts
-                video.muted = true;
-                video.volume = 0;
-                console.log(`Starting video muted for iOS compatibility: ${hotspotId}`);
+                console.log(`🍎 iOS video playback - trying automatic playback first`);
+                // For iOS, try to play with sound if user has interacted, otherwise muted
+                if (hasUserInteracted) {
+                    video.muted = false;
+                    video.volume = 1.0;
+                    console.log(`🍎 iOS: Attempting to play with sound (user has interacted)`);
+                } else {
+                    video.muted = true;
+                    video.volume = 0;
+                    console.log(`🍎 iOS: Attempting to play muted (no user interaction yet)`);
+                }
                 
                 // Ensure video has the right attributes for iOS
                 video.setAttribute('playsinline', 'true');
@@ -2502,9 +2511,17 @@ function handleMindarTargetFound(hotspotId) {
             console.log(`Calling video.play() for ${hotspotId}...`);
             const playPromise = video.play();
             
-            // Add tap-to-play fallback for iOS
+            // Add tap-to-play fallback for iOS (only if video doesn't start automatically)
             if (isIOS) {
-                addTapToPlayFallback(video, hotspotId);
+                // Set up a timeout to check if video starts playing automatically
+                setTimeout(() => {
+                    if (video.paused) {
+                        console.log(`🍎 Video didn't start automatically on iOS - showing tap-to-play`);
+                        addTapToPlayFallback(video, hotspotId);
+                    } else {
+                        console.log(`🍎 Video started automatically on iOS - no tap needed`);
+                    }
+                }, 1000); // Wait 1 second to see if video starts automatically
             }
             
             if (playPromise !== undefined) {
@@ -2555,6 +2572,13 @@ function handleMindarTargetFound(hotspotId) {
                     
                     // Hide loading ring on error
                     hideLoadingRing();
+                    
+                    // On iOS, show tap-to-play text when automatic play fails
+                    if (isIOS) {
+                        console.log(`🍎 iOS: Automatic play failed - showing tap-to-play`);
+                        addTapToPlayFallback(video, hotspotId);
+                        return; // Don't try fallback, let user tap
+                    }
                     
                     // Try fallback: play muted first, then unmute if user has interacted
                     console.log('Trying fallback: play muted first');
