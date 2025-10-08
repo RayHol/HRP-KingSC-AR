@@ -2799,12 +2799,50 @@ function addTapToPlayFallback(video, hotspotId) {
             console.log(`Video playing after tap for ${hotspotId}`);
             document.removeEventListener('touchstart', tapHandler);
             document.removeEventListener('click', tapHandler);
+            
+            // Hide loading ring when video starts playing
+            hideLoadingRing();
+            
+            // Show video playing state (hide crosshair)
+            showVideoPlaying();
+            
+            // Trigger fade-in animation
+            const videoOverlay = document.getElementById(`videooverlay-${hotspotId}`);
+            if (videoOverlay) {
+                videoOverlay.emit('fadein-' + hotspotId);
+            }
+            
+            // Set up video end handler
+            video.addEventListener('ended', () => {
+                hideTapToPlayText();
+                handleVideoEnded(hotspotId);
+            }, { once: true });
+            
         }).catch(error => {
             console.error(`Tap play failed for ${hotspotId}:`, error);
             // Try muted as fallback
             video.muted = true;
             video.play().then(() => {
                 console.log(`Video playing muted after tap for ${hotspotId}`);
+                
+                // Hide loading ring when fallback succeeds
+                hideLoadingRing();
+                
+                // Show video playing state (hide crosshair)
+                showVideoPlaying();
+                
+                // Trigger fade-in animation
+                const videoOverlay = document.getElementById(`videooverlay-${hotspotId}`);
+                if (videoOverlay) {
+                    videoOverlay.emit('fadein-' + hotspotId);
+                }
+                
+                // Set up video end handler
+                video.addEventListener('ended', () => {
+                    hideTapToPlayText();
+                    handleVideoEnded(hotspotId);
+                }, { once: true });
+                
                 // Try to unmute after a short delay
                 setTimeout(() => {
                     video.muted = false;
