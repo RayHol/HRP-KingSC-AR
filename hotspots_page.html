@@ -309,7 +309,7 @@
         <!-- UI buttons will be moved here dynamically -->
     </div>
 
-    <!-- MindAR Scene Overlay (initially hidden) -->
+    <!-- MindAR Scene Overlay (initially visible for iOS motion sensor permission) -->
     <a-scene id="mindar-scene" 
         loading-screen="enabled: false"
         mindar-image="imageTargetSrc: ./Assets/targets_all.mind; maxTrack: 1; uiLoading:no; uiScanning: no; warmupTolerance: 10; missTolerance: 1; filterMinCF: 0.0001; filterBeta: 0.001"
@@ -317,100 +317,100 @@
         renderer="colorManagement: true, physicallyCorrectLights"
         vr-mode-ui="enabled: false"
         device-orientation-permission-ui="enabled: false"
-        style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1;">
+        style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; opacity: 0.01; pointer-events: auto;">
         
         
         <!-- MindAR Video Assets -->
         <a-assets>
-            <!-- Video for target 0 (clouds) -->
-            <video id="video-clouds" preload="auto" response-type="arraybuffer" crossorigin="anonymous" webkit-playsinline playsinline muted>
+            <!-- Video for target 0 (clouds) - Stairs -->
+            <video id="video-clouds" preload="none" response-type="arraybuffer" crossorigin="anonymous" webkit-playsinline playsinline muted>
                 <source src="./Assets/Videos/Clouds.mp4" type="video/mp4">
             </video>
             
-            <!-- Video for target 1 (banquet) -->
-            <video id="video-banquet" preload="auto" response-type="arraybuffer" crossorigin="anonymous" webkit-playsinline playsinline muted>
+            <!-- Video for target 1 (banquet) - Stairs -->
+            <video id="video-banquet" preload="none" response-type="arraybuffer" crossorigin="anonymous" webkit-playsinline playsinline muted>
                 <source src="./Assets/Videos/Banquet.mp4" type="video/mp4">
             </video>
             
-            <!-- Video for target 2 (peacock) -->
-            <video id="video-peacock" preload="auto" response-type="arraybuffer" crossorigin="anonymous" webkit-playsinline playsinline muted>
+            <!-- Video for target 2 (peacock) - Stairs -->
+            <video id="video-peacock" preload="none" response-type="arraybuffer" crossorigin="anonymous" webkit-playsinline playsinline muted>
                 <source src="./Assets/Videos/Peacock_a.mp4" type="video/mp4;codecs=hvc1">
                 <source src="./Assets/Videos/Peacock_a.webm" type="video/webm">
             </video>
             
-            <!-- Video for target 3 (graces) -->
-            <video id="video-graces" preload="auto" response-type="arraybuffer" crossorigin="anonymous" webkit-playsinline playsinline muted>
+            <!-- Video for target 3 (graces) - Stairs -->
+            <video id="video-graces" preload="none" response-type="arraybuffer" crossorigin="anonymous" webkit-playsinline playsinline muted>
                 <source src="./Assets/Videos/Graces.mp4" type="video/mp4">
             </video>
             
-            <!-- Video for target 4 (trumpeter) -->
-            <video id="video-trumpeter" preload="auto" response-type="arraybuffer" crossorigin="anonymous" webkit-playsinline playsinline muted>
+            <!-- Video for target 4 (trumpeter) - Stairs -->
+            <video id="video-trumpeter" preload="none" response-type="arraybuffer" crossorigin="anonymous" webkit-playsinline playsinline muted>
                 <source src="./Assets/Videos/Trumpeter_a.mp4" type="video/mp4;codecs=hvc1">
                 <source src="./Assets/Videos/Trumpeter_a.webm" type="video/webm">
             </video>
             
-            <!-- Video for target 5 (romulus) -->
-            <video id="video-romulus" preload="auto" response-type="arraybuffer" crossorigin="anonymous" webkit-playsinline playsinline muted>
+            <!-- Video for target 5 (romulus) - Balcony -->
+            <video id="video-romulus" preload="none" response-type="arraybuffer" crossorigin="anonymous" webkit-playsinline playsinline muted>
                 <source src="./Assets/Videos/romulus_a.mp4" type="video/mp4;codecs=hvc1">
                 <source src="./Assets/Videos/romulus_a.webm" type="video/webm">
             </video>
             
-            <!-- Video for target 6 (caesar) -->
-            <video id="video-caesar" preload="auto" response-type="arraybuffer" crossorigin="anonymous" webkit-playsinline playsinline muted>
+            <!-- Video for target 6 (caesar) - Balcony -->
+            <video id="video-caesar" preload="none" response-type="arraybuffer" crossorigin="anonymous" webkit-playsinline playsinline muted>
                 <source src="./Assets/Videos/Caesar_a.mp4" type="video/mp4;codecs=hvc1">
                 <source src="./Assets/Videos/Caesar_a.webm" type="video/webm">
             </video>
 
-            <!-- Video for target 7 (nero) -->
-            <video id="video-nero" preload="auto" response-type="arraybuffer" crossorigin="anonymous" webkit-playsinline playsinline muted>
+            <!-- Video for target 7 (nero) - Balcony -->
+            <video id="video-nero" preload="none" response-type="arraybuffer" crossorigin="anonymous" webkit-playsinline playsinline muted>
                     <source src="./Assets/Videos/Nero.mp4" type="video/mp4">
             </video>
         
                 
-            <!-- Video for target 8 (silenus) -->
-            <video id="video-silenus" preload="auto" response-type="arraybuffer" crossorigin="anonymous" webkit-playsinline playsinline muted>
+            <!-- Video for target 8 (silenus) - Balcony -->
+            <video id="video-silenus" preload="none" response-type="arraybuffer" crossorigin="anonymous" webkit-playsinline playsinline muted>
                 <source src="./Assets/Videos/Silenus_a.mp4" type="video/mp4;codecs=hvc1">
                 <source src="./Assets/Videos/Silenus_a.webm" type="video/webm">
             </video>
                     
-             <!-- Video for target 9 (furies) -->
-            <video id="video-furies" preload="auto" response-type="arraybuffer" crossorigin="anonymous" webkit-playsinline playsinline muted>
+             <!-- Video for target 9 (furies) - Balcony -->
+            <video id="video-furies" preload="none" response-type="arraybuffer" crossorigin="anonymous" webkit-playsinline playsinline muted>
                 <source src="./Assets/Videos/Furies.mp4" type="video/mp4">
             </video>
 
-            <!-- Video for target 10 (alexander) -->
-            <video id="video-alexander" preload="auto" response-type="arraybuffer" crossorigin="anonymous" webkit-playsinline playsinline muted>
+            <!-- Video for target 10 (alexander) - Balcony -->
+            <video id="video-alexander" preload="none" response-type="arraybuffer" crossorigin="anonymous" webkit-playsinline playsinline muted>
                 <source src="./Assets/Videos/Alexander.mp4" type="video/mp4">
             </video>
             
-            <!-- Video for target 11 (herakles) -->
-            <video id="video-herakles" preload="auto" response-type="arraybuffer" crossorigin="anonymous" webkit-playsinline playsinline muted>
+            <!-- Video for target 11 (herakles) - Balcony -->
+            <video id="video-herakles" preload="none" response-type="arraybuffer" crossorigin="anonymous" webkit-playsinline playsinline muted>
                 <source src="./Assets/Videos/Herakles.mp4" type="video/mp4">
             </video>
                     
-            <!-- Video for target 12 (diana) -->
-            <video id="video-diana" preload="auto" response-type="arraybuffer" crossorigin="anonymous" webkit-playsinline playsinline muted>
+            <!-- Video for target 12 (diana) - Balcony -->
+            <video id="video-diana" preload="none" response-type="arraybuffer" crossorigin="anonymous" webkit-playsinline playsinline muted>
                 <source src="./Assets/Videos/Diana.mp4" type="video/mp4">
             </video>
             
-            <!-- Video for target 13 (harvest) -->
-            <video id="video-harvest" preload="auto" response-type="arraybuffer" crossorigin="anonymous" webkit-playsinline playsinline muted>
+            <!-- Video for target 13 (harvest) - Balcony -->
+            <video id="video-harvest" preload="none" response-type="arraybuffer" crossorigin="anonymous" webkit-playsinline playsinline muted>
                 <source src="./Assets/Videos/Harvest.mp4" type="video/mp4">
             </video>
             
-            <!-- Video for target 14 (cherubs) -->
-            <video id="video-cherubs" preload="auto" response-type="arraybuffer" crossorigin="anonymous" webkit-playsinline playsinline muted>
+            <!-- Video for target 14 (cherubs) - Balcony -->
+            <video id="video-cherubs" preload="none" response-type="arraybuffer" crossorigin="anonymous" webkit-playsinline playsinline muted>
                 <source src="./Assets/Videos/Cherub_a.mp4" type="video/mp4;codecs=hvc1">
                 <source src="./Assets/Videos/Cherub_a.webm" type="video/webm">
             </video>
             
-            <!-- Video for target 15 (musicians) -->
-            <video id="video-musicians" preload="auto" response-type="arraybuffer" crossorigin="anonymous" webkit-playsinline playsinline muted>
+            <!-- Video for target 15 (musicians) - Balcony -->
+            <video id="video-musicians" preload="none" response-type="arraybuffer" crossorigin="anonymous" webkit-playsinline playsinline muted>
                 <source src="./Assets/Videos/Musicians.mp4" type="video/mp4">
             </video>
             
-            <!-- Video for target 16 (signature) -->
-            <video id="video-signature" preload="auto" response-type="arraybuffer" crossorigin="anonymous" webkit-playsinline playsinline muted>
+            <!-- Video for target 16 (signature) - Balcony -->
+            <video id="video-signature" preload="none" response-type="arraybuffer" crossorigin="anonymous" webkit-playsinline playsinline muted>
                 <source src="./Assets/Videos/Signature.mp4" type="video/mp4">
             </video>
             
@@ -666,6 +666,62 @@
         // Automatically display the AR scene
         arScene.style.display = 'block';
         
+        // Set up location-based video preloading
+        setupLocationBasedVideoPreloading();
+        
+        // Request camera permission immediately on page load
+        const requestCameraPermission = async () => {
+            try {
+                const cameraPermission = await navigator.mediaDevices.getUserMedia({ video: true });
+                console.log('Camera permission granted');
+                
+                // Stop the camera stream immediately as we just needed permission
+                cameraPermission.getTracks().forEach(track => track.stop());
+            } catch (error) {
+                console.log('Camera permission denied or error:', error);
+            }
+        };
+        
+        // Request device orientation permission (triggered by user interaction)
+        const requestOrientationPermission = async () => {
+            console.log('requestOrientationPermission called');
+            try {
+                if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function') {
+                    console.log('DeviceOrientationEvent.requestPermission is available, requesting permission...');
+                    const orientationPermission = await DeviceOrientationEvent.requestPermission();
+                    if (orientationPermission === 'granted') {
+                        console.log('Device orientation permission granted');
+                    } else {
+                        console.log('Device orientation permission denied');
+                    }
+                } else {
+                    // For non-iOS devices, consider orientation granted
+                    console.log('DeviceOrientationEvent.requestPermission not available on this device');
+                }
+            } catch (error) {
+                console.log('Device orientation permission error:', error);
+            }
+        };
+        
+        // Request camera permission immediately on page load
+        requestCameraPermission();
+        
+        // Set up device orientation permission to be triggered when user clicks OK on safety warning
+        // We need to wait for the safety warning to be initialized by hotspots.js
+        setTimeout(() => {
+            const okBtn = document.getElementById('warning-ok-btn');
+            if (okBtn) {
+                console.log('Found safety warning OK button, adding orientation permission request');
+                okBtn.addEventListener('click', function() {
+                    console.log('Safety warning OK button clicked, requesting device orientation permission');
+                    // Request device orientation permission when user clicks OK
+                    requestOrientationPermission();
+                });
+            } else {
+                console.warn('Safety warning OK button not found');
+            }
+        }, 500); // Wait for safety warning to be initialized
+        
         // Hide VR button on both scenes for Android compatibility
         function hideVRButton(scene) {
             if (scene) {
@@ -709,6 +765,42 @@
         // Don't initialize hotspots immediately - let intro video control this
         // The intro video will call initializeHotspots() when it's closed
     });
+    
+    // Set up location-based video preloading
+    function setupLocationBasedVideoPreloading() {
+        // Get current location from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const location = urlParams.get('location') || 'stairs'; // Default to stairs if no location specified
+        
+        // Define which videos belong to which location
+        const stairsVideos = ['clouds', 'banquet', 'peacock', 'graces', 'trumpeter'];
+        const balconyVideos = ['romulus', 'caesar', 'nero', 'silenus', 'furies', 'alexander', 'herakles', 'diana', 'harvest', 'cherubs', 'musicians', 'signature'];
+        
+        // Get the videos to preload based on current location
+        const videosToPreload = location === 'stairs' ? stairsVideos : balconyVideos;
+        
+        console.log(`Setting up video preloading for ${location} location:`, videosToPreload);
+        
+        // Set preload="auto" only for videos in the current location
+        videosToPreload.forEach(videoId => {
+            const videoElement = document.getElementById(`video-${videoId}`);
+            if (videoElement) {
+                videoElement.setAttribute('preload', 'auto');
+                console.log(`Enabled preloading for video: ${videoId}`);
+            }
+        });
+        
+        // Ensure other videos remain with preload="none"
+        const allVideos = [...stairsVideos, ...balconyVideos];
+        const videosToDisable = allVideos.filter(videoId => !videosToPreload.includes(videoId));
+        
+        videosToDisable.forEach(videoId => {
+            const videoElement = document.getElementById(`video-${videoId}`);
+            if (videoElement) {
+                videoElement.setAttribute('preload', 'none');
+            }
+        });
+    }
     </script>
 </body>
 </html> 

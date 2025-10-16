@@ -266,23 +266,57 @@ function initializeHotspots() {
             return preloadAllHotspotImages(data);
         })
         .then(() => {
-            // Wait for A-Frame scene to be ready
-            const scene = document.querySelector("a-scene");
+            // Wait for A-Frame scene to be ready and fully initialized
+            const waitForSceneReady = () => {
+                return new Promise((resolve) => {
+                    const scene = document.querySelector("a-scene");
+                    if (!scene) {
+                        console.error("A-Frame scene not found when trying to create hotspots!");
+                        resolve(null);
+                        return;
+                    }
+                    
+                    // Check if A-Frame is fully loaded
+                    if (scene.hasLoaded) {
+                        console.log('A-Frame scene already loaded');
+                        resolve(scene);
+                        return;
+                    }
+                    
+                    // Wait for A-Frame to be ready
+                    scene.addEventListener('loaded', () => {
+                        console.log('A-Frame scene loaded event fired');
+                        resolve(scene);
+                    });
+                    
+                    // Fallback timeout
+                    setTimeout(() => {
+                        console.log('A-Frame scene timeout, proceeding anyway');
+                        resolve(scene);
+                    }, 2000);
+                });
+            };
+            
+            return waitForSceneReady();
+        })
+        .then((scene) => {
             if (!scene) {
-                console.error("A-Frame scene not found when trying to create hotspots!");
+                console.error("Failed to get A-Frame scene");
                 return;
             }
+            
             
             // NOW create the hotspots after images are loaded
             hotspots.forEach((hotspotId, index) => {
                 const hotspotData = hotspotsConfig[hotspotId];
                 const commonValues = hotspotData.common;
+                
                 const mediaArray = hotspotData.media;
 
                 // For each hotspot, use the provided fixedAngleDegrees, initialY, and initialZ
-                const fixedAngleDegrees = commonValues.fixedAngleDegrees || 0;
-                const currentY = commonValues.initialY || 0;
-                const currentZoom = Math.abs(commonValues.initialZ) || 25;
+                let fixedAngleDegrees = commonValues.fixedAngleDegrees || 0;
+                let currentY = commonValues.initialY || 0;
+                let currentZoom = Math.abs(commonValues.initialZ) || 25;
 
                 // Calculate the position based on the fixedAngleDegrees and currentZoom (initialZ)
                 const radians = (fixedAngleDegrees * Math.PI) / 180;
@@ -521,6 +555,7 @@ function displayHotspotMedia(mediaItem, index, commonValues, currentPosition, cu
         console.error("A-Frame scene not found!");
         return;
     }
+    
 
     // Create the entity for the image
     let entity = document.createElement("a-image");
@@ -555,6 +590,7 @@ function displayHotspotMedia(mediaItem, index, commonValues, currentPosition, cu
     
     // Store hotspot ID as data attribute for reference
     entity.setAttribute("data-hotspot-id", hotspotId);
+    
     
     updateHotspotVisualState(entity, hotspotId, hotspotIndex);
 
@@ -1967,15 +2003,29 @@ document.addEventListener("DOMContentLoaded", function() {
     // Small delay to ensure all elements are ready
     setTimeout(initializeSafetyWarning, 100);
     
-    // Initialize hotspots after A-Frame scene is ready
-    setTimeout(initializeHotspots, 500);
+    // Initialize hotspots after A-Frame scene is ready - increased delay for iOS
+    setTimeout(initializeHotspots, 1000);
     
     // Start intelligent video preloading
-    setTimeout(startIntelligentVideoPreloading, 1000);
+    setTimeout(startIntelligentVideoPreloading, 1500);
     
     // Uncomment the line below to test badge unlocking
     // setTimeout(testUnlockBadges, 2000);
     setTimeout(initializeMainUI, 200);
+});
+
+// Backup initialization on window load for iOS compatibility
+window.addEventListener("load", function() {
+    // If hotspots haven't been initialized yet, try again
+    setTimeout(() => {
+        const scene = document.querySelector("a-scene");
+        const existingHotspots = scene ? scene.querySelectorAll('[data-hotspot-id]') : [];
+        
+        if (existingHotspots.length === 0) {
+            console.log('No hotspots found on window load, reinitializing...');
+            initializeHotspots();
+        }
+    }, 500);
 });
 
 // ========================================
@@ -1987,13 +2037,35 @@ const videoPreloadStatus = new Map();
 const preloadQueue = [];
 let isPreloading = false;
 
+// Determine if a video should be preloaded based on current location
+function shouldPreloadVideoForLocation(hotspotId, location) {
+    // Define which hotspots belong to which location
+    const stairsHotspots = ['clouds', 'banquet', 'peacock', 'graces', 'trumpeter'];
+    const balconyHotspots = ['romulus', 'caesar', 'nero', 'silenus', 'furies', 'alexander', 'herakles', 'diana', 'harvest', 'cherubs', 'musicians', 'signature'];
+    
+    if (location === 'stairs') {
+        return stairsHotspots.includes(hotspotId);
+    } else if (location === 'balcony') {
+        return balconyHotspots.includes(hotspotId);
+    }
+    
+    // Default to not preloading if location is unknown
+    return false;
+}
+
 // Start intelligent video preloading system
 function startIntelligentVideoPreloading() {
     // Check if we're on iOS
     const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+    
+    // Get current location to determine which videos to preload
+    const urlParams = new URLSearchParams(window.location.search);
+    const location = urlParams.get('location') || 'stairs'; // Default to stairs if no location specified
+    
     // Get all video elements
     const videoElements = document.querySelectorAll('video[id^="video-"]');
-    // Add videos to preload queue
+    
+    // Add videos to preload queue - only for current location
     videoElements.forEach(video => {
         const videoId = video.id;
         const hotspotId = videoId.replace('video-', '');
@@ -2003,16 +2075,21 @@ function startIntelligentVideoPreloading() {
             return;
         }
         
-        preloadQueue.push({
-            video: video,
-            videoId: videoId,
-            hotspotId: hotspotId,
-            priority: getVideoPriority(hotspotId)
-        });
+        // Only preload videos for the current location
+        if (shouldPreloadVideoForLocation(hotspotId, location)) {
+            preloadQueue.push({
+                video: video,
+                videoId: videoId,
+                hotspotId: hotspotId,
+                priority: getVideoPriority(hotspotId)
+            });
+        }
     });
     
     // Sort by priority (first hotspot has highest priority)
     preloadQueue.sort((a, b) => a.priority - b.priority);
+    
+    console.log(`Preloading ${preloadQueue.length} videos for ${location} location:`, preloadQueue.map(q => q.hotspotId));
     
     if (isIOS) {
         // On iOS, we'll preload only metadata, not the full video
@@ -2186,6 +2263,7 @@ let currentMindarVideo = null;
 let isMindarActive = false;
 let currentHotspotVideo = null;
 let currentActiveHotspotId = null; // Track which hotspot is currently being processed
+let deviceOrientationPermissionGranted = false; // Track if permission has been granted
 
 // Initialize MindAR system
 function initializeMindAR() {
@@ -2194,6 +2272,12 @@ function initializeMindAR() {
         console.error('MindAR scene not found');
         return false;
     }
+    
+    // Ensure MindAR scene is properly initialized for iOS motion sensor permission
+    console.log('Initializing MindAR scene for location:', currentLocation);
+    
+    // Device orientation permission is now handled directly in HTML
+    // No need for complex permission handling here
     
     // Add MindAR event listeners for debugging
     mindarScene.addEventListener('targetFound', function(event) {
@@ -2283,6 +2367,7 @@ function showMindARScene(hotspotId) {
     // Fade in MindAR scene
     mindarScene.style.display = 'block';
     mindarScene.style.opacity = '0';
+    mindarScene.style.pointerEvents = 'auto'; // Make it interactive
     mindarScene.style.transition = 'opacity 0.5s ease-in';
     mindarScene.classList.add('show');
     
@@ -2334,6 +2419,7 @@ function hideMindARScene() {
     
     setTimeout(() => {
         mindarScene.style.display = 'none';
+        mindarScene.style.pointerEvents = 'none'; // Make it non-interactive
     }, 500);
     
     // Restore UI buttons to original positions
@@ -3041,10 +3127,11 @@ window.testVideoPlayback = testVideoPlayback;
 
 // Initialize MindAR when DOM is loaded
 document.addEventListener("DOMContentLoaded", function() {
-    // Initialize MindAR system
+    // Initialize MindAR system immediately for iOS motion sensor permission
+    // This needs to happen as soon as possible to trigger the motion sensor prompt
     setTimeout(() => {
         initializeMindAR();
-    }, 1000);
+    }, 100);
 }); 
 
 function recreateMindARScene() {
