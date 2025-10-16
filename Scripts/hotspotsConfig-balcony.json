@@ -79,7 +79,7 @@
             }
         ]
     },
-    "furie": {
+    "furies": {
         "common": {
             "scale": "30 30 1",
             "rotation": "0 0 0",
@@ -92,30 +92,10 @@
                 "type": "image",
                 "url": "./Assets/hotspot-icons/Asset 10.png",
                 "frameUrl": "./Assets/hotspot-icons/Asset 10.png",
-                "info": "Furie",
+                "info": "Furies",
                 "audioUrl": "",
                 "link": "./Assets/Videos/Furies.mp4",
                 "description": "These little floating creatures are Furies, Goddesses of vengeance and justice. They punish those Emperors deemed unworthy."
-            }
-        ]
-    },
-    "herakles": {
-        "common": {
-            "scale": "30 30 1",
-            "rotation": "0 0 0",
-            "fixedAngleDegrees": 34.02,
-            "initialY": 22.25,
-            "initialZ": -41.44
-        },
-        "media": [
-            {
-                "type": "image",
-                "url": "./Assets/hotspot-icons/Asset 11.png",
-                "frameUrl": "./Assets/hotspot-icons/Asset 11.png",
-                "info": "Herakles",
-                "audioUrl": "",
-                "link": "./Assets/Videos/Herakles.mp4",
-                "description": "Back to today - William III does like to see himself as Herakles and Alexander. Herakles was famous for his super-human strength and Alexander for his military conquests – great attributes for a warrior king like William. But also, just like Alexander amidst all these Romans, William is a bit of an outsider. He is Dutch, but swept to power here in England with his English wife Queen Mary II during the Glorious Revolution of 1688. A spectacular painting like this might just be enough to convince some of our important guests here at Hampton Court of William and Mary's entitlement to the crown. That they too deserve a seat at the table of the gods."
             }
         ]
     },
@@ -139,6 +119,26 @@
             }
         ]
     },
+    "herakles": {
+        "common": {
+            "scale": "30 30 1",
+            "rotation": "0 0 0",
+            "fixedAngleDegrees": 34.02,
+            "initialY": 22.25,
+            "initialZ": -41.44
+        },
+        "media": [
+            {
+                "type": "image",
+                "url": "./Assets/hotspot-icons/Asset 11.png",
+                "frameUrl": "./Assets/hotspot-icons/Asset 11.png",
+                "info": "Herakles",
+                "audioUrl": "",
+                "link": "./Assets/Videos/Herakles.mp4",
+                "description": "Back to today - William III does like to see himself as Herakles and Alexander. Herakles was famous for his super-human strength and Alexander for his military conquests – great attributes for a warrior king like William. But also, just like Alexander amidst all these Romans, William is a bit of an outsider. He is Dutch, but swept to power here in England with his English wife Queen Mary II during the Glorious Revolution of 1688. A spectacular painting like this might just be enough to convince some of our important guests here at Hampton Court of William and Mary's entitlement to the crown. That they too deserve a seat at the table of the gods."
+            }
+        ]
+    },
     "diana": {
         "common": {
             "scale": "30 30 1",
@@ -156,6 +156,86 @@
                 "audioUrl": "",
                 "link": "./Assets/Videos/Diana.mp4",
                 "description": "Talking of Queen Mary … sitting peacefully on her crescent, is Diana, Goddess of the moon. Just as we're meant to think of William as Alexander the Great, then perhaps Verrio has painted Mary as Diana. Our tragic queen who died of smallpox in 1694. Before we leave the Staircase, and enter the royal apartments, turn to the north wall … "
+            }
+        ]
+    },
+    "harvest": {
+        "common": {
+            "scale": "30 30 1",
+            "rotation": "0 0 0",
+            "fixedAngleDegrees": 15.0,
+            "initialY": 20.0,
+            "initialZ": -44.0
+        },
+        "media": [
+            {
+                "type": "image",
+                "url": "./Assets/hotspot-icons/Asset 14.png",
+                "frameUrl": "./Assets/hotspot-icons/Asset 14.png",
+                "info": "Harvest",
+                "audioUrl": "",
+                "link": "./Assets/Videos/Harvest.mp4",
+                "description": "The bountiful harvest scene represents the abundance and prosperity that comes from divine favor. These agricultural symbols remind us of the earthly realm and the connection between divine blessing and human prosperity."
+            }
+        ]
+    },
+    "cherubs": {
+        "common": {
+            "scale": "30 30 1",
+            "rotation": "0 0 0",
+            "fixedAngleDegrees": 10.0,
+            "initialY": 18.0,
+            "initialZ": -46.0
+        },
+        "media": [
+            {
+                "type": "image",
+                "url": "./Assets/hotspot-icons/Asset 15.png",
+                "frameUrl": "./Assets/hotspot-icons/Asset 15.png",
+                "info": "Cherubs",
+                "audioUrl": "",
+                "link": "./Assets/Videos/Cherub_a.mp4",
+                "description": "These playful cherubs represent the innocent and pure aspects of the divine realm. Their presence brings joy and lightness to the scene, symbolizing the happiness that comes from divine favor and protection."
+            }
+        ]
+    },
+    "musicians": {
+        "common": {
+            "scale": "30 30 1",
+            "rotation": "0 0 0",
+            "fixedAngleDegrees": 5.0,
+            "initialY": 16.0,
+            "initialZ": -48.0
+        },
+        "media": [
+            {
+                "type": "image",
+                "url": "./Assets/hotspot-icons/Asset 16.png",
+                "frameUrl": "./Assets/hotspot-icons/Asset 16.png",
+                "info": "Musicians",
+                "audioUrl": "",
+                "link": "./Assets/Videos/Musicians.mp4",
+                "description": "The celestial musicians provide the soundtrack to this divine assembly. Their harmonious melodies accompany the proceedings, creating an atmosphere of celebration and divine grandeur that befits such an important gathering."
+            }
+        ]
+    },
+    "signature": {
+        "common": {
+            "scale": "30 30 1",
+            "rotation": "0 0 0",
+            "fixedAngleDegrees": 0.0,
+            "initialY": 14.0,
+            "initialZ": -50.0
+        },
+        "media": [
+            {
+                "type": "image",
+                "url": "./Assets/hotspot-icons/Asset 17.png",
+                "frameUrl": "./Assets/hotspot-icons/Asset 17.png",
+                "info": "Signature",
+                "audioUrl": "",
+                "link": "./Assets/Videos/Signature.mp4",
+                "description": "The artist's signature marks the completion of this magnificent work. Verrio's name immortalized in this grand staircase, a testament to the skill and vision that brought this divine scene to life for all to marvel at."
             }
         ]
     }

@@ -55,14 +55,23 @@ let currentZDepthDisplay;
 
 // Map your hotspot ids to MindAR target indices
 const targetIndexById = {
-    romulus: 0,
-    caesar: 1,
-    nero: 2,
-    silenus: 3,
-    furies: 4,
-    herakles: 5,
-    alexander: 6,
-    diana: 7
+    clouds: 0,
+    banquet: 1,
+    peacock: 2,
+    graces: 3,
+    trumpeter: 4,
+    romulus: 5,
+    caesar: 6,
+    nero: 7,
+    silenus: 8,
+    furies: 9,
+    alexander: 10,
+    herakles: 11,
+    diana: 12,
+    harvest: 13,
+    cherubs: 14,
+    musicians: 15,
+    signature: 16
   };
   
   // Track which indices are finished (optional, useful if you never want them again)
@@ -1775,6 +1784,7 @@ function hideBadgesOverlay() {
 // Badge configuration in the specific order requested
 const badgeConfig = [
     { id: 'clouds', name: 'Clouds', filename: 'Ceiling clouds.png', grayFilename: 'Ceiling clouds_g.png' },
+    { id: 'banquet', name: 'Banquet of the Gods', filename: 'Banquet of the Gods.png', grayFilename: 'Banquet of the Gods_g.png' },
     { id: 'peacock', name: 'Peacock', filename: 'Peacocks.png', grayFilename: 'Peacocks_g.png' },
     { id: 'three-graces', name: 'Three Graces', filename: 'Three Graces.png', grayFilename: 'Three Graces_g.png' },
     { id: 'trumpeter', name: 'Trumpeter', filename: 'Trumpeter.png', grayFilename: 'TrumpeterG.png' },
@@ -1795,15 +1805,26 @@ const badgeConfig = [
 
 // Mapping between hotspot IDs and badge IDs
 const hotspotToBadgeMapping = {
+    // Stairs hotspots (1-5)
+    'clouds': 'clouds',
+    'banquet': 'banquet',
+    'peacock': 'peacock',
+    'graces': 'three-graces',
+    'trumpeter': 'trumpeter',
+    
+    // Balcony hotspots (6-17)
     'romulus': 'romulus',
     'caesar': 'caeser',
     'nero': 'nero',
     'silenus': 'silenus',
-    'furies': 'furies', // Note: config uses 'furie' but badge uses 'furies'
-    'herakles': 'herakles',
+    'furies': 'furies',
     'alexander': 'alexander',
-    'diana': 'diana'
-    // Add more mappings as needed for other hotspots
+    'herakles': 'herakles',
+    'diana': 'diana',
+    'harvest': 'harvest',
+    'cherubs': 'cherubs',
+    'musicians': 'musicians',
+    'signature': 'outro'
 };
 
 // Track which badges are unlocked (initially all locked except for testing)
@@ -1827,7 +1848,7 @@ function populateBadgesGrid() {
         badgeImage.className = 'badge-image';
         
         // Determine if badge is unlocked
-        const isUnlocked = unlockedBadges.has(badge.id) || (badge.id === 'final' && unlockedBadges.size >= 16);
+        const isUnlocked = unlockedBadges.has(badge.id) || (badge.id === 'final' && unlockedBadges.size >= 17);
         
         // Set appropriate image and class
         if (isUnlocked) {

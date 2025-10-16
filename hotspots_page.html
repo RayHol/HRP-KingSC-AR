@@ -312,7 +312,7 @@
     <!-- MindAR Scene Overlay (initially hidden) -->
     <a-scene id="mindar-scene" 
         loading-screen="enabled: false"
-        mindar-image="imageTargetSrc: ./Assets/targets.mind; maxTrack: 1; uiLoading:no; uiScanning: no; warmupTolerance: 10; missTolerance: 1; filterMinCF: 0.0001; filterBeta: 0.001"
+        mindar-image="imageTargetSrc: ./Assets/targets_all.mind; maxTrack: 1; uiLoading:no; uiScanning: no; warmupTolerance: 10; missTolerance: 1; filterMinCF: 0.0001; filterBeta: 0.001"
         color-space="sRGB"
         renderer="colorManagement: true, physicallyCorrectLights"
         vr-mode-ui="enabled: false"
@@ -322,48 +322,96 @@
         
         <!-- MindAR Video Assets -->
         <a-assets>
-            <!-- Video for target 0 (romulus) -->
+            <!-- Video for target 0 (clouds) -->
+            <video id="video-clouds" preload="auto" response-type="arraybuffer" crossorigin="anonymous" webkit-playsinline playsinline muted>
+                <source src="./Assets/Videos/Clouds.mp4" type="video/mp4">
+            </video>
+            
+            <!-- Video for target 1 (banquet) -->
+            <video id="video-banquet" preload="auto" response-type="arraybuffer" crossorigin="anonymous" webkit-playsinline playsinline muted>
+                <source src="./Assets/Videos/Banquet.mp4" type="video/mp4">
+            </video>
+            
+            <!-- Video for target 2 (peacock) -->
+            <video id="video-peacock" preload="auto" response-type="arraybuffer" crossorigin="anonymous" webkit-playsinline playsinline muted>
+                <source src="./Assets/Videos/Peacock_a.mp4" type="video/mp4;codecs=hvc1">
+                <source src="./Assets/Videos/Peacock_a.webm" type="video/webm">
+            </video>
+            
+            <!-- Video for target 3 (graces) -->
+            <video id="video-graces" preload="auto" response-type="arraybuffer" crossorigin="anonymous" webkit-playsinline playsinline muted>
+                <source src="./Assets/Videos/Graces.mp4" type="video/mp4">
+            </video>
+            
+            <!-- Video for target 4 (trumpeter) -->
+            <video id="video-trumpeter" preload="auto" response-type="arraybuffer" crossorigin="anonymous" webkit-playsinline playsinline muted>
+                <source src="./Assets/Videos/Trumpeter_a.mp4" type="video/mp4;codecs=hvc1">
+                <source src="./Assets/Videos/Trumpeter_a.webm" type="video/webm">
+            </video>
+            
+            <!-- Video for target 5 (romulus) -->
             <video id="video-romulus" preload="auto" response-type="arraybuffer" crossorigin="anonymous" webkit-playsinline playsinline muted>
                 <source src="./Assets/Videos/romulus_a.mp4" type="video/mp4;codecs=hvc1">
                 <source src="./Assets/Videos/romulus_a.webm" type="video/webm">
             </video>
             
-            <!-- Video for target 1 (caesar) -->
+            <!-- Video for target 6 (caesar) -->
             <video id="video-caesar" preload="auto" response-type="arraybuffer" crossorigin="anonymous" webkit-playsinline playsinline muted>
                 <source src="./Assets/Videos/Caesar_a.mp4" type="video/mp4;codecs=hvc1">
                 <source src="./Assets/Videos/Caesar_a.webm" type="video/webm">
             </video>
 
-            <!-- Video for target 2 (nero) -->
+            <!-- Video for target 7 (nero) -->
             <video id="video-nero" preload="auto" response-type="arraybuffer" crossorigin="anonymous" webkit-playsinline playsinline muted>
                     <source src="./Assets/Videos/Nero.mp4" type="video/mp4">
             </video>
         
                 
-            <!-- Video for target 3 (silenus) -->
+            <!-- Video for target 8 (silenus) -->
             <video id="video-silenus" preload="auto" response-type="arraybuffer" crossorigin="anonymous" webkit-playsinline playsinline muted>
                 <source src="./Assets/Videos/Silenus_a.mp4" type="video/mp4;codecs=hvc1">
                 <source src="./Assets/Videos/Silenus_a.webm" type="video/webm">
             </video>
                     
-             <!-- Video for target 4 (furies) -->
+             <!-- Video for target 9 (furies) -->
             <video id="video-furies" preload="auto" response-type="arraybuffer" crossorigin="anonymous" webkit-playsinline playsinline muted>
                 <source src="./Assets/Videos/Furies.mp4" type="video/mp4">
             </video>
 
-            <!-- Video for target 5 (alexander) -->
+            <!-- Video for target 10 (alexander) -->
             <video id="video-alexander" preload="auto" response-type="arraybuffer" crossorigin="anonymous" webkit-playsinline playsinline muted>
                 <source src="./Assets/Videos/Alexander.mp4" type="video/mp4">
             </video>
             
-            <!-- Video for target 6 (herakles) swapping Alexander with Herakles-->
+            <!-- Video for target 11 (herakles) -->
             <video id="video-herakles" preload="auto" response-type="arraybuffer" crossorigin="anonymous" webkit-playsinline playsinline muted>
                 <source src="./Assets/Videos/Herakles.mp4" type="video/mp4">
             </video>
                     
-            <!-- Video for target 7 (diana) -->
+            <!-- Video for target 12 (diana) -->
             <video id="video-diana" preload="auto" response-type="arraybuffer" crossorigin="anonymous" webkit-playsinline playsinline muted>
                 <source src="./Assets/Videos/Diana.mp4" type="video/mp4">
+            </video>
+            
+            <!-- Video for target 13 (harvest) -->
+            <video id="video-harvest" preload="auto" response-type="arraybuffer" crossorigin="anonymous" webkit-playsinline playsinline muted>
+                <source src="./Assets/Videos/Harvest.mp4" type="video/mp4">
+            </video>
+            
+            <!-- Video for target 14 (cherubs) -->
+            <video id="video-cherubs" preload="auto" response-type="arraybuffer" crossorigin="anonymous" webkit-playsinline playsinline muted>
+                <source src="./Assets/Videos/Cherub_a.mp4" type="video/mp4;codecs=hvc1">
+                <source src="./Assets/Videos/Cherub_a.webm" type="video/webm">
+            </video>
+            
+            <!-- Video for target 15 (musicians) -->
+            <video id="video-musicians" preload="auto" response-type="arraybuffer" crossorigin="anonymous" webkit-playsinline playsinline muted>
+                <source src="./Assets/Videos/Musicians.mp4" type="video/mp4">
+            </video>
+            
+            <!-- Video for target 16 (signature) -->
+            <video id="video-signature" preload="auto" response-type="arraybuffer" crossorigin="anonymous" webkit-playsinline playsinline muted>
+                <source src="./Assets/Videos/Signature.mp4" type="video/mp4">
             </video>
             
  
@@ -376,8 +424,68 @@
         <!-- Ambient light entity -->
         <a-light type="ambient" color="#FFF"></a-light>
         
-        <!-- MindAR Target 0 (romulus) - initially hidden -->
-        <a-entity id="target-romulus" mindar-image-target="targetIndex: 0" ar-controller
+        <!-- MindAR Target 0 (clouds) - initially hidden -->
+        <a-entity id="target-clouds" mindar-image-target="targetIndex: 0" ar-controller
+            smooth-position="target: #videooverlay-clouds; factor: 0.1" style="display: none;">
+            <a-plane id="videooverlay-clouds" 
+                material="src: #video-clouds; transparent: true; opacity: 0"
+                animation__fadein="startEvents: fadein-clouds; property: material.opacity; from: 0; to: 1; dur: 500;" 
+                height="1.4" width="0.8"
+                animation__fadeout="startEvents: fadeout-clouds; property: material.opacity; from: 1; to: 0; dur: 500;"
+                animation__scaleup="startEvents: fadein-clouds; property: scale; from: 1 1 1; to: 2 2 1; dur: 2000; easing: easeOutQuart;">
+            </a-plane>
+        </a-entity>
+        
+        <!-- MindAR Target 1 (banquet) - initially hidden -->
+        <a-entity id="target-banquet" mindar-image-target="targetIndex: 1" ar-controller
+            smooth-position="target: #videooverlay-banquet; factor: 0.1" style="display: none;">
+            <a-plane id="videooverlay-banquet" 
+                material="src: #video-banquet; transparent: true; opacity: 0"
+                animation__fadein="startEvents: fadein-banquet; property: material.opacity; from: 0; to: 1; dur: 500;" 
+                height="1.4" width="0.8"
+                animation__fadeout="startEvents: fadeout-banquet; property: material.opacity; from: 1; to: 0; dur: 500;"
+                animation__scaleup="startEvents: fadein-banquet; property: scale; from: 1 1 1; to: 2 2 1; dur: 2000; easing: easeOutQuart;">
+            </a-plane>
+        </a-entity>
+        
+        <!-- MindAR Target 2 (peacock) - initially hidden -->
+        <a-entity id="target-peacock" mindar-image-target="targetIndex: 2" ar-controller
+            smooth-position="target: #videooverlay-peacock; factor: 0.1" style="display: none;">
+            <a-plane id="videooverlay-peacock" 
+                material="shader: transparent-video; src: #video-peacock; transparent: true; opacity: 0"
+                animation__fadein="startEvents: fadein-peacock; property: material.opacity; from: 0; to: 1; dur: 500;" 
+                height="0.8" width="0.8"
+                animation__fadeout="startEvents: fadeout-peacock; property: material.opacity; from: 1; to: 0; dur: 500;"
+                animation__scaleup="startEvents: fadein-peacock; property: scale; from: 1 1 1; to: 2 2 1; dur: 2000; easing: easeOutQuart;">
+            </a-plane>
+        </a-entity>
+        
+        <!-- MindAR Target 3 (graces) - initially hidden -->
+        <a-entity id="target-graces" mindar-image-target="targetIndex: 3" ar-controller
+            smooth-position="target: #videooverlay-graces; factor: 0.1" style="display: none;">
+            <a-plane id="videooverlay-graces" 
+                material="src: #video-graces; transparent: true; opacity: 0"
+                animation__fadein="startEvents: fadein-graces; property: material.opacity; from: 0; to: 1; dur: 500;" 
+                height="1.4" width="0.8"
+                animation__fadeout="startEvents: fadeout-graces; property: material.opacity; from: 1; to: 0; dur: 500;"
+                animation__scaleup="startEvents: fadein-graces; property: scale; from: 1 1 1; to: 2 2 1; dur: 2000; easing: easeOutQuart;">
+            </a-plane>
+        </a-entity>
+        
+        <!-- MindAR Target 4 (trumpeter) - initially hidden -->
+        <a-entity id="target-trumpeter" mindar-image-target="targetIndex: 4" ar-controller
+            smooth-position="target: #videooverlay-trumpeter; factor: 0.1" style="display: none;">
+            <a-plane id="videooverlay-trumpeter" 
+                material="shader: transparent-video; src: #video-trumpeter; transparent: true; opacity: 0"
+                animation__fadein="startEvents: fadein-trumpeter; property: material.opacity; from: 0; to: 1; dur: 500;" 
+                height="0.8" width="0.8"
+                animation__fadeout="startEvents: fadeout-trumpeter; property: material.opacity; from: 1; to: 0; dur: 500;"
+                animation__scaleup="startEvents: fadein-trumpeter; property: scale; from: 1 1 1; to: 2 2 1; dur: 2000; easing: easeOutQuart;">
+            </a-plane>
+        </a-entity>
+        
+        <!-- MindAR Target 5 (romulus) - initially hidden -->
+        <a-entity id="target-romulus" mindar-image-target="targetIndex: 5" ar-controller
             smooth-position="target: #videooverlay-romulus; factor: 0.1" style="display: none;">
             <a-plane id="videooverlay-romulus" 
                 material="shader: transparent-video; src: #video-romulus; transparent: true; opacity: 0"
@@ -388,8 +496,8 @@
             </a-plane>
         </a-entity>
         
-        <!-- MindAR Target 1 (caesar) - initially hidden -->
-        <a-entity id="target-caesar" mindar-image-target="targetIndex: 1" ar-controller
+        <!-- MindAR Target 6 (caesar) - initially hidden -->
+        <a-entity id="target-caesar" mindar-image-target="targetIndex: 6" ar-controller
             smooth-position="target: #videooverlay-caesar; factor: 0.1" style="display: none;">
             <a-plane id="videooverlay-caesar" 
                 material="shader: transparent-video; src: #video-caesar; transparent: true; opacity: 0"
@@ -400,11 +508,11 @@
             </a-plane>
         </a-entity>
 
-        <!-- MindAR Target 2 (nero) - initially hidden -->
-        <a-entity id="target-nero" mindar-image-target="targetIndex: 2" ar-controller
+        <!-- MindAR Target 7 (nero) - initially hidden -->
+        <a-entity id="target-nero" mindar-image-target="targetIndex: 7" ar-controller
             smooth-position="target: #videooverlay-nero; factor: 0.1" style="display: none;">
             <a-plane id="videooverlay-nero" 
-                material="shader: transparent-video; src: #video-nero; transparent: true; opacity: 0"
+                material="src: #video-nero; transparent: true; opacity: 0"
                 animation__fadein="startEvents: fadein-nero; property: material.opacity; from: 0; to: 1; dur: 500;" 
                 height="1.4" width="0.8"
                 animation__fadeout="startEvents: fadeout-nero; property: material.opacity; from: 1; to: 0; dur: 500;"
@@ -412,8 +520,8 @@
             </a-plane>
         </a-entity>
         
-        <!-- MindAR Target 3 (silenus) - initially hidden -->
-        <a-entity id="target-silenus" mindar-image-target="targetIndex: 3" ar-controller
+        <!-- MindAR Target 8 (silenus) - initially hidden -->
+        <a-entity id="target-silenus" mindar-image-target="targetIndex: 8" ar-controller
             smooth-position="target: #videooverlay-silenus; factor: 0.1" style="display: none;">
             <a-plane id="videooverlay-silenus" 
                 material="shader: transparent-video; src: #video-silenus; transparent: true; opacity: 0"
@@ -424,11 +532,11 @@
             </a-plane>
         </a-entity>
         
-        <!-- MindAR Target 4 (furies) - initially hidden -->
-        <a-entity id="target-furies" mindar-image-target="targetIndex: 4" ar-controller
+        <!-- MindAR Target 9 (furies) - initially hidden -->
+        <a-entity id="target-furies" mindar-image-target="targetIndex: 9" ar-controller
             smooth-position="target: #videooverlay-furies; factor: 0.1" style="display: none;">
             <a-plane id="videooverlay-furies" 
-                material="shader: transparent-video; src: #video-furies; transparent: true; opacity: 0"
+                material="src: #video-furies; transparent: true; opacity: 0"
                 animation__fadein="startEvents: fadein-furies; property: material.opacity; from: 0; to: 1; dur: 500;" 
                 height="1.4" width="0.8"
                 animation__fadeout="startEvents: fadeout-furies; property: material.opacity; from: 1; to: 0; dur: 500;"
@@ -436,8 +544,20 @@
             </a-plane>
         </a-entity>
         
-        <!-- MindAR Target 6 (herakles) - initially hidden -->
-        <a-entity id="target-herakles" mindar-image-target="targetIndex: 6" ar-controller
+        <!-- MindAR Target 10 (alexander) - initially hidden -->
+        <a-entity id="target-alexander" mindar-image-target="targetIndex: 10" ar-controller
+            smooth-position="target: #videooverlay-alexander; factor: 0.1" style="display: none;">
+            <a-plane id="videooverlay-alexander" 
+                material="src: #video-alexander; transparent: true; opacity: 0"
+                animation__fadein="startEvents: fadein-alexander; property: material.opacity; from: 0; to: 1; dur: 500;" 
+                height="1.4" width="0.8"
+                animation__fadeout="startEvents: fadeout-alexander; property: material.opacity; from: 1; to: 0; dur: 500;"
+                animation__scaleup="startEvents: fadein-alexander; property: scale; from: 1 1 1; to: 2 2 1; dur: 2000; easing: easeOutQuart;">
+            </a-plane>
+        </a-entity>
+        
+        <!-- MindAR Target 11 (herakles) - initially hidden -->
+        <a-entity id="target-herakles" mindar-image-target="targetIndex: 11" ar-controller
             smooth-position="target: #videooverlay-herakles; factor: 0.1" style="display: none;">
             <a-plane id="videooverlay-herakles" 
                 material="shader: transparent-video; src: #video-herakles; transparent: true; opacity: 0"
@@ -448,27 +568,63 @@
             </a-plane>
         </a-entity>
         
-        <!-- MindAR Target 5 (alexander) - initially hidden -->
-        <a-entity id="target-alexander" mindar-image-target="targetIndex: 5" ar-controller
-            smooth-position="target: #videooverlay-alexander; factor: 0.1" style="display: none;">
-            <a-plane id="videooverlay-alexander" 
-                material="shader: transparent-video; src: #video-alexander; transparent: true; opacity: 0"
-                animation__fadein="startEvents: fadein-alexander; property: material.opacity; from: 0; to: 1; dur: 500;" 
-                height="1.4" width="0.8"
-                animation__fadeout="startEvents: fadeout-alexander; property: material.opacity; from: 1; to: 0; dur: 500;"
-                animation__scaleup="startEvents: fadein-alexander; property: scale; from: 1 1 1; to: 2 2 1; dur: 2000; easing: easeOutQuart;">
-            </a-plane>
-        </a-entity>
-        
-        <!-- MindAR Target 7 (diana) - initially hidden -->
-        <a-entity id="target-diana" mindar-image-target="targetIndex: 7" ar-controller
+        <!-- MindAR Target 12 (diana) - initially hidden -->
+        <a-entity id="target-diana" mindar-image-target="targetIndex: 12" ar-controller
             smooth-position="target: #videooverlay-diana; factor: 0.1" style="display: none;">
             <a-plane id="videooverlay-diana" 
-                material="shader: transparent-video; src: #video-diana; transparent: true; opacity: 0"
+                material="src: #video-diana; transparent: true; opacity: 0"
                 animation__fadein="startEvents: fadein-diana; property: material.opacity; from: 0; to: 1; dur: 500;" 
                 height="1.4" width="0.8"
                 animation__fadeout="startEvents: fadeout-diana; property: material.opacity; from: 1; to: 0; dur: 500;"
                 animation__scaleup="startEvents: fadein-diana; property: scale; from: 1 1 1; to: 2 2 1; dur: 2000; easing: easeOutQuart;">
+            </a-plane>
+        </a-entity>
+        
+        <!-- MindAR Target 13 (harvest) - initially hidden -->
+        <a-entity id="target-harvest" mindar-image-target="targetIndex: 13" ar-controller
+            smooth-position="target: #videooverlay-harvest; factor: 0.1" style="display: none;">
+            <a-plane id="videooverlay-harvest" 
+                material="src: #video-harvest; transparent: true; opacity: 0"
+                animation__fadein="startEvents: fadein-harvest; property: material.opacity; from: 0; to: 1; dur: 500;" 
+                height="1.4" width="0.8"
+                animation__fadeout="startEvents: fadeout-harvest; property: material.opacity; from: 1; to: 0; dur: 500;"
+                animation__scaleup="startEvents: fadein-harvest; property: scale; from: 1 1 1; to: 2 2 1; dur: 2000; easing: easeOutQuart;">
+            </a-plane>
+        </a-entity>
+        
+        <!-- MindAR Target 14 (cherubs) - initially hidden -->
+        <a-entity id="target-cherubs" mindar-image-target="targetIndex: 14" ar-controller
+            smooth-position="target: #videooverlay-cherubs; factor: 0.1" style="display: none;">
+            <a-plane id="videooverlay-cherubs" 
+                material="shader: transparent-video; src: #video-cherubs; transparent: true; opacity: 0"
+                animation__fadein="startEvents: fadein-cherubs; property: material.opacity; from: 0; to: 1; dur: 500;" 
+                height="1.6" width="1.6"
+                animation__fadeout="startEvents: fadeout-cherubs; property: material.opacity; from: 1; to: 0; dur: 500;"
+                animation__scaleup="startEvents: fadein-cherubs; property: scale; from: 1 1 1; to: 2 2 1; dur: 2000; easing: easeOutQuart;">
+            </a-plane>
+        </a-entity>
+        
+        <!-- MindAR Target 15 (musicians) - initially hidden -->
+        <a-entity id="target-musicians" mindar-image-target="targetIndex: 15" ar-controller
+            smooth-position="target: #videooverlay-musicians; factor: 0.1" style="display: none;">
+            <a-plane id="videooverlay-musicians" 
+                material="src: #video-musicians; transparent: true; opacity: 0"
+                animation__fadein="startEvents: fadein-musicians; property: material.opacity; from: 0; to: 1; dur: 500;" 
+                height="1.4" width="0.8"
+                animation__fadeout="startEvents: fadeout-musicians; property: material.opacity; from: 1; to: 0; dur: 500;"
+                animation__scaleup="startEvents: fadein-musicians; property: scale; from: 1 1 1; to: 2 2 1; dur: 2000; easing: easeOutQuart;">
+            </a-plane>
+        </a-entity>
+        
+        <!-- MindAR Target 16 (signature) - initially hidden -->
+        <a-entity id="target-signature" mindar-image-target="targetIndex: 16" ar-controller
+            smooth-position="target: #videooverlay-signature; factor: 0.1" style="display: none;">
+            <a-plane id="videooverlay-signature" 
+                material="shader: transparent-video; src: #video-signature; transparent: true; opacity: 0"
+                animation__fadein="startEvents: fadein-signature; property: material.opacity; from: 0; to: 1; dur: 500;" 
+                height="1.4" width="0.8"
+                animation__fadeout="startEvents: fadeout-signature; property: material.opacity; from: 1; to: 0; dur: 500;"
+                animation__scaleup="startEvents: fadein-signature; property: scale; from: 1 1 1; to: 2 2 1; dur: 2000; easing: easeOutQuart;">
             </a-plane>
         </a-entity>
 

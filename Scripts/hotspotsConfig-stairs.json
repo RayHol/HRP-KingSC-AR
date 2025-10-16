@@ -1,161 +1,101 @@
 {
-    "romulus": {
+    "clouds": {
         "common": {
             "scale": "30 30 1",
             "rotation": "0 0 0",
-            "fixedAngleDegrees": -49.7,
-            "initialY": 36,
-            "initialZ": -32.34
+            "fixedAngleDegrees": -25.0,
+            "initialY": 25.0,
+            "initialZ": -42.0
         },
         "media": [
             {
                 "type": "image",
-                "url": "./Assets/hotspot-icons/Asset 6.png",
-                "frameUrl": "./Assets/hotspot-icons/Asset 6.png",
-                "info": "Romulus",
+                "url": "./Assets/hotspot-icons/Asset 1.png",
+                "frameUrl": "./Assets/hotspot-icons/Asset 1.png",
+                "info": "Clouds",
                 "audioUrl": "",
-                "link": "",
-                "description": "This man seems to be pleading with the Gods above. That's Romulus, the legendary founder of Rome. He has thrown this lavish banquet and is trying to convince the Gods to admit the many rulers of Rome, who are assembling down below. A crucial invite for these glory-seeking emperors. The Gods rather mischievously suggest that a competition takes place, and only the winners should be allowed to attend…."
+                "link": "./Assets/Videos/Clouds.mp4",
+                "description": "Look up at the magnificent ceiling clouds painted by Verrio. These ethereal formations represent the divine realm where the gods reside, watching over the earthly affairs below. The clouds symbolize the connection between heaven and earth, a theme central to this grand staircase."
             }
         ]
     },
-    "caesar": {
+    "banquet": {
         "common": {
             "scale": "30 30 1",
             "rotation": "0 0 0",
-            "fixedAngleDegrees": -35.07,
-            "initialY": 35.02,
-            "initialZ": -40.53
+            "fixedAngleDegrees": -15.0,
+            "initialY": 22.0,
+            "initialZ": -40.0
         },
         "media": [
             {
                 "type": "image",
-                "url": "./Assets/hotspot-icons/Asset 7.png",
-                "frameUrl": "./Assets/hotspot-icons/Asset 7.png",
-                "info": "Caesar",
+                "url": "./Assets/hotspot-icons/Asset 2.png",
+                "frameUrl": "./Assets/hotspot-icons/Asset 2.png",
+                "info": "Banquet of the Gods",
                 "audioUrl": "",
-                "link": "",
-                "description": "Each emperor jostles for a seat at this table. Julius Caesar has forced himself to the front of course, centre-stage, confident that he will be one of the chosen few. I think as Verrio painted this, he may have been inspired by some of the pompous courtiers he witnessed here at Hampton court! "
+                "link": "./Assets/Videos/Banquet.mp4",
+                "description": "Behold the grand banquet of the gods! This central scene shows the divine assembly where the Olympian gods gather to decide the fate of mortal rulers. Each deity is carefully positioned to show their power and influence in the cosmic hierarchy."
             }
         ]
     },
-    "nero": {
+    "peacock": {
         "common": {
             "scale": "30 30 1",
             "rotation": "0 0 0",
-            "fixedAngleDegrees": -48.37,
-            "initialY": 29,
-            "initialZ": -32.96
+            "fixedAngleDegrees": 5.0,
+            "initialY": 28.0,
+            "initialZ": -45.0
         },
         "media": [
             {
                 "type": "image",
-                "url": "./Assets/hotspot-icons/Asset 8.png",
-                "frameUrl": "./Assets/hotspot-icons/Asset 8.png",
-                "info": "Nero",
+                "url": "./Assets/hotspot-icons/Asset 3.png",
+                "frameUrl": "./Assets/hotspot-icons/Asset 3.png",
+                "info": "Peacock",
                 "audioUrl": "",
-                "link": "",
-                "description": "And that’s Nero to the right, strumming away on his guitar. He’s trying to flatter the gods by modelling himself on Apollo, but Apollo wasn’t at all impressed… I will soon take off that wreath. For he does not imitate me in all things, and even when he does he does it badly. He’s swiftly rejected by the Gods. How unfortunate for him!"
+                "link": "./Assets/Videos/Peacock_a.mp4",
+                "description": "The magnificent peacock, symbol of Juno, queen of the gods. Its iridescent plumage represents the beauty and majesty of the divine realm. In classical mythology, the peacock was sacred to Juno and symbolized immortality and renewal."
             }
         ]
     },
-    "silenus": {
+    "graces": {
         "common": {
             "scale": "30 30 1",
             "rotation": "0 0 0",
-            "fixedAngleDegrees": -4.97,
-            "initialY": 67.09,
-            "initialZ": -49.34
+            "fixedAngleDegrees": 20.0,
+            "initialY": 30.0,
+            "initialZ": -43.0
         },
         "media": [
             {
                 "type": "image",
-                "url": "./Assets/hotspot-icons/Asset 9.png",
-                "frameUrl": "./Assets/hotspot-icons/Asset 9.png",
-                "info": "Silenus",
+                "url": "./Assets/hotspot-icons/Asset 4.png",
+                "frameUrl": "./Assets/hotspot-icons/Asset 4.png",
+                "info": "Three Graces",
                 "audioUrl": "",
-                "link": "",
-                "description": "On his Donkey is Silenus, court jester to the Gods. He humbles the emperors, taunting them with his jibes. ake care Zeus, lest this man in his lust for power rob you of your empire. His insults help the Gods decide who might be allowed into the feast and many are swiftly dismissed. Good heavens! What a changeable monster is this! What mischief will [Octavian] do us?"
+                "link": "./Assets/Videos/Graces.mp4",
+                "description": "The Three Graces, daughters of Zeus, represent charm, beauty, and creativity. They dance together in perfect harmony, symbolizing the ideal of divine grace and the interconnected nature of these virtues. Their presence brings elegance to the divine assembly."
             }
         ]
     },
-    "furies": {
+    "trumpeter": {
         "common": {
             "scale": "30 30 1",
             "rotation": "0 0 0",
-            "fixedAngleDegrees": 21.35,
-            "initialY": 53.38,
-            "initialZ": -46.13
+            "fixedAngleDegrees": 35.0,
+            "initialY": 26.0,
+            "initialZ": -41.0
         },
         "media": [
             {
                 "type": "image",
-                "url": "./Assets/hotspot-icons/Asset 10.png",
-                "frameUrl": "./Assets/hotspot-icons/Asset 10.png",
-                "info": "Furies",
+                "url": "./Assets/hotspot-icons/Asset 5.png",
+                "frameUrl": "./Assets/hotspot-icons/Asset 5.png",
+                "info": "Trumpeter",
                 "audioUrl": "",
-                "link": "",
-                "description": "These little floating creatures are Furies, Goddesses of vengeance and justice. They punish those Emperors deemed unworthy."
-            }
-        ]
-    },
-    "alexander": {
-        "common": {
-            "scale": "30 30 1",
-            "rotation": "0 0 0",
-            "fixedAngleDegrees": 6.23,
-            "initialY": 42.02,
-            "initialZ": -49.23
-        },
-        "media": [
-            {
-                "type": "image",
-                "url": "./Assets/hotspot-icons/Asset 12.png",
-                "frameUrl": "./Assets/hotspot-icons/Asset 12.png",
-                "info": "Alexander",
-                "audioUrl": "",
-                "link": "",
-                "description": "Here we have a figure, a little more separate from the rest of the group that the artist Verrio has paid plenty of attention to. Such prowess, such glory. This is the Macedonian emperor, Alexander the Great, who has arrived into the scene as the guest of his promoter Herakles, a hero from Greek mythology … Alexander ruled over an empire even larger, we're told, than the Roman emperors. We can see the Winged figure of Victory swooping in to place a laurel wreath upon his head, in celebration of his victories. See now whether all these Romans can match this one Greek."
-            }
-        ]
-    },
-    "herakles": {
-        "common": {
-            "scale": "30 30 1",
-            "rotation": "0 0 0",
-            "fixedAngleDegrees": 2.80,
-            "initialY": 53.04,
-            "initialZ": -49.47
-        },
-        "media": [
-            {
-                "type": "image",
-                "url": "./Assets/hotspot-icons/Asset 11.png",
-                "frameUrl": "./Assets/hotspot-icons/Asset 11.png",
-                "info": "Herakles",
-                "audioUrl": "",
-                "link": "",
-                "description": "Back to today - William III does like to see himself as Herakles and Alexander. Herakles was famous for his super-human strength and Alexander for his military conquests – great attributes for a warrior king like William. But also, just like Alexander amidst all these Romans, William is a bit of an outsider. He is Dutch, but swept to power here in England with his English wife Queen Mary II during the Glorious Revolution of 1688. A spectacular painting like this might just be enough to convince some of our important guests here at Hampton Court of William and Mary's entitlement to the crown. That they too deserve a seat at the table of the gods."
-            }
-        ]
-    },
-    "diana": {
-        "common": {
-            "scale": "30 30 1",
-            "rotation": "0 0 0",
-            "fixedAngleDegrees": -19.04,
-            "initialY": 65.18,
-            "initialZ": -49.82
-        },
-        "media": [
-            {
-                "type": "image",
-                "url": "./Assets/hotspot-icons/Asset 13.png",
-                "frameUrl": "./Assets/hotspot-icons/Asset 13.png",
-                "info": "Diana",
-                "audioUrl": "",
-                "link": "",
-                "description": "Talking of Queen Mary … sitting peacefully on her crescent, is Diana, Goddess of the moon. Just as we’re meant to think of William as Alexander the Great, then perhaps Verrio has painted Mary as Diana. Our tragic queen who died of smallpox in 1694. Before we leave the Staircase, and enter the royal apartments, turn to the north wall … "
+                "link": "./Assets/Videos/Trumpeter_a.mp4",
+                "description": "The celestial trumpeter announces the arrival of divine judgment. His trumpet call signals the beginning of the great competition among the mortal rulers, summoning them to prove their worthiness before the gods. The sound echoes through the heavens."
             }
         ]
     }
