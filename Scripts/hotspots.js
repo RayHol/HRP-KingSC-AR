@@ -59,7 +59,7 @@ async function pauseEncantar() {
         }
         
     } catch(e) {
-        console.error('❌ Error pausing Encantar:', e);
+        console.error('Error pausing Encantar:', e);
     }
     
     // Wait for camera release
@@ -93,9 +93,9 @@ async function resumeEncantar() {
             comp.play();
         }
         
-        console.log('✅ ENCANTAR RESUMED');
+        console.log('ENCANTAR RESUMED');
     } catch(e) {
-        console.error('❌ Error resuming Encantar:', e);
+        console.error('Error resuming Encantar:', e);
     }
 }
 
@@ -784,25 +784,25 @@ function displayHotspotMedia(mediaItem, index, commonValues, currentPosition, cu
 
     // Require explicit click/fuse to activate MindAR
     entity.addEventListener('click', async function () {
-        console.log('🎯 HOTSPOT CLICKED:', hotspotId);
+        console.log('HOTSPOT CLICKED:', hotspotId);
         if (!canActivateHotspot(hotspotId)) {
-            console.log('❌ Cannot activate hotspot (sequence check failed)');
+            console.log('Cannot activate hotspot (sequence check failed)');
             return;
         }
         
         // IMMEDIATELY pause Encantar to prevent camera contention
         if (isEncantarEnabled()) {
-            console.log('⏸️ PAUSING ENCANTAR...');
+            console.log('PAUSING ENCANTAR...');
             try { 
                 await pauseEncantar(); 
                 setEncantarAnchorsVisible(false);
-                console.log('✅ ENCANTAR PAUSED');
+                console.log('ENCANTAR PAUSED');
             } catch(e) { 
-                console.error('❌ Failed to pause Encantar:', e);
+                console.error('Failed to pause Encantar:', e);
             }
         }
         
-        console.log('🎬 STARTING MINDAR...');
+        console.log('STARTING MINDAR...');
         activateHotspotWithMindAR(hotspotId, entity);
     });
 }
@@ -2498,7 +2498,7 @@ function initializeMindAR() {
 async function showMindARScene(hotspotId) {
     if (!mindarScene) {
         currentActiveHotspotId = hotspotId;
-        console.error('❌ MindAR scene not initialized');
+        console.error('MindAR scene not initialized');
         return;
     }
     
@@ -2529,21 +2529,21 @@ async function showMindARScene(hotspotId) {
         try {
             if (typeof comp.startSession === 'function') {
                 await comp.startSession();
-                console.log('✅ MINDAR STARTED (startSession)');
+                console.log('MINDAR STARTED (startSession)');
             } else if (typeof comp.start === 'function') {
                 comp.start();
-                console.log('✅ MINDAR STARTED (start)');
+                console.log('MINDAR STARTED (start)');
             } else if (typeof comp.play === 'function') {
                 comp.play();
-                console.log('✅ MINDAR STARTED (play)');
+                console.log('MINDAR STARTED (play)');
             } else {
-                console.error('❌ No valid MindAR start method found');
+                console.error('No valid MindAR start method found');
             }
         } catch(e) { 
-            console.error('❌ MindAR start failed:', e); 
+            console.error('MindAR start failed:', e); 
         }
     } else {
-        console.error('❌ MindAR component not found');
+        console.error('MindAR component not found');
     }
     
     // Hide ALL target entities first
@@ -3346,7 +3346,7 @@ document.addEventListener("DOMContentLoaded", function() {
             ms.style.display = 'none';
             ms.style.pointerEvents = 'none';
         }
-        console.log('🚀 AR SYSTEMS INITIALIZED - Encantar mode active');
+        console.log('AR SYSTEMS INITIALIZED - Encantar mode active');
     }, 100);
 }); 
 
