@@ -107,6 +107,17 @@
     <!-- Encantar debug HUD styles (div moved into body) -->
     <style>
     #encantar-debug { position: fixed; top: 8px; left: 8px; z-index: 2147483647; color: #00ff88; background: rgba(0,0,0,0.6); padding: 6px 8px; font-family: monospace; font-size: 12px; border-radius: 4px; pointer-events: none; }
+    
+    /* A-Frame cursor hover states */
+    #center-target.hotspot-hover {
+        animation: pulse 0.5s infinite alternate;
+    }
+    
+    @keyframes pulse {
+        from { opacity: 0.8; }
+        to { opacity: 1; }
+    }
+    
     /* When Encantar mode is on, ensure MindAR is fully hidden and Encantar canvas is on top */
     html.encantar-enabled #mindar-scene { display: none !important; pointer-events: none !important; }
     html.encantar-enabled #ar-scene { position: fixed !important; top: 0 !important; left: 0 !important; width: 100% !important; height: 100% !important; z-index: 10 !important; }
@@ -420,7 +431,17 @@
          style="display:block;">
         <a-light type="ambient" color="#ffffff" ></a-light>
         <a-light type="directional" color="#ffffff" position="-2 4 5"></a-light>
-        <ar-camera cursor="rayOrigin: mouse; fuse: true; fuseTimeout: 650" raycaster="objects: .clickable; interval: 80; far: 150"></ar-camera>
+        <ar-camera cursor="rayOrigin: mouse; fuse: true; fuseTimeout: 650" raycaster="objects: .clickable; interval: 80; far: 150">
+            <a-cursor id="center-target" 
+                material="color: white; shader: flat" 
+                geometry="primitive: ring; radiusInner: 0.02; radiusOuter: 0.03"
+                position="0 0 -1"
+                animation__click="property: scale; startEvents: click; from: 0.1 0.1 0.1; to: 1 1 1; dur: 150"
+                animation__fusing="property: scale; startEvents: fusing; from: 1 1 1; to: 0.1 0.1 0.1; dur: 1500"
+                animation__mouseleave="property: scale; startEvents: mouseleave; from: 0.1 0.1 0.1; to: 1 1 1; dur: 150"
+                raycaster="objects: .clickable">
+            </a-cursor>
+        </ar-camera>
 
         <!-- Encantar sources/viewport/trackers (reference images are placeholders) -->
         <ar-sources>
