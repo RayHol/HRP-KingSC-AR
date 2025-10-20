@@ -108,14 +108,52 @@
     <style>
     #encantar-debug { position: fixed; top: 8px; left: 8px; z-index: 2147483647; color: #00ff88; background: rgba(0,0,0,0.6); padding: 6px 8px; font-family: monospace; font-size: 12px; border-radius: 4px; pointer-events: none; }
     
-    /* A-Frame cursor hover states */
-    #center-target.hotspot-hover {
-        animation: pulse 0.5s infinite alternate;
+    /* 2D Center Target Crosshair Styles */
+    .center-target {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 1000;
+        pointer-events: none;
     }
     
-    @keyframes pulse {
-        from { opacity: 0.8; }
-        to { opacity: 1; }
+    .crosshair-image {
+        width: 40px;
+        height: 40px;
+        transition: all 0.3s ease;
+    }
+    
+    .loading-ring {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 50px;
+        height: 50px;
+        border: 2px solid transparent;
+        border-top: 2px solid #00ff00;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        opacity: 0;
+    }
+    
+    .center-target.loading .loading-ring {
+        opacity: 1;
+    }
+    
+    .center-target.video-playing {
+        opacity: 0;
+    }
+    
+    #center-target.hotspot-hover .crosshair-image {
+        transform: scale(1.2);
+        filter: brightness(1.5);
+    }
+    
+    @keyframes spin {
+        0% { transform: translate(-50%, -50%) rotate(0deg); }
+        100% { transform: translate(-50%, -50%) rotate(360deg); }
     }
     
     /* When Encantar mode is on, ensure MindAR is fully hidden and Encantar canvas is on top */
@@ -431,17 +469,7 @@
          style="display:block;">
         <a-light type="ambient" color="#ffffff" ></a-light>
         <a-light type="directional" color="#ffffff" position="-2 4 5"></a-light>
-        <ar-camera cursor="rayOrigin: mouse; fuse: true; fuseTimeout: 650" raycaster="objects: .clickable; interval: 80; far: 150">
-            <a-cursor id="center-target" 
-                material="color: white; shader: flat" 
-                geometry="primitive: ring; radiusInner: 0.02; radiusOuter: 0.03"
-                position="0 0 -1"
-                animation__click="property: scale; startEvents: click; from: 0.1 0.1 0.1; to: 1 1 1; dur: 150"
-                animation__fusing="property: scale; startEvents: fusing; from: 1 1 1; to: 0.1 0.1 0.1; dur: 1500"
-                animation__mouseleave="property: scale; startEvents: mouseleave; from: 0.1 0.1 0.1; to: 1 1 1; dur: 150"
-                raycaster="objects: .clickable">
-            </a-cursor>
-        </ar-camera>
+        <ar-camera cursor="rayOrigin: mouse; fuse: true; fuseTimeout: 650" raycaster="objects: .clickable; interval: 80; far: 150"></ar-camera>
 
         <!-- Encantar sources/viewport/trackers (reference images are placeholders) -->
         <ar-sources>
