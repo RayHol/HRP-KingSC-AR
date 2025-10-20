@@ -77,15 +77,23 @@
                 scene.setAttribute('encantar', 'autoplay: false; stats: false; gizmos: false');
             }
             const tryStart = () => {
+                // Ensure ar-sources is available before starting
+                const arSources = scene.querySelector('ar-sources');
+                if (!arSources) {
+                    console.error('ar-sources not found, retrying...');
+                    setTimeout(tryStart, 200);
+                    return;
+                }
+                
                 if (scene.components && scene.components.encantar) {
                     scene.components.encantar.startSession().then(() => {
                         console.log('[encantar] session started manually');
                     }).catch(e => console.error('[encantar] start failed', e));
                 } else {
-                    setTimeout(tryStart, 100);
+                    setTimeout(tryStart, 200);
                 }
             };
-            setTimeout(tryStart, 100);
+            setTimeout(tryStart, 500);
         };
         if (scene.hasLoaded) {
             // Scene already loaded; children like <ar-sources> are available
@@ -412,7 +420,7 @@
          style="display:block;">
         <a-light type="ambient" color="#ffffff" ></a-light>
         <a-light type="directional" color="#ffffff" position="-2 4 5"></a-light>
-        <ar-camera cursor="rayOrigin: entity; fuse: true; fuseTimeout: 650" raycaster="objects: .clickable; interval: 80; far: 150"></ar-camera>
+        <ar-camera cursor="rayOrigin: mouse; fuse: true; fuseTimeout: 650" raycaster="objects: .clickable; interval: 80; far: 150"></ar-camera>
 
         <!-- Encantar sources/viewport/trackers (reference images are placeholders) -->
         <ar-sources>
@@ -811,7 +819,7 @@
         </button>
     </div> -->
 
-    <script src="./Scripts/hotspots.js?v=4"></script>
+    <script src="./Scripts/hotspots.js?v=5"></script>
     <script>
     document.addEventListener("DOMContentLoaded", function() {
         const arScene = document.getElementById('ar-scene');
