@@ -1,7 +1,7 @@
 {
     "clouds": {
         "common": {
-            "scale": "30 30 1",
+            "scale": "3 3 1",
             "rotation": "0 0 0",
             "fixedAngleDegrees": 32,
             "initialY": 36.8,
@@ -21,7 +21,7 @@
     },
     "romulus": {
         "common": {
-            "scale": "30 30 1",
+            "scale": "3 3 1",
             "rotation": "0 0 0",
             "fixedAngleDegrees": 7.28,
             "initialY": 28.87,
@@ -41,7 +41,7 @@
     },
     "caesar": {
         "common": {
-            "scale": "30 30 1",
+            "scale": "3 3 1",
             "rotation": "0 0 0",
             "fixedAngleDegrees": 4.55,
             "initialY": 15.94,
@@ -61,7 +61,7 @@
     },
     "nero": {
         "common": {
-            "scale": "30 30 1",
+            "scale": "3 3 1",
             "rotation": "0 0 0",
             "fixedAngleDegrees": -10.85,
             "initialY": 15.36,
@@ -81,7 +81,7 @@
     },
     "silenus": {
         "common": {
-            "scale": "30 30 1",
+            "scale": "3 3 1",
             "rotation": "0 0 0",
             "fixedAngleDegrees": 29.12,
             "initialY": 27.95,
@@ -101,7 +101,7 @@
     },
     "furie": {
         "common": {
-            "scale": "30 30 1",
+            "scale": "3 3 1",
             "rotation": "0 0 0",
             "fixedAngleDegrees": 21.21,
             "initialY": 22.25,
@@ -121,7 +121,7 @@
     },
     "herakles": {
         "common": {
-            "scale": "30 30 1",
+            "scale": "3 3 1",
             "rotation": "0 0 0",
             "fixedAngleDegrees": 34.02,
             "initialY": 22.25,
@@ -141,7 +141,7 @@
     },
     "alexander": {
         "common": {
-            "scale": "30 30 1",
+            "scale": "3 3 1",
             "rotation": "0 0 0",
             "fixedAngleDegrees": 35.85,
             "initialY": -10.14,

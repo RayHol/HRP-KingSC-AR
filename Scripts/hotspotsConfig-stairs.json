@@ -1,12 +1,16 @@
 {
     "clouds": {
         "common": {
-            "scale": "30 30 1",
+            "scale": "1 1 1",
             "rotation": "0 0 0",
             "fixedAngleDegrees": -25.0,
             "initialY": 25.0,
             "initialZ": -42.0
         },
+        "surfaceId": "central",
+        "u": 0.5,
+        "v": 0.5,
+        "depthMeters": 0.01,
         "media": [
             {
                 "type": "image",
@@ -21,12 +25,16 @@
     },
     "banquet": {
         "common": {
-            "scale": "30 30 1",
+            "scale": "1 1 1",
             "rotation": "0 0 0",
             "fixedAngleDegrees": -15.0,
             "initialY": 22.0,
             "initialZ": -40.0
         },
+        "surfaceId": "ceiling",
+        "u": 0.2,
+        "v": 0.5,
+        "depthMeters": 0.01,
         "media": [
             {
                 "type": "image",
@@ -41,12 +49,16 @@
     },
     "peacock": {
         "common": {
-            "scale": "30 30 1",
+            "scale": "1 1 1",
             "rotation": "0 0 0",
             "fixedAngleDegrees": 5.0,
             "initialY": 28.0,
             "initialZ": -45.0
         },
+        "surfaceId": "ceiling",
+        "u": 0.3,
+        "v": 0.5,
+        "depthMeters": 0.01,
         "media": [
             {
                 "type": "image",
@@ -61,12 +73,16 @@
     },
     "graces": {
         "common": {
-            "scale": "30 30 1",
+            "scale": "1 1 1",
             "rotation": "0 0 0",
             "fixedAngleDegrees": 20.0,
             "initialY": 30.0,
             "initialZ": -43.0
         },
+        "surfaceId": "ceiling",
+        "u": 0.4,
+        "v": 0.5,
+        "depthMeters": 0.01,
         "media": [
             {
                 "type": "image",
@@ -81,12 +97,16 @@
     },
     "trumpeter": {
         "common": {
-            "scale": "30 30 1",
+            "scale": "1 1 1",
             "rotation": "0 0 0",
             "fixedAngleDegrees": 35.0,
             "initialY": 26.0,
             "initialZ": -41.0
         },
+        "surfaceId": "ceiling",
+        "u": 0.5,
+        "v": 0.5,
+        "depthMeters": 0.01,
         "media": [
             {
                 "type": "image",
