@@ -20,190 +20,9 @@
     <script src="https://unpkg.com/aframe-transparent-video-shader@1.0.6/dist/aframe-transparent-video-shader.umd.js"></script>
     
     <link rel="stylesheet" href="./Scripts/hotspots.css">
-    
-    <!-- encantar.js for robust image tracking of walls/ceiling -->
-    <script src="./Scripts/encantar/encantar.js"></script>
-    <script src="./Scripts/encantar/plugins/aframe-with-encantar.js"></script>
-    
-    <!-- Encantar surface dimensions (meters) and aspect ratios for u/v mapping -->
-    <script>
-    window.ENCANTAR_SURFACES = {
-        central: { widthMeters: 6.2, aspect: 16/9 },
-        north:   { widthMeters: 7.0, aspect: 4/3 },
-        south:   { widthMeters: 6.2, aspect: 4/3 },
-        ceiling: { widthMeters: 7.0, aspect: 4/3 }
-    };
-    </script>
-
-    <!-- Gate MindAR when Encantar mode is on to avoid camera contention -->
-    <script>
-    (function() {
-        // Always use Encantar mode - no URL flag needed
-        // After DOM is ready, aggressively hide MindAR scene and elevate Encantar scene
-        const onReady = () => {
-            // Mark html for CSS overrides
-            try { document.documentElement.classList.add('encantar-enabled'); } catch(e) {}
-            const mindarScene = document.getElementById('mindar-scene');
-            if (mindarScene) {
-                mindarScene.style.display = 'none';
-                mindarScene.style.pointerEvents = 'none';
-            }
-            const encScene = document.getElementById('ar-scene');
-            if (encScene) {
-                encScene.style.position = 'fixed';
-                encScene.style.top = '0';
-                encScene.style.left = '0';
-                encScene.style.width = '100%';
-                encScene.style.height = '100%';
-                encScene.style.zIndex = '10';
-            }
-        };
-        if (document.readyState === 'complete' || document.readyState === 'interactive') {
-            setTimeout(onReady, 0);
-        } else {
-            document.addEventListener('DOMContentLoaded', onReady);
-        }
-    })();
-    </script>
-    <script>
-    // Dynamically attach Encantar component AFTER scene & children are fully parsed to avoid race on <ar-sources>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Always use Encantar mode - no URL flag needed
-        const scene = document.getElementById('ar-scene');
-        if (!scene) return;
-        const attachAndStart = () => {
-            // Only attach if not already present
-            if (!scene.components || !scene.components.encantar) {
-                scene.setAttribute('encantar', 'autoplay: false; stats: false; gizmos: false');
-            }
-            const tryStart = () => {
-                // Ensure ar-sources is available before starting
-                const arSources = scene.querySelector('ar-sources');
-                if (!arSources) {
-                    console.error('ar-sources not found, retrying...');
-                    setTimeout(tryStart, 200);
-                    return;
-                }
-                
-                if (scene.components && scene.components.encantar) {
-                    scene.components.encantar.startSession().then(() => {
-                        console.log('[encantar] session started manually');
-                    }).catch(e => console.error('[encantar] start failed', e));
-                } else {
-                    setTimeout(tryStart, 200);
-                }
-            };
-            setTimeout(tryStart, 500);
-        };
-        if (scene.hasLoaded) {
-            // Scene already loaded; children like <ar-sources> are available
-            setTimeout(attachAndStart, 0);
-        } else {
-            scene.addEventListener('loaded', () => setTimeout(attachAndStart, 0));
-        }
-    });
-    </script>
-
-    <!-- Encantar debug HUD styles (div moved into body) -->
-    <style>
-    #encantar-debug { position: fixed; top: 8px; left: 8px; z-index: 2147483647; color: #00ff88; background: rgba(0,0,0,0.6); padding: 6px 8px; font-family: monospace; font-size: 12px; border-radius: 4px; pointer-events: none; }
-    
-    /* 2D Center Target Crosshair Styles */
-    .center-target {
-        position: fixed;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        z-index: 1000;
-        pointer-events: none;
-    }
-    
-    .crosshair-image {
-        width: 40px;
-        height: 40px;
-        transition: all 0.3s ease;
-    }
-    
-    .loading-ring {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        width: 50px;
-        height: 50px;
-        border: 2px solid transparent;
-        border-top: 2px solid #00ff00;
-        border-radius: 50%;
-        animation: spin 1s linear infinite;
-        opacity: 0;
-    }
-    
-    .center-target.loading .loading-ring {
-        opacity: 1;
-    }
-    
-    .center-target.video-playing {
-        opacity: 0;
-    }
-    
-    #center-target.hotspot-hover .crosshair-image {
-        transform: scale(1.2);
-        filter: brightness(1.5);
-    }
-    
-    @keyframes spin {
-        0% { transform: translate(-50%, -50%) rotate(0deg); }
-        100% { transform: translate(-50%, -50%) rotate(360deg); }
-    }
-    
-    /* When Encantar mode is on, ensure MindAR is fully hidden and Encantar canvas is on top */
-    html.encantar-enabled #mindar-scene { display: none !important; pointer-events: none !important; }
-    html.encantar-enabled #ar-scene { position: fixed !important; top: 0 !important; left: 0 !important; width: 100% !important; height: 100% !important; z-index: 10 !important; }
-    html.encantar-enabled #ar-scene .a-canvas { position: fixed !important; top: 0 !important; left: 0 !important; z-index: 10 !important; }
-    </style>
 </head>
 <body style="margin: 0; overflow: hidden;">
     
-    <div id="encantar-debug">Encantar: loading…</div>
-    <script>
-    (function(){
-      function initHud(){
-        const hud = document.getElementById('encantar-debug');
-        const scene = document.getElementById('ar-scene');
-        if (!hud || !scene) { setTimeout(initHud, 200); return; }
-        const set = (txt) => { hud.textContent = txt; };
-        // Fallback polling in case events fire before listeners attach
-        const pollReady = setInterval(() => {
-          try {
-            const arSystem = scene.systems && scene.systems.ar;
-            if (arSystem && arSystem.session) {
-              set('Encantar: ready');
-              clearInterval(pollReady);
-            }
-          } catch(e) {}
-        }, 300);
-        scene.addEventListener('artargetfound', function(ev){
-          try {
-            const name = ev && ev.detail && ev.detail.referenceImage && ev.detail.referenceImage.name || '(unnamed)';
-            set('Encantar: tracking ' + name);
-          } catch(e) { set('Encantar: tracking'); }
-        });
-        scene.addEventListener('artargetlost', function(ev){
-          try {
-            const name = ev && ev.detail && ev.detail.referenceImage && ev.detail.referenceImage.name || '(unnamed)';
-            set('Encantar: lost ' + name);
-          } catch(e) { set('Encantar: lost'); }
-        });
-        scene.addEventListener('arready', function(){ set('Encantar: ready'); });
-      }
-      if (document.readyState === 'complete' || document.readyState === 'interactive') {
-        setTimeout(initHud, 0);
-      } else {
-        document.addEventListener('DOMContentLoaded', initHud);
-      }
-    })();
-    </script>
-
     <!-- Main UI Elements -->
     <div id="main-ui" class="main-ui">
         <!-- Back Button -->
@@ -466,47 +285,17 @@
 
     <!-- A-Frame Scene -->
     <a-scene id="ar-scene" xr-mode-ui="enabled: false" 
+         arjs="debugUIEnabled: false; far: 100000; near: 0.001; maxDetectionRate: 60; 
+                sourceWidth: 1920; sourceHeight: 1080; 
+                sourceType: webcam; 
+                cameraParametersUrl: https://raw.githack.com/jeromeetienne/AR.js/master/data/data/camera_para.dat;" 
          style="display:block;">
         <a-light type="ambient" color="#ffffff" ></a-light>
         <a-light type="directional" color="#ffffff" position="-2 4 5"></a-light>
-        <ar-camera cursor="rayOrigin: mouse; fuse: true; fuseTimeout: 650" raycaster="objects: .clickable; interval: 100; far: 1000"></ar-camera>
-
-        <!-- Encantar sources/viewport/trackers (reference images are placeholders) -->
-        <ar-sources>
-            <ar-camera-source resolution="lg" facing-mode="environment"></ar-camera-source>
-            <ar-pointer-source></ar-pointer-source>
-        </ar-sources>
-        <ar-viewport resolution="lg" style="best-fit"></ar-viewport>
-        <ar-trackers>
-            <ar-image-tracker resolution="md" score-threshold="0.35">
-                <!-- src paths to your provided wall/ceiling reference images -->
-                <ar-reference-image name="central" src="./Assets/walls/central.jpg"></ar-reference-image>
-                <ar-reference-image name="north" src="./Assets/walls/north.jpg"></ar-reference-image>
-                <ar-reference-image name="south" src="./Assets/walls/south.jpg"></ar-reference-image>
-                <ar-reference-image name="ceiling" src="./Assets/walls/ceiling.jpg"></ar-reference-image>
-            </ar-image-tracker>
-        </ar-trackers>
-
-        <!-- Encantar-driven anchors for hotspot parenting -->
-        <a-entity id="surface-central-anchor" ar-root="referenceImage: central" visible="true">
-            <!-- <a-ring radius-inner="0.20" radius-outer="0.25" position="0 0 0" material="color: #00ff88; shader: flat; opacity: 1.0; transparent: true"></a-ring>
-            <a-text value="central" align="center" color="#00ff88" position="0 0.35 0" side="double"></a-text> -->
-        </a-entity>
-        <a-entity id="surface-north-anchor" ar-root="referenceImage: north" visible="true">
-            <!-- <a-ring radius-inner="0.20" radius-outer="0.25" position="0 0 0" material="color: #00ff88; shader: flat; opacity: 1.0; transparent: true"></a-ring>
-            <a-text value="north" align="center" color="#00ff88" position="0 0.35 0" side="double"></a-text> -->
-        </a-entity>
-        <a-entity id="surface-south-anchor" ar-root="referenceImage: south" visible="true">
-            <!-- <a-ring radius-inner="0.20" radius-outer="0.25" position="0 0 0" material="color: #00ff88; shader: flat; opacity: 1.0; transparent: true"></a-ring>
-            <a-text value="south" align="center" color="#00ff88" position="0 0.35 0" side="double"></a-text> -->
-        </a-entity>
-        <a-entity id="surface-ceiling-anchor" ar-root="referenceImage: ceiling" visible="true">
-            <!-- <a-ring radius-inner="0.20" radius-outer="0.25" position="0 0 0" material="color: #00ff88; shader: flat; opacity: 1.0; transparent: true"></a-ring>
-            <a-text value="ceiling" align="center" color="#00ff88" position="0 0.35 0" side="double"></a-text> -->
+        <a-entity camera rotation-reader look-controls="touchEnabled: false" raycaster="objects: .clickable" position="0 1.6 0" id="camera" far="10000">
+            <a-cursor color="#FFFFFF" position="0 0 -1" visible="false"></a-cursor>
         </a-entity>
     </a-scene>
-
-    
 
     <!-- MindAR Debug Status -->
     <div id="mindar-debug-status" style="display: none; position: fixed; top: 20px; left: 20px; z-index: 3000; background: rgba(0,0,0,0.8); color: white; padding: 10px; border-radius: 5px; font-family: Arial, sans-serif; visibility: hidden;">
@@ -523,7 +312,7 @@
     <!-- MindAR Scene Overlay (initially visible for iOS motion sensor permission) -->
     <a-scene id="mindar-scene" 
         loading-screen="enabled: false"
-        mindar-image="enabled: false; imageTargetSrc: ./Assets/targets_all.mind; maxTrack: 1; uiLoading:no; uiScanning: no; warmupTolerance: 10; missTolerance: 1; filterMinCF: 0.0001; filterBeta: 0.001"
+        mindar-image="imageTargetSrc: ./Assets/targets_all.mind; maxTrack: 1; uiLoading:no; uiScanning: no; warmupTolerance: 10; missTolerance: 1; filterMinCF: 0.0001; filterBeta: 0.001"
         color-space="sRGB"
         renderer="colorManagement: true, physicallyCorrectLights"
         vr-mode-ui="enabled: false"
@@ -868,7 +657,7 @@
         </button>
     </div> -->
 
-    <script src="./Scripts/hotspots.js?v=5"></script>
+    <script src="./Scripts/hotspots.js?v=3"></script>
     <script>
     document.addEventListener("DOMContentLoaded", function() {
         const arScene = document.getElementById('ar-scene');
