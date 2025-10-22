@@ -793,6 +793,9 @@ function activateHotspot(hotspotId, entity) {
     // Add to activated set
     activatedHotspots.add(hotspotId);
     
+    // Mark as completed to disable future MindAR tracking
+    completedHotspots.add(hotspotId);
+    
     // Use MindAR integration if available, otherwise fallback to original behavior
     if (typeof activateHotspotWithMindAR === 'function') {
         activateHotspotWithMindAR(hotspotId, entity);
@@ -2295,6 +2298,7 @@ let isMindarActive = false;
 let currentHotspotVideo = null;
 let currentActiveHotspotId = null; // Track which hotspot is currently being processed
 let deviceOrientationPermissionGranted = false; // Track if permission has been granted
+let completedHotspots = new Set(); // Track completed hotspots to disable their tracking
 
 // Initialize MindAR system
 function initializeMindAR() {
@@ -2314,6 +2318,12 @@ function initializeMindAR() {
     mindarScene.addEventListener('targetFound', function(event) {
         const expectedId = currentActiveHotspotId;
         if (!expectedId) {
+            return;
+        }
+        
+        // Additional safety check: prevent completed hotspots from being processed
+        if (completedHotspots.has(expectedId)) {
+            console.log(`Prevented completed hotspot from being processed: ${expectedId}`);
             return;
         }
     
@@ -2351,6 +2361,92 @@ function initializeMindAR() {
     return true;
 }
 
+// Function to disable MindAR tracking for completed hotspots by modifying target indices
+function disableMindARTrackingForCompletedHotspots() {
+    if (!mindarScene) return;
+    
+    // Get all MindAR target entities
+    const allTargets = document.querySelectorAll('[mindar-image-target]');
+    
+    allTargets.forEach(target => {
+        const hotspotId = target.getAttribute('data-hotspot-id');
+        
+        // If this hotspot is completed AND not currently active, disable its tracking
+        if (hotspotId && completedHotspots.has(hotspotId) && hotspotId !== currentActiveHotspotId) {
+            // Completely remove the mindar-image-target attribute to prevent any detection
+            target.removeAttribute('mindar-image-target');
+            target.setAttribute('data-disabled', 'true');
+            
+            // Make it completely invisible
+            target.style.display = 'none';
+            target.style.visibility = 'hidden';
+            target.style.opacity = '0';
+            
+            // Remove or disable the video element to prevent loading
+            const videoOverlay = target.querySelector('[id^="videooverlay-"]');
+            if (videoOverlay) {
+                videoOverlay.style.display = 'none';
+                videoOverlay.style.visibility = 'hidden';
+                
+                // Remove the video source to prevent loading
+                const video = videoOverlay.querySelector('video');
+                if (video) {
+                    video.removeAttribute('src');
+                    video.load(); // This clears the video
+                }
+            }
+            
+            console.log(`Completely disabled MindAR tracking for completed hotspot: ${hotspotId}`);
+        }
+    });
+}
+
+// Function to clean up completed targets when moving to a new hotspot
+function cleanupCompletedTargets() {
+    if (!mindarScene) return;
+    
+    // Get all MindAR target entities
+    const allTargets = document.querySelectorAll('[data-hotspot-id]');
+    
+    allTargets.forEach(target => {
+        const hotspotId = target.getAttribute('data-hotspot-id');
+        
+        // If this hotspot is completed AND not currently active, remove it completely
+        if (hotspotId && completedHotspots.has(hotspotId) && hotspotId !== currentActiveHotspotId) {
+            if (target.parentNode) {
+                target.parentNode.removeChild(target);
+                console.log(`Completely removed completed hotspot from MindAR scene: ${hotspotId}`);
+            }
+        }
+    });
+}
+
+// Function to enable MindAR tracking for a specific hotspot
+function enableMindARTrackingForHotspot(hotspotId) {
+    if (!mindarScene) return;
+    
+    const targetEntity = document.getElementById(`target-${hotspotId}`);
+    if (targetEntity) {
+        // Re-enable tracking by setting the correct target index
+        const targetIndex = targetIndexById[hotspotId];
+        if (targetIndex !== undefined) {
+            targetEntity.setAttribute('mindar-image-target', `targetIndex: ${targetIndex}`);
+            targetEntity.removeAttribute('data-disabled');
+            
+            // Make it visible
+            targetEntity.style.display = 'block';
+            targetEntity.style.visibility = 'visible';
+            targetEntity.style.opacity = '1';
+            
+            console.log(`Re-enabled MindAR tracking for hotspot: ${hotspotId}`);
+        }
+    } else {
+        // If target was removed, we need to recreate it
+        console.log(`Target entity not found for hotspot: ${hotspotId} - may need to recreate`);
+    }
+}
+
+
 // Note: MindAR targets are now pre-defined in HTML, no need for dynamic creation
 
 // Show MindAR scene and activate target detection
@@ -2380,14 +2476,25 @@ function showMindARScene(hotspotId) {
         }, 500);
     }
     
+    // Clean up completed targets first (remove them completely)
+    cleanupCompletedTargets();
+    
+    // Disable tracking for any remaining completed hotspots
+    disableMindARTrackingForCompletedHotspots();
+    
+    // CRITICAL: Disable ALL targets first, then only enable the current one
+    const allTargets = document.querySelectorAll('[data-hotspot-id]');
+    allTargets.forEach(target => {
+        // Remove mindar-image-target attribute from ALL targets
+        target.removeAttribute('mindar-image-target');
+        target.style.display = 'none';
+    });
+    
     // Enable MindAR target detection
     mindarScene.setAttribute('mindar-image', 'enabled', true);
     
-    // Hide ALL target entities first
-    const allTargets = document.querySelectorAll('[mindar-image-target]');
-    allTargets.forEach(target => {
-        target.style.display = 'none';
-    });
+    // Re-enable tracking for ONLY the current hotspot
+    enableMindARTrackingForHotspot(hotspotId);
     
     // Show ONLY the specific target for this hotspot
     const targetEntity = document.getElementById(`target-${hotspotId}`);
@@ -2434,6 +2541,9 @@ function hideMindARScene() {
         currentMindarVideo.currentTime = 0;
         currentMindarVideo = null;
     }
+    
+    // Disable tracking for all completed hotspots when returning to main scene
+    disableMindARTrackingForCompletedHotspots();
     
     // Reset all video elements to ensure clean state
     const allVideos = document.querySelectorAll('video[id^="video-"]');
@@ -2642,8 +2752,33 @@ function handleMindarTargetLost(hotspotId) {
 function handleMindarTargetFound(hotspotId) {
     // Check if this hotspot has already been completed
     if (activatedHotspots.has(hotspotId)) {
+        console.log(`Prevented loading of completed hotspot: ${hotspotId}`);
         return;
     }
+    
+    // Additional check: prevent completed hotspots from loading
+    if (completedHotspots.has(hotspotId)) {
+        console.log(`Prevented loading of completed hotspot: ${hotspotId}`);
+        return;
+    }
+    
+    // IMMEDIATELY prevent video loading by removing the target attribute
+    const targetEntity = document.getElementById(`target-${hotspotId}`);
+    if (targetEntity) {
+        targetEntity.removeAttribute('mindar-image-target');
+        console.log(`Immediately disabled MindAR tracking for: ${hotspotId}`);
+    }
+    
+    // Mark this hotspot as completed to disable future tracking
+    completedHotspots.add(hotspotId);
+    
+    // Immediately disable tracking for this hotspot
+    disableMindARTrackingForCompletedHotspots();
+    
+    // Don't remove the current active target - only remove it after it's completed
+    // The target will be removed when we move to the next hotspot
+    
+    console.log(`Marked hotspot as completed: ${hotspotId}`);
     
     // Map hotspot IDs to video element IDs (handle naming inconsistencies)
     const videoIdMapping = {
