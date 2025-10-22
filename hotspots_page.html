@@ -101,6 +101,11 @@
         } else {
             scene.addEventListener('loaded', () => setTimeout(attachAndStart, 0));
         }
+        
+        // Set up Encantar tracking detection
+        setTimeout(() => {
+            setupEncantarTrackingDetection();
+        }, 1000);
     });
     </script>
 
@@ -479,11 +484,30 @@
         <ar-viewport resolution="lg" style="best-fit"></ar-viewport>
         <ar-trackers>
             <ar-image-tracker resolution="md" score-threshold="0.35">
-                <!-- src paths to your provided wall/ceiling reference images -->
+                <!-- Wall/ceiling reference images for hotspot placement -->
                 <ar-reference-image name="central" src="./Assets/walls/central.jpg"></ar-reference-image>
                 <ar-reference-image name="north" src="./Assets/walls/north.jpg"></ar-reference-image>
                 <ar-reference-image name="south" src="./Assets/walls/south.jpg"></ar-reference-image>
                 <ar-reference-image name="ceiling" src="./Assets/walls/ceiling.jpg"></ar-reference-image>
+                
+                <!-- Individual painting tracking images for video display -->
+                <ar-reference-image name="1. Clouds" src="./Assets/Tracking images/1. Clouds.jpg"></ar-reference-image>
+                <ar-reference-image name="2.Banquet" src="./Assets/Tracking images/2.Banquet.jpg"></ar-reference-image>
+                <ar-reference-image name="3.Peacock" src="./Assets/Tracking images/3.Peacock.jpg"></ar-reference-image>
+                <ar-reference-image name="4. Graces" src="./Assets/Tracking images/4. Graces.jpg"></ar-reference-image>
+                <ar-reference-image name="5.Trumpeter" src="./Assets/Tracking images/5.Trumpeter.jpg"></ar-reference-image>
+                <ar-reference-image name="6. Romulus" src="./Assets/Tracking images/6. Romulus.jpg"></ar-reference-image>
+                <ar-reference-image name="7. Caeser" src="./Assets/Tracking images/7. Caeser.jpg"></ar-reference-image>
+                <ar-reference-image name="8. Nero" src="./Assets/Tracking images/8. Nero.jpg"></ar-reference-image>
+                <ar-reference-image name="9. Silenus" src="./Assets/Tracking images/9. Silenus.jpg"></ar-reference-image>
+                <ar-reference-image name="10. Furies" src="./Assets/Tracking images/10. Furies.jpg"></ar-reference-image>
+                <ar-reference-image name="11. Alexander" src="./Assets/Tracking images/11. Alexander.jpg"></ar-reference-image>
+                <ar-reference-image name="12. Herakles" src="./Assets/Tracking images/12. Herakles.jpg"></ar-reference-image>
+                <ar-reference-image name="13.Diana" src="./Assets/Tracking images/13.Diana.jpg"></ar-reference-image>
+                <ar-reference-image name="14.Harvest" src="./Assets/Tracking images/14.Harvest.jpg"></ar-reference-image>
+                <ar-reference-image name="15.Cherubs" src="./Assets/Tracking images/15.Cherubs.jpg"></ar-reference-image>
+                <ar-reference-image name="16.Musicians" src="./Assets/Tracking images/16.Musicians.jpg"></ar-reference-image>
+                <ar-reference-image name="17.Signature" src="./Assets/Tracking images/17.Signature.jpg"></ar-reference-image>
             </ar-image-tracker>
         </ar-trackers>
 

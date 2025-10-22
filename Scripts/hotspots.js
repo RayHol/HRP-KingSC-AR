@@ -40,101 +40,43 @@ const dragSpeedY = 0.005; // Adjust the drag speed for the y-axis
 // Global hotspot scale multiplier - adjust this to scale all hotspots uniformly
 const GLOBAL_HOTSPOT_SCALE = 0.5// 1.0 = normal size; reduce to 0.05 to shrink ~20x
 
-// ===== SIMPLE CAMERA CLEANUP =====
+// ===== ENCANTAR TRACKING MODE MANAGEMENT =====
+let currentTrackingMode = 'walls'; // 'walls' or 'image'
+let currentImageTarget = null;
+let currentVideoOverlay = null;
+
+// Switch to wall tracking mode (show hotspots, hide videos)
+function switchToWallTracking() {
+    console.log('SWITCHING TO WALL TRACKING MODE');
+    
+    currentTrackingMode = 'walls';
+    currentImageTarget = null;
+    
+    // Show wall tracking elements (hotspots)
+    setEncantarAnchorsVisible(true);
+    
+    // Hide any video overlays
+    hideAllVideoOverlays();
+    
+    console.log('WALL TRACKING ENABLED');
+}
+
+// Switch to image tracking mode (hide hotspots, show video for specific image)
+function switchToImageTracking(imageName) {
+    console.log('SWITCHING TO IMAGE TRACKING MODE for:', imageName);
+    
+    currentTrackingMode = 'image';
+    currentImageTarget = imageName;
+    
+    // Hide wall tracking elements (hotspots)
+    setEncantarAnchorsVisible(false);
+    
+    console.log('IMAGE TRACKING ENABLED for:', imageName);
+}
+
+// Simple camera cleanup
 function releaseAllCamera() {
-    // No camera management needed - each system handles its own
-    console.log('Camera cleanup - each system manages its own camera');
-}
-
-// Encantar session control helpers (pause/resume camera to avoid contention)
-async function pauseEncantar() {
-    const scene = document.getElementById('ar-scene');
-    if (!scene) return;
-    
-    console.log('PAUSING ENCANTAR...');
-    
-    // Stop Encantar session completely
-    const comp = scene.components && scene.components.encantar;
-    
-    try {
-        // Try all available stop methods first
-        if (comp) {
-            // Try to stop the main session
-            if (typeof comp.stopSession === 'function') {
-                await comp.stopSession();
-            } else if (typeof comp.stop === 'function') {
-                await comp.stop();
-            } else if (typeof comp.pause === 'function') {
-                comp.pause();
-            }
-            
-            // Force stop any running sessions
-            if (comp._session && typeof comp._session.stop === 'function') {
-                await comp._session.stop();
-            }
-            
-            // Try to stop the underlying AR session
-            if (comp._arSession && typeof comp._arSession.stop === 'function') {
-                await comp._arSession.stop();
-            }
-            
-            // Try to stop the camera session
-            if (comp._cameraSession && typeof comp._cameraSession.stop === 'function') {
-                await comp._cameraSession.stop();
-            }
-            
-            // Force stop the main loop
-            if (comp._mainLoop && typeof comp._mainLoop.stop === 'function') {
-                comp._mainLoop.stop();
-            }
-            
-            // Try to stop the render loop
-            if (comp._renderLoop && typeof comp._renderLoop.stop === 'function') {
-                comp._renderLoop.stop();
-            }
-        }
-        
-        // Disable the component
-        scene.setAttribute('encantar', 'enabled', false);
-        
-        // Add delay to ensure Encantar fully stops and releases camera
-        await new Promise(resolve => setTimeout(resolve, 3000));
-        
-        console.log('ENCANTAR PAUSED');
-        
-    } catch(e) {
-        console.error('Error pausing Encantar:', e);
-    }
-}
-
-async function resumeEncantar() {
-    const scene = document.getElementById('ar-scene');
-    if (!scene) return;
-    
-    console.log('RESUMING ENCANTAR...');
-    
-    try {
-        // Re-enable the component
-        scene.setAttribute('encantar', 'enabled', true);
-        
-        // Wait for component to be ready
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        
-        const comp = scene.components && scene.components.encantar;
-        
-        // Try all available start methods
-        if (comp && typeof comp.startSession === 'function') {
-            await comp.startSession();
-        } else if (comp && typeof comp.start === 'function') {
-            await comp.start();
-        } else if (comp && typeof comp.play === 'function') {
-            comp.play();
-        }
-        
-        console.log('ENCANTAR RESUMED');
-    } catch(e) {
-        console.error('Error resuming Encantar:', e);
-    }
+    console.log('Camera cleanup - Encantar manages its own camera');
 }
 
 // Pinch-to-zoom variables
@@ -836,7 +778,7 @@ function displayHotspotMedia(mediaItem, index, commonValues, currentPosition, cu
         // This gives time for the hotspot to settle before allowing MindAR activation
         hoverTimeout = setTimeout(() => {
             // Activate MindAR for this hotspot
-            activateHotspotWithMindAR(hotspotId, entity);
+            activateHotspotWithImageTracking(hotspotId, entity);
             hoverTimeout = null;
         }, 500); // 500ms delay to prevent immediate activation
     });
@@ -887,7 +829,7 @@ function displayHotspotMedia(mediaItem, index, commonValues, currentPosition, cu
         }
         
         console.log('STARTING MINDAR...');
-        activateHotspotWithMindAR(hotspotId, entity);
+        activateHotspotWithImageTracking(hotspotId, entity);
     });
     
 }
@@ -1038,8 +980,8 @@ function activateHotspot(hotspotId, entity) {
     activatedHotspots.add(hotspotId);
     
     // Use MindAR integration if available, otherwise fallback to original behavior
-    if (typeof activateHotspotWithMindAR === 'function') {
-        activateHotspotWithMindAR(hotspotId, entity);
+    if (typeof activateHotspotWithImageTracking === 'function') {
+        activateHotspotWithImageTracking(hotspotId, entity);
     } else {
         // Fallback: unlock corresponding badge directly
         const badgeId = hotspotToBadgeMapping[hotspotId];
@@ -3467,8 +3409,23 @@ function handleVideoEnded(hotspotId) {
         }
     }
     
-    // Hide MindAR scene
-    hideMindARScene();
+    // Hide video overlay
+    const videoOverlay = document.getElementById(`videooverlay-${hotspotId}`);
+    if (videoOverlay) {
+        videoOverlay.emit('fadeout-' + hotspotId);
+        setTimeout(() => {
+            const imageAnchor = document.getElementById(`image-anchor-${hotspotId}`);
+            if (imageAnchor) {
+                imageAnchor.remove();
+            }
+        }, 500);
+    }
+    
+    // Switch back to wall tracking
+    switchToWallTracking();
+    
+    // Reset current active hotspot
+    currentActiveHotspotId = null;
     
     // Hide transcript button when badge popup appears
     showTranscriptButton(false);
@@ -3505,43 +3462,308 @@ function hideTargetFoundIndicator() {
     }
 }
 
-// Modified activateHotspot function to trigger MindAR
-async function activateHotspotWithMindAR(hotspotId, entity) {
-    // Activating hotspot with MindAR
+// Modified activateHotspot function to trigger Encantar image tracking
+async function activateHotspotWithImageTracking(hotspotId, entity) {
+    console.log('ACTIVATING HOTSPOT WITH IMAGE TRACKING:', hotspotId);
+    
     if (activatedHotspots.has(hotspotId)) {
-        // Hotspot already activated, returning
+        console.log('Hotspot already activated, returning');
         return; // Already activated - don't allow repeat detection
     }
     
     // Set the current active hotspot ID
     currentActiveHotspotId = hotspotId;
     
-    // Show the appropriate MindAR target
-    const targetEntity = document.getElementById(`target-${hotspotId}`);
-    if (targetEntity) {
-        targetEntity.style.display = 'block';
-    } else {
-        console.error(`No MindAR target found for hotspot: ${hotspotId}`);
-        // Fallback to original activation
-        activateHotspot(hotspotId, entity);
+    // Map hotspot IDs to tracking image names
+    const imageMapping = {
+        'clouds': '1. Clouds',
+        'banquet': '2.Banquet', 
+        'peacock': '3.Peacock',
+        'graces': '4. Graces',
+        'trumpeter': '5.Trumpeter',
+        'romulus': '6. Romulus',
+        'caesar': '7. Caeser',
+        'nero': '8. Nero',
+        'silenus': '9. Silenus',
+        'furies': '10. Furies',
+        'alexander': '11. Alexander',
+        'herakles': '12. Herakles',
+        'diana': '13.Diana',
+        'harvest': '14.Harvest',
+        'cherubs': '15.Cherubs',
+        'musicians': '16.Musicians',
+        'signature': '17.Signature'
+    };
+    
+    const imageName = imageMapping[hotspotId];
+    if (!imageName) {
+        console.error(`No tracking image found for hotspot: ${hotspotId}`);
         return;
     }
     
-    // Show MindAR scene (this will pause Encantar and hide hotspots)
-    await showMindARScene(hotspotId);
+    // Switch to image tracking mode
+    switchToImageTracking(imageName);
     
-    // Set up target detection handler
-    if (targetEntity) {
-        targetEntity.addEventListener('targetFound', () => {
-            handleMindarTargetFound(hotspotId);
-        });
+    // Create video overlay for this hotspot
+    createVideoOverlay(hotspotId);
+}
+
+// Create video overlay for Encantar image tracking
+function createVideoOverlay(hotspotId) {
+    console.log('CREATING VIDEO OVERLAY for:', hotspotId);
+    
+    // Map hotspot IDs to video element IDs
+    const videoIdMapping = {
+        'clouds': 'video-clouds',
+        'banquet': 'video-banquet',
+        'peacock': 'video-peacock',
+        'graces': 'video-graces',
+        'trumpeter': 'video-trumpeter',
+        'romulus': 'video-romulus',
+        'caesar': 'video-caesar',
+        'nero': 'video-nero',
+        'silenus': 'video-silenus',
+        'furies': 'video-furies',
+        'alexander': 'video-alexander',
+        'herakles': 'video-herakles',
+        'diana': 'video-diana',
+        'harvest': 'video-harvest',
+        'cherubs': 'video-cherubs',
+        'musicians': 'video-musicians',
+        'signature': 'video-signature'
+    };
+    
+    const videoId = videoIdMapping[hotspotId] || `video-${hotspotId}`;
+    const video = document.getElementById(videoId);
+    
+    if (!video) {
+        console.error(`Video element not found: ${videoId}`);
+        return;
+    }
+    
+    // Create video plane entity in the AR scene
+    const scene = document.getElementById('ar-scene');
+    if (!scene) {
+        console.error('AR scene not found');
+        return;
+    }
+    
+    // Remove existing video overlay if any
+    const existingOverlay = document.getElementById(`videooverlay-${hotspotId}`);
+    if (existingOverlay) {
+        existingOverlay.remove();
+    }
+    
+    // Create video plane positioned relative to the tracked image
+    const videoPlane = document.createElement('a-plane');
+    videoPlane.id = `videooverlay-${hotspotId}`;
+    videoPlane.setAttribute('material', `src: #${videoId}; transparent: true; opacity: 0`);
+    videoPlane.setAttribute('width', '2');
+    videoPlane.setAttribute('height', '1.2');
+    videoPlane.setAttribute('position', '0 0 0.1'); // Slightly in front of the tracked image
+    videoPlane.setAttribute('rotation', '0 0 0');
+    
+    // Add fade-in animation
+    videoPlane.setAttribute('animation__fadein', 'startEvents: fadein-' + hotspotId + '; property: material.opacity; from: 0; to: 1; dur: 500;');
+    videoPlane.setAttribute('animation__fadeout', 'startEvents: fadeout-' + hotspotId + '; property: material.opacity; from: 1; to: 0; dur: 500;');
+    
+    // Create a parent entity that will be positioned by Encantar's ar-root
+    const imageAnchor = document.createElement('a-entity');
+    imageAnchor.id = `image-anchor-${hotspotId}`;
+    imageAnchor.setAttribute('ar-root', `referenceImage: ${imageName}`);
+    imageAnchor.appendChild(videoPlane);
+    
+    // Add to scene
+    scene.appendChild(imageAnchor);
+    
+    console.log('Video overlay created for:', hotspotId);
+}
+
+// Set up Encantar tracking detection (call this once on page load)
+function setupEncantarTrackingDetection() {
+    console.log('SETTING UP ENCANTAR TRACKING DETECTION');
+    
+    const scene = document.getElementById('ar-scene');
+    if (!scene) return;
+    
+    // Listen for Encantar tracking events
+    scene.addEventListener('encantar-target-found', (event) => {
+        console.log('ENCANTAR TARGET FOUND:', event.detail);
+        handleEncantarTargetFound(event.detail);
+    });
+    
+    scene.addEventListener('encantar-target-lost', (event) => {
+        console.log('ENCANTAR TARGET LOST:', event.detail);
+        handleEncantarTargetLost(event.detail);
+    });
+}
+
+// Handle when Encantar finds any target
+function handleEncantarTargetFound(targetInfo) {
+    const targetName = targetInfo.name || targetInfo;
+    console.log('ENCANTAR TARGET FOUND:', targetName);
+    
+    // Check if this is a wall target (for hotspots)
+    const wallTargets = ['central', 'north', 'south', 'ceiling'];
+    if (wallTargets.includes(targetName)) {
+        console.log('Wall target found:', targetName);
+        // Wall targets are handled by the existing hotspot system
+        return;
+    }
+    
+    // Check if this is an image target (for videos)
+    if (currentTrackingMode === 'image' && currentImageTarget === targetName) {
+        console.log('Image target found for video:', targetName);
+        handleImageTargetFound(currentActiveHotspotId);
+    }
+}
+
+// Handle when Encantar loses any target
+function handleEncantarTargetLost(targetInfo) {
+    const targetName = targetInfo.name || targetInfo;
+    console.log('ENCANTAR TARGET LOST:', targetName);
+    
+    // Check if this is an image target (for videos)
+    if (currentTrackingMode === 'image' && currentImageTarget === targetName) {
+        console.log('Image target lost for video:', targetName);
+        handleImageTargetLost(currentActiveHotspotId);
+    }
+}
+
+// Handle image target found
+function handleImageTargetFound(hotspotId) {
+    console.log('IMAGE TARGET FOUND for:', hotspotId);
+    
+    // Check if this hotspot has already been completed
+    if (activatedHotspots.has(hotspotId)) {
+        return;
+    }
+    
+    // Get video element
+    const videoIdMapping = {
+        'clouds': 'video-clouds',
+        'banquet': 'video-banquet',
+        'peacock': 'video-peacock',
+        'graces': 'video-graces',
+        'trumpeter': 'video-trumpeter',
+        'romulus': 'video-romulus',
+        'caesar': 'video-caesar',
+        'nero': 'video-nero',
+        'silenus': 'video-silenus',
+        'furies': 'video-furies',
+        'alexander': 'video-alexander',
+        'herakles': 'video-herakles',
+        'diana': 'video-diana',
+        'harvest': 'video-harvest',
+        'cherubs': 'video-cherubs',
+        'musicians': 'video-musicians',
+        'signature': 'video-signature'
+    };
+    
+    const videoId = videoIdMapping[hotspotId] || `video-${hotspotId}`;
+    const video = document.getElementById(videoId);
+    
+    if (!video) {
+        console.error(`Video element not found: ${videoId}`);
+        return;
+    }
+    
+    // Play video
+    playVideoForHotspot(hotspotId, video);
+}
+
+// Handle image target lost
+function handleImageTargetLost(hotspotId) {
+    console.log('IMAGE TARGET LOST for:', hotspotId);
+    
+    // Pause video if playing
+    const videoIdMapping = {
+        'clouds': 'video-clouds',
+        'banquet': 'video-banquet',
+        'peacock': 'video-peacock',
+        'graces': 'video-graces',
+        'trumpeter': 'video-trumpeter',
+        'romulus': 'video-romulus',
+        'caesar': 'video-caesar',
+        'nero': 'video-nero',
+        'silenus': 'video-silenus',
+        'furies': 'video-furies',
+        'alexander': 'video-alexander',
+        'herakles': 'video-herakles',
+        'diana': 'video-diana',
+        'harvest': 'video-harvest',
+        'cherubs': 'video-cherubs',
+        'musicians': 'video-musicians',
+        'signature': 'video-signature'
+    };
+    
+    const videoId = videoIdMapping[hotspotId] || `video-${hotspotId}`;
+    const video = document.getElementById(videoId);
+    
+    if (video && !video.paused) {
+        video.pause();
         
-        targetEntity.addEventListener('targetLost', () => {
-            handleMindarTargetLost(hotspotId);
-            // When target is lost, switch back to Encantar
-            hideMindARScene();
+        // Hide video playing state
+        hideVideoPlaying();
+        
+        // Trigger fade-out animation
+        const videoOverlay = document.getElementById(`videooverlay-${hotspotId}`);
+        if (videoOverlay) {
+            videoOverlay.emit('fadeout-' + hotspotId);
+        }
+    }
+}
+
+// Play video for hotspot
+function playVideoForHotspot(hotspotId, video) {
+    console.log('PLAYING VIDEO for hotspot:', hotspotId);
+    
+    // Reset video to beginning
+    video.currentTime = 0;
+    
+    // Set video properties
+    video.muted = true; // Start muted for autoplay
+    video.volume = 0;
+    
+    // Try to play the video
+    const playPromise = video.play();
+    
+    if (playPromise !== undefined) {
+        playPromise.then(() => {
+            console.log('Video play promise resolved - video should be playing');
+            
+            // Trigger fade-in animation for the video plane
+            const videoOverlay = document.getElementById(`videooverlay-${hotspotId}`);
+            if (videoOverlay) {
+                console.log('Triggering fade-in animation');
+                videoOverlay.emit('fadein-' + hotspotId);
+            }
+            
+            // Show video playing state
+            showVideoPlaying();
+            
+            // Set up video end handler
+            video.addEventListener('ended', () => {
+                handleVideoEnded(hotspotId);
+            }, { once: true });
+            
+        }).catch(error => {
+            console.error('Video play promise rejected:', error);
         });
     }
+}
+
+// Hide all video overlays
+function hideAllVideoOverlays() {
+    const overlays = document.querySelectorAll('[id^="videooverlay-"]');
+    overlays.forEach(overlay => {
+        overlay.remove();
+    });
+    
+    const anchors = document.querySelectorAll('[id^="image-anchor-"]');
+    anchors.forEach(anchor => {
+        anchor.remove();
+    });
 }
 
 // Add tap-to-play fallback for iOS
