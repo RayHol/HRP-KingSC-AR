@@ -54,15 +54,16 @@ function switchToWallTracking() {
     
     // Show wall tracking elements (hotspots)
     setEncantarAnchorsVisible(true);
+    showAllHotspots();
     
-    // Hide any video overlays
-    hideAllVideoOverlays();
+    // Hide all video planes
+    hideAllVideoPlanes();
     
     console.log('WALL TRACKING ENABLED');
 }
 
 // Switch to image tracking mode (hide hotspots, show video for specific image)
-function switchToImageTracking(imageName) {
+function switchToImageTracking(imageName, hotspotId) {
     console.log('SWITCHING TO IMAGE TRACKING MODE for:', imageName);
     
     // Hide any currently active video overlay
@@ -72,11 +73,62 @@ function switchToImageTracking(imageName) {
     
     currentTrackingMode = 'image';
     currentImageTarget = imageName;
+    currentActiveHotspotId = hotspotId;
     
     // Hide wall tracking elements (hotspots)
     setEncantarAnchorsVisible(false);
+    hideAllHotspots();
+    
+    // Show the video plane for this image target
+    const videoPlaneId = `video-plane-${hotspotId}`;
+    const videoPlane = document.getElementById(videoPlaneId);
+    if (videoPlane) {
+        videoPlane.setAttribute('visible', 'true');
+    }
     
     console.log('IMAGE TRACKING ENABLED for:', imageName);
+}
+
+// Hide all Encantar video planes
+function hideAllVideoPlanes() {
+    const videoPlaneIds = [
+        'video-plane-clouds', 'video-plane-banquet', 'video-plane-peacock', 
+        'video-plane-graces', 'video-plane-trumpeter', 'video-plane-romulus',
+        'video-plane-caesar', 'video-plane-nero', 'video-plane-silenus',
+        'video-plane-furies', 'video-plane-alexander', 'video-plane-herakles',
+        'video-plane-diana', 'video-plane-harvest', 'video-plane-cherubs',
+        'video-plane-musicians', 'video-plane-signature'
+    ];
+    
+    videoPlaneIds.forEach(id => {
+        const plane = document.getElementById(id);
+        if (plane) {
+            plane.setAttribute('visible', 'false');
+            const videoOverlay = plane.querySelector('[id^="videooverlay-"]');
+            if (videoOverlay) {
+                videoOverlay.setAttribute('material', 'opacity', '0');
+            }
+        }
+    });
+}
+
+// Show/hide all hotspot entities
+function hideAllHotspots() {
+    const hotspots = document.querySelectorAll('[data-hotspot-id]');
+    hotspots.forEach(hotspot => {
+        if (!hotspot.hasAttribute('ar-root')) { // Only hide hotspot entities, not video planes
+            hotspot.setAttribute('visible', 'false');
+        }
+    });
+}
+
+function showAllHotspots() {
+    const hotspots = document.querySelectorAll('[data-hotspot-id]');
+    hotspots.forEach(hotspot => {
+        if (!hotspot.hasAttribute('ar-root')) { // Only show hotspot entities, not video planes
+            hotspot.setAttribute('visible', 'true');
+        }
+    });
 }
 
 // Simple camera cleanup
@@ -754,20 +806,10 @@ function displayHotspotMedia(mediaItem, index, commonValues, currentPosition, cu
     let hoverTimeout = null;
     
     entity.addEventListener('raycaster-intersected', function () {
-        // Raycaster intersected with hotspot
-        
-        // Prevent multiple activations for the same hotspot
-        if (hoverTimeout) {
-            return; // Already has pending activation
-        }
-        
         // Check if this hotspot can be activated (sequential order)
         if (!canActivateHotspot(hotspotId)) {
-            return; // Don't allow activation if not in sequence
+            return;
         }
-
-        // DON'T change opacity on hover - maintain original visual state
-        // Only change crosshair and button states
 
         // Change crosshair to green when hovering over hotspot
         const centerTarget = document.getElementById('center-target');
@@ -775,17 +817,24 @@ function displayHotspotMedia(mediaItem, index, commonValues, currentPosition, cu
             centerTarget.classList.add('hotspot-hover');
         }
 
-        // Update badges/replay button based on whether hotspot has been triggered
+        // Update badges/replay button
         const isAlreadyTriggered = activatedHotspots.has(hotspotId);
         updateBadgesReplayButton(isAlreadyTriggered);
 
-        // Add a delay to prevent immediate triggering when hotspot is first created
-        // This gives time for the hotspot to settle before allowing MindAR activation
-        hoverTimeout = setTimeout(() => {
-            // Activate MindAR for this hotspot
-            activateHotspotWithImageTracking(hotspotId, entity);
-            hoverTimeout = null;
-        }, 500); // 500ms delay to prevent immediate activation
+        // IMMEDIATE: Switch to image tracking mode for this hotspot
+        const imageMapping = {
+            'clouds': '1. Clouds', 'banquet': '2.Banquet', 'peacock': '3.Peacock',
+            'graces': '4. Graces', 'trumpeter': '5.Trumpeter', 'romulus': '6. Romulus',
+            'caesar': '7. Caeser', 'nero': '8. Nero', 'silenus': '9. Silenus',
+            'furies': '10. Furies', 'alexander': '11. Alexander', 'herakles': '12. Herakles',
+            'diana': '13.Diana', 'harvest': '14.Harvest', 'cherubs': '15.Cherubs',
+            'musicians': '16.Musicians', 'signature': '17.Signature'
+        };
+        
+        const imageName = imageMapping[hotspotId];
+        if (imageName) {
+            switchToImageTracking(imageName, hotspotId);
+        }
     });
 
     entity.addEventListener('raycaster-intersected-cleared', function () {
@@ -2819,7 +2868,8 @@ function hideVideoPlaying() {
 
 // Switch from Encantar to MindAR tracking mode
 async function switchToMindARTracking() {
-    console.log('Switching from Encantar to MindAR tracking mode');
+    console.log('Switching from Encantar to MindAR tracking mode - DISABLED');
+    return; // DISABLED - Using Encantar only
     
     isMindarActive = true;
     
@@ -2891,7 +2941,8 @@ async function switchToMindARTracking() {
 
 // Switch from MindAR back to Encantar tracking mode
 async function switchToEncantarTracking() {
-    console.log('Switching from MindAR to Encantar tracking mode');
+    console.log('Switching from MindAR to Encantar tracking mode - DISABLED');
+    return; // DISABLED - Using Encantar only
     
     isMindarActive = false;
     
@@ -3385,61 +3436,42 @@ function handleMindarTargetFound(hotspotId) {
 
 // Handle video ended
 function handleVideoEnded(hotspotId) {
-    // Hide tap-to-play text when video ends
+    // Hide tap-to-play text
     hideTapToPlayText();
     
-    // Hide transcript button when video ends
+    // Hide transcript button
     showTranscriptButton(false);
     
-    // Hide video playing state (show crosshair)
+    // Hide video playing state
     hideVideoPlaying();
     
-    // Mark the hotspot as completed immediately
+    // Mark hotspot as completed
     activatedHotspots.add(hotspotId);
-    // Prevent future video loading for this hotspot
-    preventVideoLoadingForCompletedHotspot(hotspotId);
     
-    // Refresh all hotspot visual states to show completed status
-    refreshAllHotspotVisualStates();
-    
-    // Restore original video plane dimensions
-    const videoPlane = document.getElementById(`videooverlay-${hotspotId}`);
-    if (videoPlane) {
-        const originalWidth = videoPlane.getAttribute('data-original-width');
-        const originalHeight = videoPlane.getAttribute('data-original-height');
-        
-        if (originalWidth && originalHeight) {
-            videoPlane.setAttribute('width', originalWidth);
-            videoPlane.setAttribute('height', originalHeight);
-        }
-    }
-    
-    // Hide video overlay
+    // Fade out video overlay
     const videoOverlay = document.getElementById(`videooverlay-${hotspotId}`);
     if (videoOverlay) {
-        videoOverlay.emit('fadeout-' + hotspotId);
-        setTimeout(() => {
-            const imageAnchor = document.getElementById(`image-anchor-${hotspotId}`);
-            if (imageAnchor) {
-                imageAnchor.remove();
-            }
-        }, 500);
+        videoOverlay.emit(`fadeout-${hotspotId}`);
     }
     
-    // Switch back to wall tracking
-    switchToWallTracking();
-    
-    // Reset current active hotspot
-    currentActiveHotspotId = null;
-    
-    // Hide transcript button when badge popup appears
-    showTranscriptButton(false);
-    
-    // Show congratulations overlay
-    const badgeId = hotspotToBadgeMapping[hotspotId];
-    if (badgeId) {
-        unlockBadge(badgeId);
-    }
+    // Wait for fade out, then switch back to wall tracking
+    setTimeout(() => {
+        switchToWallTracking();
+        
+        // Refresh hotspot visual states (reduce opacity for completed)
+        refreshAllHotspotVisualStates();
+        
+        // Show badge popup
+        const badgeId = hotspotToBadgeMapping[hotspotId];
+        if (badgeId) {
+            unlockBadge(badgeId);
+        }
+        
+        // Mark that we should show stairs navigation popup after badge is dismissed
+        if (hotspotId === 'trumpeter') {
+            window.shouldShowStairsPopup = true;
+        }
+    }, 500);
 }
 
 // Show target found indicator
@@ -3700,14 +3732,40 @@ function handleEncantarTargetFound(targetInfo) {
     const wallTargets = ['central', 'north', 'south', 'ceiling'];
     if (wallTargets.includes(targetName)) {
         console.log('Wall target found:', targetName);
-        // Wall targets are handled by the existing hotspot system
         return;
     }
     
-    // Check if this is an image target (for videos)
-    if (currentTrackingMode === 'image' && currentImageTarget === targetName) {
+    // Check if this is the current active image target (for videos)
+    if (currentTrackingMode === 'image' && currentImageTarget === targetName && currentActiveHotspotId) {
         console.log('Image target found for video:', targetName);
-        handleImageTargetFound(currentActiveHotspotId);
+        
+        // Get video element
+        const videoId = `video-${currentActiveHotspotId}`;
+        const video = document.getElementById(videoId);
+        
+        if (video) {
+            // Get video overlay
+            const videoOverlayId = `videooverlay-${currentActiveHotspotId}`;
+            const videoOverlay = document.getElementById(videoOverlayId);
+            
+            // Fade in video
+            if (videoOverlay) {
+                videoOverlay.emit(`fadein-${currentActiveHotspotId}`);
+            }
+            
+            // Play video with sound
+            video.muted = false;
+            video.play().catch(err => {
+                console.error('Video play failed:', err);
+                // Fallback to tap-to-play
+                showTapToPlayText();
+            });
+            
+            // Handle video end
+            video.addEventListener('ended', () => {
+                handleVideoEnded(currentActiveHotspotId);
+            }, { once: true });
+        }
     }
 }
 
@@ -3971,7 +4029,7 @@ window.testVideoPlayback = testVideoPlayback;
 document.addEventListener("DOMContentLoaded", function() {
     // Initialize MindAR system, but keep it disabled by default
     setTimeout(() => {
-        initializeMindAR();
+        // initializeMindAR(); // COMMENTED OUT - Using Encantar only
         // Always start in Encantar mode - disable MindAR by default
         const ms = document.getElementById('mindar-scene');
         if (ms) {
