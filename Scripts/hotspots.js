@@ -1,3 +1,10 @@
+// Simple camera cleanup function
+function releaseAllCamera() {
+    // Release global camera stream
+    releaseGlobalCamera();
+    console.log('Camera cleanup - global camera released');
+}
+
 // Global variable definitions for hotspots
 let hotspotIndex = 0;
 let hotspotEntity = null;
@@ -32,63 +39,94 @@ const dragSpeedY = 0.005; // Adjust the drag speed for the y-axis
 // ===== GLOBAL SETTINGS =====
 // Global hotspot scale multiplier - adjust this to scale all hotspots uniformly
 const GLOBAL_HOTSPOT_SCALE = 0.5// 1.0 = normal size; reduce to 0.05 to shrink ~20x
+
+// ===== SIMPLE CAMERA CLEANUP =====
+function releaseAllCamera() {
+    // No camera management needed - each system handles its own
+    console.log('Camera cleanup - each system manages its own camera');
+}
+
 // Encantar session control helpers (pause/resume camera to avoid contention)
 async function pauseEncantar() {
     const scene = document.getElementById('ar-scene');
     if (!scene) return;
     
-    // Stop Encantar session
+    console.log('PAUSING ENCANTAR...');
+    
+    // Stop Encantar session completely
     const comp = scene.components && scene.components.encantar;
-    const sys = scene.systems && scene.systems.ar;
     
     try {
-        if (sys && typeof sys.stopSession === 'function') {
-            await sys.stopSession();
-        } else if (comp && typeof comp.stopSession === 'function') {
-            await comp.stopSession();
-        } else if (comp && typeof comp.pause === 'function') {
-            comp.pause();
+        // Try all available stop methods first
+        if (comp) {
+            // Try to stop the main session
+            if (typeof comp.stopSession === 'function') {
+                await comp.stopSession();
+            } else if (typeof comp.stop === 'function') {
+                await comp.stop();
+            } else if (typeof comp.pause === 'function') {
+                comp.pause();
+            }
+            
+            // Force stop any running sessions
+            if (comp._session && typeof comp._session.stop === 'function') {
+                await comp._session.stop();
+            }
+            
+            // Try to stop the underlying AR session
+            if (comp._arSession && typeof comp._arSession.stop === 'function') {
+                await comp._arSession.stop();
+            }
+            
+            // Try to stop the camera session
+            if (comp._cameraSession && typeof comp._cameraSession.stop === 'function') {
+                await comp._cameraSession.stop();
+            }
+            
+            // Force stop the main loop
+            if (comp._mainLoop && typeof comp._mainLoop.stop === 'function') {
+                comp._mainLoop.stop();
+            }
+            
+            // Try to stop the render loop
+            if (comp._renderLoop && typeof comp._renderLoop.stop === 'function') {
+                comp._renderLoop.stop();
+            }
         }
         
-        // Disable component
+        // Disable the component
         scene.setAttribute('encantar', 'enabled', false);
         
-        // Stop global Encantar session
-        if (window.encantar && window.encantar.stopSession) {
-            await window.encantar.stopSession();
-        }
+        // Add delay to ensure Encantar fully stops and releases camera
+        await new Promise(resolve => setTimeout(resolve, 3000));
+        
+        console.log('ENCANTAR PAUSED');
         
     } catch(e) {
         console.error('Error pausing Encantar:', e);
     }
-    
-    // Wait for camera release
-    await new Promise(r => setTimeout(r, 1500));
-    
-    // Hide scene
-    scene.style.display = 'none';
-    scene.style.pointerEvents = 'none';
-    scene.style.opacity = '0';
 }
 
 async function resumeEncantar() {
     const scene = document.getElementById('ar-scene');
     if (!scene) return;
     
+    console.log('RESUMING ENCANTAR...');
+    
     try {
-        // Re-enable and show scene
+        // Re-enable the component
         scene.setAttribute('encantar', 'enabled', true);
-        scene.style.display = 'block';
-        scene.style.pointerEvents = 'auto';
-        scene.style.opacity = '1';
+        
+        // Wait for component to be ready
+        await new Promise(resolve => setTimeout(resolve, 1000));
         
         const comp = scene.components && scene.components.encantar;
-        const sys = scene.systems && scene.systems.ar;
         
-        if (sys && typeof sys.startSession === 'function') {
-            await sys.startSession();
-        } else if (comp && typeof comp.startSession === 'function') {
+        // Try all available start methods
+        if (comp && typeof comp.startSession === 'function') {
             await comp.startSession();
+        } else if (comp && typeof comp.start === 'function') {
+            await comp.start();
         } else if (comp && typeof comp.play === 'function') {
             comp.play();
         }
@@ -824,10 +862,8 @@ function displayHotspotMedia(mediaItem, index, commonValues, currentPosition, cu
         // Reset badges/replay button back to badges mode
         updateBadgesReplayButton(false);
         
-        // Switch back to Encantar tracking when no longer hovering
-        if (isMindarActive) {
-            switchToEncantarTracking();
-        }
+        // DON'T switch back to Encantar immediately - let MindAR complete its video/badges
+        // The switch back will happen when the video ends and badges are shown
     });
 
     // Require explicit click/fuse to activate MindAR
@@ -2487,18 +2523,17 @@ let currentActiveHotspotId = null; // Track which hotspot is currently being pro
 let deviceOrientationPermissionGranted = false; // Track if permission has been granted
 
 // Initialize MindAR system
-function initializeMindAR() {
+async function initializeMindAR() {
     mindarScene = document.getElementById('mindar-scene');
     if (!mindarScene) {
         console.error('MindAR scene not found');
         return false;
     }
     
-    // Ensure MindAR scene is properly initialized for iOS motion sensor permission
-    // Initializing MindAR scene for location
+    console.log('Initializing MindAR');
     
-    // Device orientation permission is now handled directly in HTML
-    // No need for complex permission handling here
+    // MindAR will handle its own camera acquisition
+    // We don't need to pre-configure anything here
     
     // Add MindAR event listeners for debugging
     mindarScene.addEventListener('targetFound', function(event) {
@@ -2686,15 +2721,33 @@ async function hideMindARScene() {
         mindarScene.style.pointerEvents = 'none'; // Make it non-interactive
     }, 500);
     
+    // Add delay to ensure MindAR fully stops
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    
     // Restore UI buttons to original positions
     restoreUIButtons();
     
     // Resume Encantar tracking
     try {
+        console.log('RESTARTING ENCANTAR AFTER MINDAR...');
         await resumeEncantar();
-        // Encantar resumed
+        console.log('ENCANTAR RESTARTED SUCCESSFULLY');
     } catch (e) {
         console.error('Failed to resume Encantar:', e);
+        // Try to restart Encantar manually if resume fails
+        try {
+            const scene = document.getElementById('ar-scene');
+            if (scene) {
+                scene.setAttribute('encantar', 'autoplay: false; stats: false; gizmos: false');
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                if (scene.components && scene.components.encantar) {
+                    await scene.components.encantar.startSession();
+                    console.log('ENCANTAR MANUALLY RESTARTED');
+                }
+            }
+        } catch (e2) {
+            console.error('Manual Encantar restart also failed:', e2);
+        }
     }
     
     // Show Encantar anchors/hotspots
@@ -2818,125 +2871,134 @@ function hideVideoPlaying() {
 }
 
 // Switch from Encantar to MindAR tracking mode
-function switchToMindARTracking() {
-    // Switching from Encantar to MindAR tracking mode
+async function switchToMindARTracking() {
+    console.log('Switching from Encantar to MindAR tracking mode');
     
-    // Set MindAR as active
     isMindarActive = true;
     
-    // Pause Encantar session
+    // 1. Pause Encantar session completely
     if (isEncantarEnabled()) {
-        // Pausing Encantar session
         try {
-            pauseEncantar();
+            await pauseEncantar();
             setEncantarAnchorsVisible(false);
-            // Encantar paused successfully
         } catch(e) {
             console.error('Failed to pause Encantar:', e);
         }
     }
     
-    // Hide Encantar scene
+    // 2. Hide Encantar scene with fade
     const encantarScene = document.getElementById('ar-scene');
     if (encantarScene) {
-        encantarScene.style.display = 'none';
-        encantarScene.style.pointerEvents = 'none';
-        // Encantar scene hidden
-    }
-    
-    // Show MindAR scene
-    const mindarScene = document.getElementById('mindar-scene');
-    if (mindarScene) {
-        mindarScene.style.display = 'block';
-        mindarScene.style.opacity = '1';
-        mindarScene.style.pointerEvents = 'auto';
-        mindarScene.style.zIndex = '10';
-        // MindAR scene shown
+        encantarScene.style.transition = 'opacity 0.5s ease-out';
+        encantarScene.style.opacity = '0';
         
-        // Enable MindAR tracking
-        try {
-            mindarScene.setAttribute('mindar-image', 'enabled', true);
-            const comp = mindarScene.components['mindar-image'];
-            if (comp) {
-                if (typeof comp.startSession === 'function') {
-                    comp.startSession().then(() => {
-                        // MindAR session started
-                    }).catch(e => {
-                        console.error('MindAR startSession failed:', e);
-                    });
-                } else if (typeof comp.start === 'function') {
-                    comp.start();
-                    // MindAR started
-                } else if (typeof comp.play === 'function') {
-                    comp.play();
-                    // MindAR playing
-                } else {
-                    console.error('No valid MindAR start method found');
-                }
-            } else {
-                console.error('MindAR component not found');
-            }
-        } catch(e) {
-            console.error('MindAR start failed:', e);
-        }
-    } else {
-        console.error('MindAR scene not found');
+        setTimeout(() => {
+            encantarScene.style.display = 'none';
+            encantarScene.style.pointerEvents = 'none';
+        }, 500);
     }
     
-    // Update UI to show MindAR mode
+    // 3. Wait for fade to complete, then show MindAR
+    setTimeout(async () => {
+        const mindarScene = document.getElementById('mindar-scene');
+        if (mindarScene) {
+            // Show MindAR scene
+            mindarScene.style.display = 'block';
+            mindarScene.style.opacity = '0';
+            mindarScene.style.pointerEvents = 'auto';
+            mindarScene.style.zIndex = '10';
+            
+            // Wait a bit more for camera to be fully available
+            await new Promise(resolve => setTimeout(resolve, 2000));
+            
+            // Enable MindAR tracking - let it get its own camera
+            try {
+                mindarScene.setAttribute('mindar-image', 'enabled', true);
+                const comp = mindarScene.components['mindar-image'];
+                
+                if (comp) {
+                    if (typeof comp.startSession === 'function') {
+                        await comp.startSession();
+                    } else if (typeof comp.start === 'function') {
+                        comp.start();
+                    } else if (typeof comp.play === 'function') {
+                        comp.play();
+                    }
+                    
+                    console.log('MINDAR STARTED');
+                }
+            } catch(e) {
+                console.error('MindAR start failed:', e);
+            }
+            
+            // Fade in MindAR scene
+            mindarScene.style.transition = 'opacity 0.5s ease-in';
+            setTimeout(() => {
+                mindarScene.style.opacity = '1';
+            }, 50);
+        }
+    }, 500);
+    
     updateTrackingModeUI('MindAR');
 }
 
 // Switch from MindAR back to Encantar tracking mode
-function switchToEncantarTracking() {
-    // Switching from MindAR to Encantar tracking mode
+async function switchToEncantarTracking() {
+    console.log('Switching from MindAR to Encantar tracking mode');
     
-    // Set MindAR as inactive
     isMindarActive = false;
     
-    // Hide MindAR scene
+    // 1. Stop MindAR with fade
     const mindarScene = document.getElementById('mindar-scene');
     if (mindarScene) {
-        mindarScene.style.display = 'none';
+        mindarScene.style.transition = 'opacity 0.5s ease-out';
         mindarScene.style.opacity = '0';
-        mindarScene.style.pointerEvents = 'none';
-        mindarScene.style.zIndex = '1';
-        // MindAR scene hidden
         
-        // Disable MindAR tracking
-        try {
-            mindarScene.setAttribute('mindar-image', 'enabled', false);
-            const comp = mindarScene.components['mindar-image'];
-            if (comp && typeof comp.stop === 'function') {
-                comp.stop();
-                // MindAR session stopped
+        setTimeout(async () => {
+            mindarScene.style.display = 'none';
+            mindarScene.style.pointerEvents = 'none';
+            
+            // Disable MindAR tracking
+            try {
+                mindarScene.setAttribute('mindar-image', 'enabled', false);
+                const comp = mindarScene.components['mindar-image'];
+                if (comp && typeof comp.stop === 'function') {
+                    comp.stop();
+                }
+                
+                console.log('MINDAR STOPPED');
+            } catch(e) {
+                console.warn('MindAR stop failed:', e);
             }
-        } catch(e) {
-            console.warn('MindAR stop failed:', e);
-        }
+        }, 500);
     }
     
-    // Show Encantar scene
-    const encantarScene = document.getElementById('ar-scene');
-    if (encantarScene) {
-        encantarScene.style.display = 'block';
-        encantarScene.style.pointerEvents = 'auto';
-        encantarScene.style.zIndex = '10';
-        // Encantar scene shown
-        
-        // Resume Encantar session
-        if (isEncantarEnabled()) {
+    // 2. Wait for fade, then show Encantar
+    setTimeout(async () => {
+        const encantarScene = document.getElementById('ar-scene');
+        if (encantarScene) {
+            encantarScene.style.display = 'block';
+            encantarScene.style.opacity = '0';
+            encantarScene.style.pointerEvents = 'auto';
+            encantarScene.style.zIndex = '10';
+            
+            // Resume Encantar
             try {
-                resumeEncantar();
+                await resumeEncantar();
                 setEncantarAnchorsVisible(true);
-                // Encantar resumed
+                console.log('ENCANTAR RESTARTED');
             } catch(e) {
                 console.error('Failed to resume Encantar:', e);
             }
+            
+            // Fade in Encantar scene
+            encantarScene.style.transition = 'opacity 0.5s ease-in';
+            setTimeout(() => {
+                encantarScene.style.opacity = '1';
+            }, 50);
         }
-    }
+    }, 500);
     
-    // Update UI to show Encantar mode
     updateTrackingModeUI('Encantar');
 }
 
@@ -3171,14 +3233,26 @@ function handleMindarTargetFound(hotspotId) {
 
         // Simple video playback function
         const playVideo = () => {
+            console.log('PLAYING VIDEO for hotspot:', hotspotId);
+            
             // Check if we're on iOS
             const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+            console.log('Is iOS:', isIOS);
             
             // Adjust video plane dimensions for webm format
             adjustVideoPlaneForFormat(hotspotId, video);
             
             // Reset video to beginning
             video.currentTime = 0;
+            
+            // Check video plane visibility
+            const videoOverlay = document.getElementById(`videooverlay-${hotspotId}`);
+            if (videoOverlay) {
+                console.log('Video overlay found:', videoOverlay);
+                console.log('Video overlay opacity:', videoOverlay.getAttribute('material').opacity);
+            } else {
+                console.error('Video overlay not found for:', hotspotId);
+            }
             
             if (isIOS) {
                 // For iOS, try to play with sound if user has interacted, otherwise muted
@@ -3205,13 +3279,35 @@ function handleMindarTargetFound(hotspotId) {
             }
             
             // Try to play the video
+            console.log('Attempting to play video...');
             const playPromise = video.play();
+            
+            if (playPromise !== undefined) {
+                playPromise.then(() => {
+                    console.log('Video play promise resolved - video should be playing');
+                    // Trigger fade-in animation for the video plane
+                    if (videoOverlay) {
+                        console.log('Triggering fade-in animation');
+                        videoOverlay.emit('fadein-' + hotspotId);
+                    }
+                }).catch(error => {
+                    console.error('Video play promise rejected:', error);
+                    updateMindarDebugUI(hotspotId, video, 'Play rejected: ' + error.message);
+                });
+            } else {
+                console.log('Video play returned undefined - trying fallback');
+                // Fallback: trigger fade-in anyway
+                if (videoOverlay) {
+                    videoOverlay.emit('fadein-' + hotspotId);
+                }
+            }
             
             // Set up tap-to-play fallback for iOS if video doesn't start automatically
             if (isIOS) {
                 setTimeout(() => {
                     if (video.paused) {
-            addTapToPlayFallback(video, hotspotId);
+                        console.log('Video still paused on iOS, adding tap-to-play fallback');
+                        addTapToPlayFallback(video, hotspotId);
                     }
                 }, 1500); // Wait 1.5 seconds to see if video starts automatically
             }

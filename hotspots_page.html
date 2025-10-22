@@ -71,12 +71,12 @@
         // Always use Encantar mode - no URL flag needed
         const scene = document.getElementById('ar-scene');
         if (!scene) return;
-        const attachAndStart = () => {
+        const attachAndStart = async () => {
             // Only attach if not already present
             if (!scene.components || !scene.components.encantar) {
                 scene.setAttribute('encantar', 'autoplay: false; stats: false; gizmos: false');
             }
-            const tryStart = () => {
+            const tryStart = async () => {
                 // Ensure ar-sources is available before starting
                 const arSources = scene.querySelector('ar-sources');
                 if (!arSources) {
@@ -86,9 +86,9 @@
                 }
                 
                 if (scene.components && scene.components.encantar) {
-                    scene.components.encantar.startSession().then(() => {
-                        console.log('[encantar] session started manually');
-                    }).catch(e => console.error('[encantar] start failed', e));
+                    // Let Encantar handle its own camera initially
+                    await scene.components.encantar.startSession();
+                    console.log('ENCANTAR STARTED');
                 } else {
                     setTimeout(tryStart, 200);
                 }
@@ -1012,6 +1012,11 @@
             }
         });
     }
+    
+    // Clean up camera on page unload
+    window.addEventListener('beforeunload', () => {
+        releaseAllCamera();
+    });
     </script>
 </body>
 </html> 
