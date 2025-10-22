@@ -79,14 +79,20 @@ function switchToImageTracking(imageName, hotspotId) {
     setEncantarAnchorsVisible(false);
     hideAllHotspots();
     
+    // Hide all video planes first
+    hideAllVideoPlanes();
+    
     // Show the video plane for this image target
     const videoPlaneId = `video-plane-${hotspotId}`;
     const videoPlane = document.getElementById(videoPlaneId);
     if (videoPlane) {
         videoPlane.setAttribute('visible', 'true');
+        console.log('VIDEO PLANE SHOWN:', videoPlaneId);
+    } else {
+        console.error('VIDEO PLANE NOT FOUND:', videoPlaneId);
     }
     
-    console.log('IMAGE TRACKING ENABLED for:', imageName);
+    console.log('IMAGE TRACKING ENABLED:', imageName);
 }
 
 // Hide all Encantar video planes
@@ -718,12 +724,13 @@ window.addEventListener('visibilitychange', function() {
 // This was the root cause of the X-axis scaling jitter
 
 function displayHotspotMedia(mediaItem, index, commonValues, currentPosition, currentRotation, hotspotId, hotspotIndex) {
-    let scene = document.querySelector("a-scene");
+    let scene = document.querySelector("#ar-scene");
     
     if (!scene) {
         console.error("A-Frame scene not found!");
         return;
     }
+    
     
 
     // Create the entity for the image
@@ -801,6 +808,9 @@ function displayHotspotMedia(mediaItem, index, commonValues, currentPosition, cu
     // Store hotspot ID as data attribute for reference
     entity.setAttribute("data-hotspot-id", hotspotId);
     
+    // Add clickable class for raycaster detection
+    entity.classList.add('clickable');
+    
     
     updateHotspotVisualState(entity, hotspotId, hotspotIndex);
 
@@ -808,6 +818,7 @@ function displayHotspotMedia(mediaItem, index, commonValues, currentPosition, cu
     if (!entity.parentNode || entity.parentNode === scene) {
         scene.appendChild(entity);
     }
+    
 
     // Debug log for placement
     // Hotspot created successfully
@@ -842,12 +853,12 @@ function displayHotspotMedia(mediaItem, index, commonValues, currentPosition, cu
         
         const imageName = imageMapping[hotspotId];
         if (imageName) {
+            console.log('HOTSPOT ACTIVATED:', hotspotId, '->', imageName);
             switchToImageTracking(imageName, hotspotId);
         }
     });
 
     entity.addEventListener('raycaster-intersected-cleared', function () {
-        // Raycaster intersected cleared for hotspot
         
         // Clear any pending hover timeout
         if (hoverTimeout) {
@@ -3764,6 +3775,7 @@ function handleEncantarTargetFound(targetInfo) {
 function handleEncantarVideoPlayback(hotspotId) {
     // Check if this hotspot has already been completed
     if (activatedHotspots.has(hotspotId)) {
+        console.log('Hotspot already completed:', hotspotId);
         return;
     }
 
@@ -3771,56 +3783,38 @@ function handleEncantarVideoPlayback(hotspotId) {
     const videoId = `video-${hotspotId}`;
     const video = document.getElementById(videoId);
     
+    console.log('VIDEO PLAYBACK STARTING:', hotspotId);
+    
     if (video) {
-        console.log('Playing video for hotspot:', hotspotId);
+        // Mark user interaction for video playback
+        hasUserInteracted = true;
         
         // Check if we're on iOS
         const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-        console.log('Is iOS:', isIOS);
         
         // Reset video to beginning
         video.currentTime = 0;
         
         // Check video plane visibility
         const videoOverlay = document.getElementById(`videooverlay-${hotspotId}`);
-        if (videoOverlay) {
-            console.log('Video overlay found:', videoOverlay);
-            console.log('Video overlay opacity:', videoOverlay.getAttribute('material').opacity);
-        } else {
-            console.error('Video overlay not found for:', hotspotId);
+        if (!videoOverlay) {
+            console.error('VIDEO OVERLAY NOT FOUND:', hotspotId);
         }
         
-        if (isIOS) {
-            // For iOS, try to play with sound if user has interacted, otherwise muted
-            if (hasUserInteracted) {
-                video.muted = false;
-                video.volume = 1.0;
-            } else {
-                video.muted = true;
-                video.volume = 0;
-            }
-            
-            // Ensure video has the right attributes for iOS
-            video.setAttribute('playsinline', 'true');
-            video.setAttribute('webkit-playsinline', 'true');
-        } else {
-            // For non-iOS, we can try to play with sound if user has interacted
-            if (hasUserInteracted) {
-                video.muted = false;
-                video.volume = 1.0;
-            } else {
-                video.muted = true;
-                video.volume = 0;
-            }
-        }
+        // Set video properties for playback
+        video.muted = false;
+        video.volume = 1.0;
+        
+        // Ensure video has the right attributes
+        video.setAttribute('playsinline', 'true');
+        video.setAttribute('webkit-playsinline', 'true');
         
         // Try to play the video
-        console.log('Attempting to play video...');
         const playPromise = video.play();
         
         if (playPromise !== undefined) {
             playPromise.then(() => {
-                console.log('Video play succeeded');
+                console.log('VIDEO PLAYING:', hotspotId);
                 
                 // Hide loading ring when video starts playing
                 hideLoadingRing();
@@ -3836,27 +3830,19 @@ function handleEncantarVideoPlayback(hotspotId) {
                     videoOverlay.emit(`fadein-${hotspotId}`);
                 }
                 
-                // If user has interacted, try to unmute after a short delay
-                if (hasUserInteracted) {
-                    setTimeout(() => {
-                        video.muted = false;
-                        video.volume = 1.0;
-                    }, 100);
-                }
-                
                 // Set up video end handler
                 video.addEventListener('ended', () => {
-                    console.log('Video ended');
+                    console.log('VIDEO ENDED:', hotspotId);
                     handleVideoEnded(hotspotId);
                 }, { once: true });
                 
             }).catch(error => {
-                console.error(`Video play failed for ${hotspotId}:`, error);
+                console.error('VIDEO PLAY FAILED:', hotspotId, error.message);
                 
                 // Fallback: try muted play
                 video.muted = true;
                 video.play().then(() => {
-                    console.log('Fallback muted play succeeded');
+                    console.log('VIDEO PLAYING (MUTED):', hotspotId);
                     
                     // Hide loading ring when fallback succeeds
                     hideLoadingRing();
@@ -3872,13 +3858,11 @@ function handleEncantarVideoPlayback(hotspotId) {
                         videoOverlay.emit(`fadein-${hotspotId}`);
                     }
                     
-                    // If user has interacted, try to unmute after a short delay
-                    if (hasUserInteracted) {
-                        setTimeout(() => {
-                            video.muted = false;
-                            video.volume = 1.0;
-                        }, 100);
-                    }
+                    // Try to unmute after a short delay
+                    setTimeout(() => {
+                        video.muted = false;
+                        video.volume = 1.0;
+                    }, 100);
                     
                     // Set up video end handler
                     video.addEventListener('ended', () => {
@@ -3886,7 +3870,7 @@ function handleEncantarVideoPlayback(hotspotId) {
                     }, { once: true });
                     
                 }).catch(fallbackError => {
-                    console.error('Fallback play failed:', fallbackError);
+                    console.error('VIDEO PLAY COMPLETELY FAILED:', hotspotId);
                     // Final fallback: show congratulations after a delay
                     setTimeout(() => {
                         handleVideoEnded(hotspotId);
@@ -3907,17 +3891,19 @@ function handleEncantarVideoPlayback(hotspotId) {
         
         // Ensure video is loaded before playing
         if (video.readyState < 2) {
+            console.log('VIDEO LOADING:', hotspotId);
             video.load();
             
             // Wait for video to be loaded
             video.addEventListener('loadeddata', () => {
+                console.log('VIDEO LOADED, RETRYING:', hotspotId);
                 // Re-trigger the play logic
                 handleEncantarVideoPlayback(hotspotId);
             }, { once: true });
             return;
         }
     } else {
-        console.error(`Video element not found for hotspot: ${hotspotId}`);
+        console.error('VIDEO ELEMENT NOT FOUND:', hotspotId);
     }
 }
 
@@ -4212,13 +4198,12 @@ document.addEventListener("DOMContentLoaded", function() {
                     camera.setAttribute('raycaster', 'objects: .clickable; interval: 100; far: 1000; rayOrigin: mouse');
                 }
                 
-                // Add global raycaster debugging
+                // Add global raycaster debugging (only for hotspot detection)
                 camera.addEventListener('raycaster-intersected', function(event) {
-                    // Global raycaster intersected
-                });
-                
-                camera.addEventListener('raycaster-intersected-cleared', function(event) {
-                    // Global raycaster intersected cleared
+                    const target = event.detail && event.detail.els && event.detail.els[0];
+                    if (target && target.getAttribute('data-hotspot-id')) {
+                        console.log('HOTSPOT HOVER DETECTED:', target.getAttribute('data-hotspot-id'));
+                    }
                 });
             } else {
                 console.error('Camera not found');

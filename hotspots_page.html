@@ -66,13 +66,63 @@
     })();
     </script>
     <script>
+    // Filter out verbose Encantar logs
+    (function() {
+        const originalLog = console.log;
+        const originalWarn = console.warn;
+        const originalError = console.error;
+        
+        console.log = function(...args) {
+            const message = args.join(' ');
+            // Filter out Encantar verbose logs
+            if (message.includes('[encantar-js]') || 
+                message.includes('[speedy-vision]') ||
+                message.includes('Adding reference image') ||
+                message.includes('Image Tracker:') ||
+                message.includes('found') && message.includes('keypoints') ||
+                message.includes('Building') && message.includes('LSH tables') ||
+                message.includes('Creating a') && message.includes('database') ||
+                message.includes('Initializing the camera model') ||
+                message.includes('Accessing the webcam') ||
+                message.includes('The video is prepared') ||
+                message.includes('Loading a video') ||
+                message.includes('Source of data is a') ||
+                message.includes('The immersive session is now active') ||
+                message.includes('The main loop has been started') ||
+                message.includes('No longer tracking image') ||
+                message.includes('Can\'t pre-track') ||
+                message.includes('The target has been lost')) {
+                return; // Skip these logs
+            }
+            originalLog.apply(console, args);
+        };
+        
+        console.warn = function(...args) {
+            const message = args.join(' ');
+            // Filter out Encantar warnings
+            if (message.includes('[encantar-js]') || 
+                message.includes('[speedy-vision]') ||
+                message.includes('WebGL:') ||
+                message.includes('RENDER WARNING:')) {
+                return; // Skip these warnings
+            }
+            originalWarn.apply(console, args);
+        };
+    })();
+    
     // Dynamically attach Encantar component AFTER scene & children are fully parsed to avoid race on <ar-sources>
     document.addEventListener('DOMContentLoaded', function() {
         // Always use Encantar mode - no URL flag needed
         const scene = document.getElementById('ar-scene');
         if (!scene) return;
         
+        let encantarStarted = false; // Flag to prevent double initialization
+        
         const attachAndStart = async () => {
+            if (encantarStarted) {
+                console.log('Encantar already started, skipping...');
+                return;
+            }
             // Wait for ar-sources to be available before attaching Encantar component
             const waitForARSources = () => {
                 return new Promise((resolve) => {
@@ -117,14 +167,17 @@
                         // Let Encantar handle its own camera initially
                         await scene.components.encantar.startSession();
                         console.log('ENCANTAR STARTED');
+                        encantarStarted = true;
                     } catch (error) {
                         console.error('Error starting Encantar session:', error);
                         // Try to restart after a delay
                         setTimeout(async () => {
+                            if (encantarStarted) return; // Prevent double start
                             try {
                                 console.log('Retrying Encantar session start...');
                                 await scene.components.encantar.startSession();
                                 console.log('ENCANTAR STARTED (retry)');
+                                encantarStarted = true;
                             } catch (retryError) {
                                 console.error('Failed to start Encantar session after retry:', retryError);
                             }
