@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -71,41 +71,121 @@
         // Always use Encantar mode - no URL flag needed
         const scene = document.getElementById('ar-scene');
         if (!scene) return;
+        
         const attachAndStart = async () => {
-            // Only attach if not already present
-            if (!scene.components || !scene.components.encantar) {
-                scene.setAttribute('encantar', 'autoplay: false; stats: false; gizmos: false');
-            }
-            const tryStart = async () => {
-                // Ensure ar-sources is available before starting
-                const arSources = scene.querySelector('ar-sources');
-                if (!arSources) {
-                    console.error('ar-sources not found, retrying...');
-                    setTimeout(tryStart, 200);
-                    return;
+            // Wait for ar-sources to be available before attaching Encantar component
+            const waitForARSources = () => {
+                return new Promise((resolve) => {
+                    const checkARSources = () => {
+                        const arSources = scene.querySelector('ar-sources');
+                        if (arSources) {
+                            console.log('ar-sources found, proceeding with Encantar setup');
+                            resolve();
+                        } else {
+                            console.log('ar-sources not found yet, retrying in 100ms...');
+                            setTimeout(checkARSources, 100);
+                        }
+                    };
+                    checkARSources();
+                });
+            };
+            
+            try {
+                // Wait for ar-sources to be available
+                await waitForARSources();
+                
+                // Check if Encantar component is registered
+                if (typeof AFRAME !== 'undefined' && AFRAME.components && AFRAME.components.encantar) {
+                    console.log('Encantar component is registered');
+                } else {
+                    console.warn('Encantar component not registered yet, waiting...');
+                    await new Promise(resolve => setTimeout(resolve, 1000));
                 }
                 
-                if (scene.components && scene.components.encantar) {
-                    // Let Encantar handle its own camera initially
-                    await scene.components.encantar.startSession();
-                    console.log('ENCANTAR STARTED');
-                } else {
-                    setTimeout(tryStart, 200);
+                // Only attach if not already present
+                if (!scene.components || !scene.components.encantar) {
+                    console.log('Attaching Encantar component...');
+                    scene.setAttribute('encantar', 'autoplay: false; stats: false; gizmos: false');
                 }
-            };
-            setTimeout(tryStart, 500);
+                
+                // Wait a bit more for the component to be fully initialized
+                await new Promise(resolve => setTimeout(resolve, 500));
+                
+                if (scene.components && scene.components.encantar) {
+                    console.log('Starting Encantar session...');
+                    try {
+                        // Let Encantar handle its own camera initially
+                        await scene.components.encantar.startSession();
+                        console.log('ENCANTAR STARTED');
+                    } catch (error) {
+                        console.error('Error starting Encantar session:', error);
+                        // Try to restart after a delay
+                        setTimeout(async () => {
+                            try {
+                                console.log('Retrying Encantar session start...');
+                                await scene.components.encantar.startSession();
+                                console.log('ENCANTAR STARTED (retry)');
+                            } catch (retryError) {
+                                console.error('Failed to start Encantar session after retry:', retryError);
+                            }
+                        }, 1000);
+                    }
+                } else {
+                    console.error('Encantar component not available after attachment');
+                    console.log('Available components:', scene.components ? Object.keys(scene.components) : 'none');
+                }
+            } catch (error) {
+                console.error('Error during Encantar setup:', error);
+            }
         };
+        
         if (scene.hasLoaded) {
             // Scene already loaded; children like <ar-sources> are available
-            setTimeout(attachAndStart, 0);
+            setTimeout(attachAndStart, 100);
         } else {
-            scene.addEventListener('loaded', () => setTimeout(attachAndStart, 0));
+            scene.addEventListener('loaded', () => setTimeout(attachAndStart, 100));
         }
         
         // Set up Encantar tracking detection
         setTimeout(() => {
             setupEncantarTrackingDetection();
-        }, 1000);
+        }, 2000);
+        
+        // Additional debugging for reference images
+        setTimeout(() => {
+            const arSources = scene.querySelector('ar-sources');
+            const arTrackers = scene.querySelector('ar-trackers');
+            const arImageTracker = scene.querySelector('ar-image-tracker');
+            const referenceImages = scene.querySelectorAll('ar-reference-image');
+            
+            console.log('AR Elements Debug:');
+            console.log('- ar-sources:', arSources ? 'found' : 'missing');
+            console.log('- ar-trackers:', arTrackers ? 'found' : 'missing');
+            console.log('- ar-image-tracker:', arImageTracker ? 'found' : 'missing');
+            console.log('- reference images count:', referenceImages.length);
+            
+            if (referenceImages.length > 0) {
+                console.log('Reference images:');
+                referenceImages.forEach((img, index) => {
+                    const name = img.getAttribute('name');
+                    const src = img.getAttribute('src');
+                    console.log(`  ${index + 1}. ${name}: ${src}`);
+                    
+                    // Check if image loads successfully
+                    const testImg = new Image();
+                    testImg.onload = () => console.log(`    ✓ Image loaded successfully: ${name}`);
+                    testImg.onerror = () => console.error(`    ✗ Failed to load image: ${name} (${src})`);
+                    testImg.src = src;
+                });
+            }
+            
+            // Check Encantar component status
+            if (scene.components && scene.components.encantar) {
+                console.log('Encantar component status:', scene.components.encantar);
+            } else {
+                console.warn('Encantar component not found');
+            }
+        }, 3000);
     });
     </script>
 
@@ -552,7 +632,7 @@
         renderer="colorManagement: true, physicallyCorrectLights"
         vr-mode-ui="enabled: false"
         device-orientation-permission-ui="enabled: false"
-        style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; opacity: 0.01; pointer-events: auto;">
+        style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; opacity: 0.01; pointer-events: none; display: none;"
         
         
         <!-- MindAR Video Assets -->
@@ -659,9 +739,8 @@
         <!-- Ambient light entity -->
         <a-light type="ambient" color="#FFF"></a-light>
         
-        <!-- MindAR Target 0 (clouds) - initially hidden -->
-        <a-entity id="target-clouds" mindar-image-target="targetIndex: 0" ar-controller
-            smooth-position="target: #videooverlay-clouds; factor: 0.1" style="display: none;">
+        <!-- Encantar Target 0 (clouds) -->
+        <a-entity id="target-clouds" ar-root="referenceImage: 1. Clouds">
             <a-plane id="videooverlay-clouds" 
                 material="src: #video-clouds; transparent: true; opacity: 0"
                 animation__fadein="startEvents: fadein-clouds; property: material.opacity; from: 0; to: 1; dur: 500;" 
@@ -671,9 +750,8 @@
             </a-plane>
         </a-entity>
         
-        <!-- MindAR Target 1 (banquet) - initially hidden -->
-        <a-entity id="target-banquet" mindar-image-target="targetIndex: 1" ar-controller
-            smooth-position="target: #videooverlay-banquet; factor: 0.1" style="display: none;">
+        <!-- Encantar Target 1 (banquet) -->
+        <a-entity id="target-banquet" ar-root="referenceImage: 2.Banquet">
             <a-plane id="videooverlay-banquet" 
                 material="src: #video-banquet; transparent: true; opacity: 0"
                 animation__fadein="startEvents: fadein-banquet; property: material.opacity; from: 0; to: 1; dur: 500;" 
@@ -683,9 +761,8 @@
             </a-plane>
         </a-entity>
         
-        <!-- MindAR Target 2 (peacock) - initially hidden -->
-        <a-entity id="target-peacock" mindar-image-target="targetIndex: 2" ar-controller
-            smooth-position="target: #videooverlay-peacock; factor: 0.1" style="display: none;">
+        <!-- Encantar Target 2 (peacock) -->
+        <a-entity id="target-peacock" ar-root="referenceImage: 3.Peacock">
             <a-plane id="videooverlay-peacock" 
                 material="shader: transparent-video; src: #video-peacock; transparent: true; opacity: 0"
                 animation__fadein="startEvents: fadein-peacock; property: material.opacity; from: 0; to: 1; dur: 500;" 
@@ -695,9 +772,8 @@
             </a-plane>
         </a-entity>
         
-        <!-- MindAR Target 3 (graces) - initially hidden -->
-        <a-entity id="target-graces" mindar-image-target="targetIndex: 3" ar-controller
-            smooth-position="target: #videooverlay-graces; factor: 0.1" style="display: none;">
+        <!-- Encantar Target 3 (graces) -->
+        <a-entity id="target-graces" ar-root="referenceImage: 4. Graces">
             <a-plane id="videooverlay-graces" 
                 material="src: #video-graces; transparent: true; opacity: 0"
                 animation__fadein="startEvents: fadein-graces; property: material.opacity; from: 0; to: 1; dur: 500;" 
@@ -707,9 +783,8 @@
             </a-plane>
         </a-entity>
         
-        <!-- MindAR Target 4 (trumpeter) - initially hidden -->
-        <a-entity id="target-trumpeter" mindar-image-target="targetIndex: 4" ar-controller
-            smooth-position="target: #videooverlay-trumpeter; factor: 0.1" style="display: none;">
+        <!-- Encantar Target 4 (trumpeter) -->
+        <a-entity id="target-trumpeter" ar-root="referenceImage: 5.Trumpeter">
             <a-plane id="videooverlay-trumpeter" 
                 material="shader: transparent-video; src: #video-trumpeter; transparent: true; opacity: 0"
                 animation__fadein="startEvents: fadein-trumpeter; property: material.opacity; from: 0; to: 1; dur: 500;" 
@@ -719,9 +794,8 @@
             </a-plane>
         </a-entity>
         
-        <!-- MindAR Target 5 (romulus) - initially hidden -->
-        <a-entity id="target-romulus" mindar-image-target="targetIndex: 5" ar-controller
-            smooth-position="target: #videooverlay-romulus; factor: 0.1" style="display: none;">
+        <!-- Encantar Target 5 (romulus) -->
+        <a-entity id="target-romulus" ar-root="referenceImage: 6. Romulus">
             <a-plane id="videooverlay-romulus" 
                 material="shader: transparent-video; src: #video-romulus; transparent: true; opacity: 0"
                 animation__fadein="startEvents: fadein-romulus; property: material.opacity; from: 0; to: 1; dur: 500;" 
@@ -731,9 +805,8 @@
             </a-plane>
         </a-entity>
         
-        <!-- MindAR Target 6 (caesar) - initially hidden -->
-        <a-entity id="target-caesar" mindar-image-target="targetIndex: 6" ar-controller
-            smooth-position="target: #videooverlay-caesar; factor: 0.1" style="display: none;">
+        <!-- Encantar Target 6 (caesar) -->
+        <a-entity id="target-caesar" ar-root="referenceImage: 7. Caesar">
             <a-plane id="videooverlay-caesar" 
                 material="shader: transparent-video; src: #video-caesar; transparent: true; opacity: 0"
                 animation__fadein="startEvents: fadein-caesar; property: material.opacity; from: 0; to: 1; dur: 500;" 
@@ -743,9 +816,8 @@
             </a-plane>
         </a-entity>
 
-        <!-- MindAR Target 7 (nero) - initially hidden -->
-        <a-entity id="target-nero" mindar-image-target="targetIndex: 7" ar-controller
-            smooth-position="target: #videooverlay-nero; factor: 0.1" style="display: none;">
+        <!-- Encantar Target 7 (nero) -->
+        <a-entity id="target-nero" ar-root="referenceImage: 8. Nero">
             <a-plane id="videooverlay-nero" 
                 material="src: #video-nero; transparent: true; opacity: 0"
                 animation__fadein="startEvents: fadein-nero; property: material.opacity; from: 0; to: 1; dur: 500;" 
@@ -755,9 +827,8 @@
             </a-plane>
         </a-entity>
         
-        <!-- MindAR Target 8 (silenus) - initially hidden -->
-        <a-entity id="target-silenus" mindar-image-target="targetIndex: 8" ar-controller
-            smooth-position="target: #videooverlay-silenus; factor: 0.1" style="display: none;">
+        <!-- Encantar Target 8 (silenus) -->
+        <a-entity id="target-silenus" ar-root="referenceImage: 9. Silenus">
             <a-plane id="videooverlay-silenus" 
                 material="shader: transparent-video; src: #video-silenus; transparent: true; opacity: 0"
                 animation__fadein="startEvents: fadein-silenus; property: material.opacity; from: 0; to: 1; dur: 500;" 
@@ -767,9 +838,8 @@
             </a-plane>
         </a-entity>
         
-        <!-- MindAR Target 9 (furies) - initially hidden -->
-        <a-entity id="target-furies" mindar-image-target="targetIndex: 9" ar-controller
-            smooth-position="target: #videooverlay-furies; factor: 0.1" style="display: none;">
+        <!-- Encantar Target 9 (furies) -->
+        <a-entity id="target-furies" ar-root="referenceImage: 10. Furies">
             <a-plane id="videooverlay-furies" 
                 material="src: #video-furies; transparent: true; opacity: 0"
                 animation__fadein="startEvents: fadein-furies; property: material.opacity; from: 0; to: 1; dur: 500;" 
@@ -779,9 +849,8 @@
             </a-plane>
         </a-entity>
         
-        <!-- MindAR Target 10 (alexander) - initially hidden -->
-        <a-entity id="target-alexander" mindar-image-target="targetIndex: 10" ar-controller
-            smooth-position="target: #videooverlay-alexander; factor: 0.1" style="display: none;">
+        <!-- Encantar Target 10 (alexander) -->
+        <a-entity id="target-alexander" ar-root="referenceImage: 11. Alexander">
             <a-plane id="videooverlay-alexander" 
                 material="src: #video-alexander; transparent: true; opacity: 0"
                 animation__fadein="startEvents: fadein-alexander; property: material.opacity; from: 0; to: 1; dur: 500;" 
@@ -791,9 +860,8 @@
             </a-plane>
         </a-entity>
         
-        <!-- MindAR Target 11 (herakles) - initially hidden -->
-        <a-entity id="target-herakles" mindar-image-target="targetIndex: 11" ar-controller
-            smooth-position="target: #videooverlay-herakles; factor: 0.1" style="display: none;">
+        <!-- Encantar Target 11 (herakles) -->
+        <a-entity id="target-herakles" ar-root="referenceImage: 12. Herakles">
             <a-plane id="videooverlay-herakles" 
                 material="shader: transparent-video; src: #video-herakles; transparent: true; opacity: 0"
                 animation__fadein="startEvents: fadein-herakles; property: material.opacity; from: 0; to: 1; dur: 500;" 
@@ -803,9 +871,8 @@
             </a-plane>
         </a-entity>
         
-        <!-- MindAR Target 12 (diana) - initially hidden -->
-        <a-entity id="target-diana" mindar-image-target="targetIndex: 12" ar-controller
-            smooth-position="target: #videooverlay-diana; factor: 0.1" style="display: none;">
+        <!-- Encantar Target 12 (diana) -->
+        <a-entity id="target-diana" ar-root="referenceImage: 13.Diana">
             <a-plane id="videooverlay-diana" 
                 material="src: #video-diana; transparent: true; opacity: 0"
                 animation__fadein="startEvents: fadein-diana; property: material.opacity; from: 0; to: 1; dur: 500;" 
@@ -815,9 +882,8 @@
             </a-plane>
         </a-entity>
         
-        <!-- MindAR Target 13 (harvest) - initially hidden -->
-        <a-entity id="target-harvest" mindar-image-target="targetIndex: 13" ar-controller
-            smooth-position="target: #videooverlay-harvest; factor: 0.1" style="display: none;">
+        <!-- Encantar Target 13 (harvest) -->
+        <a-entity id="target-harvest" ar-root="referenceImage: 14.Harvest">
             <a-plane id="videooverlay-harvest" 
                 material="src: #video-harvest; transparent: true; opacity: 0"
                 animation__fadein="startEvents: fadein-harvest; property: material.opacity; from: 0; to: 1; dur: 500;" 
@@ -827,9 +893,8 @@
             </a-plane>
         </a-entity>
         
-        <!-- MindAR Target 14 (cherubs) - initially hidden -->
-        <a-entity id="target-cherubs" mindar-image-target="targetIndex: 14" ar-controller
-            smooth-position="target: #videooverlay-cherubs; factor: 0.1" style="display: none;">
+        <!-- Encantar Target 14 (cherubs) -->
+        <a-entity id="target-cherubs" ar-root="referenceImage: 15.Cherubs">
             <a-plane id="videooverlay-cherubs" 
                 material="shader: transparent-video; src: #video-cherubs; transparent: true; opacity: 0"
                 animation__fadein="startEvents: fadein-cherubs; property: material.opacity; from: 0; to: 1; dur: 500;" 
@@ -839,9 +904,8 @@
             </a-plane>
         </a-entity>
         
-        <!-- MindAR Target 15 (musicians) - initially hidden -->
-        <a-entity id="target-musicians" mindar-image-target="targetIndex: 15" ar-controller
-            smooth-position="target: #videooverlay-musicians; factor: 0.1" style="display: none;">
+        <!-- Encantar Target 15 (musicians) -->
+        <a-entity id="target-musicians" ar-root="referenceImage: 16.Musicians">
             <a-plane id="videooverlay-musicians" 
                 material="src: #video-musicians; transparent: true; opacity: 0"
                 animation__fadein="startEvents: fadein-musicians; property: material.opacity; from: 0; to: 1; dur: 500;" 
@@ -851,9 +915,8 @@
             </a-plane>
         </a-entity>
         
-        <!-- MindAR Target 16 (signature) - initially hidden -->
-        <a-entity id="target-signature" mindar-image-target="targetIndex: 16" ar-controller
-            smooth-position="target: #videooverlay-signature; factor: 0.1" style="display: none;">
+        <!-- Encantar Target 16 (signature) -->
+        <a-entity id="target-signature" ar-root="referenceImage: 17.Signature">
             <a-plane id="videooverlay-signature" 
                 material="shader: transparent-video; src: #video-signature; transparent: true; opacity: 0"
                 animation__fadein="startEvents: fadein-signature; property: material.opacity; from: 0; to: 1; dur: 500;" 

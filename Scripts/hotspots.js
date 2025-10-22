@@ -65,6 +65,11 @@ function switchToWallTracking() {
 function switchToImageTracking(imageName) {
     console.log('SWITCHING TO IMAGE TRACKING MODE for:', imageName);
     
+    // Hide any currently active video overlay
+    if (currentActiveHotspotId) {
+        hideVideoOverlay(currentActiveHotspotId);
+    }
+    
     currentTrackingMode = 'image';
     currentImageTarget = imageName;
     
@@ -3505,12 +3510,133 @@ async function activateHotspotWithImageTracking(hotspotId, entity) {
     switchToImageTracking(imageName);
     
     // Create video overlay for this hotspot
-    createVideoOverlay(hotspotId);
+    createVideoOverlay(hotspotId, imageName);
 }
 
 // Create video overlay for Encantar image tracking
-function createVideoOverlay(hotspotId) {
+function createVideoOverlay(hotspotId, imageName) {
     console.log('CREATING VIDEO OVERLAY for:', hotspotId);
+
+    // Map hotspot IDs to video plane IDs (these are already in the HTML)
+    const videoPlaneIdMapping = {
+        'clouds': 'videooverlay-clouds',
+        'banquet': 'videooverlay-banquet',
+        'peacock': 'videooverlay-peacock',
+        'graces': 'videooverlay-graces',
+        'trumpeter': 'videooverlay-trumpeter',
+        'romulus': 'videooverlay-romulus',
+        'caesar': 'videooverlay-caesar',
+        'nero': 'videooverlay-nero',
+        'silenus': 'videooverlay-silenus',
+        'furies': 'videooverlay-furies',
+        'alexander': 'videooverlay-alexander',
+        'herakles': 'videooverlay-herakles',
+        'diana': 'videooverlay-diana',
+        'harvest': 'videooverlay-harvest',
+        'cherubs': 'videooverlay-cherubs',
+        'musicians': 'videooverlay-musicians',
+        'signature': 'videooverlay-signature'
+    };
+
+    const videoPlaneId = videoPlaneIdMapping[hotspotId] || `videooverlay-${hotspotId}`;
+    const videoPlane = document.getElementById(videoPlaneId);
+
+    if (!videoPlane) {
+        console.error(`Video plane not found: ${videoPlaneId}`);
+        return;
+    }
+
+    // Map hotspot IDs to video element IDs
+    const videoIdMapping = {
+        'clouds': 'video-clouds',
+        'banquet': 'video-banquet',
+        'peacock': 'video-peacock',
+        'graces': 'video-graces',
+        'trumpeter': 'video-trumpeter',
+        'romulus': 'video-romulus',
+        'caesar': 'video-caesar',
+        'nero': 'video-nero',
+        'silenus': 'video-silenus',
+        'furies': 'video-furies',
+        'alexander': 'video-alexander',
+        'herakles': 'video-herakles',
+        'diana': 'video-diana',
+        'harvest': 'video-harvest',
+        'cherubs': 'video-cherubs',
+        'musicians': 'video-musicians',
+        'signature': 'video-signature'
+    };
+
+    const videoId = videoIdMapping[hotspotId] || `video-${hotspotId}`;
+    const video = document.getElementById(videoId);
+
+    if (!video) {
+        console.error(`Video element not found: ${videoId}`);
+        return;
+    }
+
+    // The video plane should already be visible due to Encantar's ar-root system
+    // The video plane starts with opacity: 0, so we need to trigger the fade-in animation
+
+    // Start playing the video
+    video.currentTime = 0;
+    video.muted = true; // Start muted for autoplay
+    video.play().then(() => {
+        console.log('Video started playing for:', hotspotId);
+
+        // Trigger fade-in animation to make video visible
+        videoPlane.emit('fadein-' + hotspotId);
+    }).catch(error => {
+        console.warn('Video play failed:', error);
+        // Try muted fallback
+        video.muted = true;
+        video.play().then(() => {
+            console.log('Video started playing (muted) for:', hotspotId);
+            // Trigger fade-in animation
+            videoPlane.emit('fadein-' + hotspotId);
+        }).catch(err => {
+            console.error('Video play failed even with muted:', err);
+        });
+    });
+
+    console.log('Video overlay activated for:', hotspotId);
+}
+
+// Hide video overlay when switching away from image tracking
+function hideVideoOverlay(hotspotId) {
+    console.log('HIDING VIDEO OVERLAY for:', hotspotId);
+    
+    // Map hotspot IDs to video plane IDs
+    const videoPlaneIdMapping = {
+        'clouds': 'videooverlay-clouds',
+        'banquet': 'videooverlay-banquet',
+        'peacock': 'videooverlay-peacock',
+        'graces': 'videooverlay-graces',
+        'trumpeter': 'videooverlay-trumpeter',
+        'romulus': 'videooverlay-romulus',
+        'caesar': 'videooverlay-caesar',
+        'nero': 'videooverlay-nero',
+        'silenus': 'videooverlay-silenus',
+        'furies': 'videooverlay-furies',
+        'alexander': 'videooverlay-alexander',
+        'herakles': 'videooverlay-herakles',
+        'diana': 'videooverlay-diana',
+        'harvest': 'videooverlay-harvest',
+        'cherubs': 'videooverlay-cherubs',
+        'musicians': 'videooverlay-musicians',
+        'signature': 'videooverlay-signature'
+    };
+    
+    const videoPlaneId = videoPlaneIdMapping[hotspotId] || `videooverlay-${hotspotId}`;
+    const videoPlane = document.getElementById(videoPlaneId);
+    
+    if (videoPlane) {
+        // Trigger fade-out animation
+        videoPlane.emit('fadeout-' + hotspotId);
+        
+        // Note: The video plane will automatically become invisible when Encantar loses the target
+        // due to the ar-root system, so we don't need to manually hide it
+    }
     
     // Map hotspot IDs to video element IDs
     const videoIdMapping = {
@@ -3536,48 +3662,15 @@ function createVideoOverlay(hotspotId) {
     const videoId = videoIdMapping[hotspotId] || `video-${hotspotId}`;
     const video = document.getElementById(videoId);
     
-    if (!video) {
-        console.error(`Video element not found: ${videoId}`);
-        return;
+    if (video) {
+        // Pause the video
+        video.pause();
+        video.currentTime = 0;
     }
     
-    // Create video plane entity in the AR scene
-    const scene = document.getElementById('ar-scene');
-    if (!scene) {
-        console.error('AR scene not found');
-        return;
-    }
-    
-    // Remove existing video overlay if any
-    const existingOverlay = document.getElementById(`videooverlay-${hotspotId}`);
-    if (existingOverlay) {
-        existingOverlay.remove();
-    }
-    
-    // Create video plane positioned relative to the tracked image
-    const videoPlane = document.createElement('a-plane');
-    videoPlane.id = `videooverlay-${hotspotId}`;
-    videoPlane.setAttribute('material', `src: #${videoId}; transparent: true; opacity: 0`);
-    videoPlane.setAttribute('width', '2');
-    videoPlane.setAttribute('height', '1.2');
-    videoPlane.setAttribute('position', '0 0 0.1'); // Slightly in front of the tracked image
-    videoPlane.setAttribute('rotation', '0 0 0');
-    
-    // Add fade-in animation
-    videoPlane.setAttribute('animation__fadein', 'startEvents: fadein-' + hotspotId + '; property: material.opacity; from: 0; to: 1; dur: 500;');
-    videoPlane.setAttribute('animation__fadeout', 'startEvents: fadeout-' + hotspotId + '; property: material.opacity; from: 1; to: 0; dur: 500;');
-    
-    // Create a parent entity that will be positioned by Encantar's ar-root
-    const imageAnchor = document.createElement('a-entity');
-    imageAnchor.id = `image-anchor-${hotspotId}`;
-    imageAnchor.setAttribute('ar-root', `referenceImage: ${imageName}`);
-    imageAnchor.appendChild(videoPlane);
-    
-    // Add to scene
-    scene.appendChild(imageAnchor);
-    
-    console.log('Video overlay created for:', hotspotId);
+    console.log('Video overlay hidden for:', hotspotId);
 }
+
 
 // Set up Encantar tracking detection (call this once on page load)
 function setupEncantarTrackingDetection() {
@@ -3755,15 +3848,15 @@ function playVideoForHotspot(hotspotId, video) {
 
 // Hide all video overlays
 function hideAllVideoOverlays() {
-    const overlays = document.querySelectorAll('[id^="videooverlay-"]');
-    overlays.forEach(overlay => {
-        overlay.remove();
+    // Pause all videos
+    const videos = document.querySelectorAll('video[id^="video-"]');
+    videos.forEach(video => {
+        video.pause();
+        video.currentTime = 0;
     });
     
-    const anchors = document.querySelectorAll('[id^="image-anchor-"]');
-    anchors.forEach(anchor => {
-        anchor.remove();
-    });
+    // Note: Video planes will automatically become invisible when Encantar loses targets
+    // due to the ar-root system, so we don't need to manually hide them
 }
 
 // Add tap-to-play fallback for iOS
