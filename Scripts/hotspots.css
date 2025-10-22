@@ -609,7 +609,8 @@ body {
 }
 
 /* Safety Warning Popup Styles */
-.safety-warning-popup {
+.safety-warning-popup,
+.stairs-navigation-popup {
     position: fixed;
     top: 0;
     left: 0;

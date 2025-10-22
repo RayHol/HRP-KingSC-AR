@@ -419,6 +419,9 @@ document.addEventListener("DOMContentLoaded", function() {
         closePopupButton.addEventListener('click', closeCongratsPopup);
     }
 
+    // Initialize stairs navigation popup
+    initializeStairsNavigationPopup();
+
     const viewMapButton = document.getElementById("view-map");
     const helpButton = document.getElementById("help");
     const refreshButton = document.getElementById("refresh");
@@ -1086,8 +1089,74 @@ function closeSafetyWarning() {
     } catch (e) {
     }
     
-    // Initialize intro video after warning is closed
-    initializeIntroVideo();
+    // Check if we're on the balcony location - skip intro video for balcony
+    const urlParams = new URLSearchParams(window.location.search);
+    const location = urlParams.get('location') || 'stairs';
+    
+    if (location === 'balcony') {
+        // Skip intro video for balcony - go directly to tutorial
+        hasWatchedIntro = true; // Mark as watched so tutorial can proceed
+        if (typeof initializeTutorial === "function") {
+            initializeTutorial();
+        }
+    } else {
+        // Initialize intro video for stairs location
+        initializeIntroVideo();
+    }
+}
+
+// ===== STAIRS NAVIGATION POPUP FUNCTIONALITY =====
+let stairsNavTimer = null;
+
+function initializeStairsNavigationPopup() {
+    const stairsNavPopup = document.getElementById('stairs-navigation-popup');
+    const okBtn = document.getElementById('stairs-nav-ok-btn');
+    
+    if (!stairsNavPopup || !okBtn) {
+        console.warn('Stairs navigation popup elements not found');
+        return;
+    }
+    
+    // OK button click handler
+    okBtn.addEventListener('click', function() {
+        if (!okBtn.disabled) {
+            // Hide the stairs navigation popup
+            stairsNavPopup.style.display = 'none';
+            
+            // Clear the timer
+            if (stairsNavTimer) {
+                clearTimeout(stairsNavTimer);
+                stairsNavTimer = null;
+            }
+        }
+    });
+}
+
+function showStairsNavigationPopup() {
+    const stairsNavPopup = document.getElementById('stairs-navigation-popup');
+    const okBtn = document.getElementById('stairs-nav-ok-btn');
+    
+    if (!stairsNavPopup || !okBtn) {
+        console.warn('Stairs navigation popup elements not found');
+        return;
+    }
+    
+    // Show the popup
+    stairsNavPopup.style.display = 'flex';
+    
+    // Disable button initially
+    okBtn.disabled = true;
+    okBtn.style.backgroundColor = '#ccc';
+    okBtn.style.cursor = 'not-allowed';
+    okBtn.style.opacity = '0.6';
+    
+    // Start 3-second timer to enable OK button
+    stairsNavTimer = setTimeout(() => {
+        okBtn.disabled = false;
+        okBtn.style.backgroundColor = '#333';
+        okBtn.style.cursor = 'pointer';
+        okBtn.style.opacity = '1';
+    }, 3000);
 }
 
 // ===== INTRO VIDEO OVERLAY FUNCTIONALITY =====
@@ -2001,6 +2070,12 @@ function hideCongratulationsOverlay() {
             // Clear the current active hotspot ID (hotspot already marked as completed in handleVideoEnded)
             if (currentActiveHotspotId) {
                 currentActiveHotspotId = null;
+            }
+            
+            // Check if we should show stairs navigation popup after badge is dismissed
+            if (window.shouldShowStairsPopup) {
+                window.shouldShowStairsPopup = false; // Reset the flag
+                showStairsNavigationPopup();
             }
             
             // Return to hotspot finding mode (main AR scene should already be visible)
@@ -2985,6 +3060,11 @@ function handleVideoEnded(hotspotId) {
     const badgeId = hotspotToBadgeMapping[hotspotId];
     if (badgeId) {
         unlockBadge(badgeId);
+    }
+    
+    // Mark that we should show stairs navigation popup after badge is dismissed
+    if (hotspotId === 'trumpeter') {
+        window.shouldShowStairsPopup = true;
     }
 }
 
