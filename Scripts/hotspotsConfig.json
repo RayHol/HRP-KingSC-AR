@@ -4,6 +4,7 @@
             "scale": "30 30 1",
             "rotation": "0 0 0",
             "fixedAngleDegrees": 32,
+            "heightAngleDegrees": 0,
             "initialY": 36.8,
             "initialZ": 42
         },
@@ -24,6 +25,7 @@
             "scale": "30 30 1",
             "rotation": "0 0 0",
             "fixedAngleDegrees": 7.28,
+            "heightAngleDegrees": 0,
             "initialY": 28.87,
             "initialZ": -49.60
         },
@@ -44,6 +46,7 @@
             "scale": "30 30 1",
             "rotation": "0 0 0",
             "fixedAngleDegrees": 4.55,
+            "heightAngleDegrees": 0,
             "initialY": 15.94,
             "initialZ": -49.11
         },
@@ -64,6 +67,7 @@
             "scale": "30 30 1",
             "rotation": "0 0 0",
             "fixedAngleDegrees": -10.85,
+            "heightAngleDegrees": 0,
             "initialY": 15.36,
             "initialZ": -49.11
         },
@@ -84,6 +88,7 @@
             "scale": "30 30 1",
             "rotation": "0 0 0",
             "fixedAngleDegrees": 29.12,
+            "heightAngleDegrees": 0,
             "initialY": 27.95,
             "initialZ": -43.68
         },
@@ -104,6 +109,7 @@
             "scale": "30 30 1",
             "rotation": "0 0 0",
             "fixedAngleDegrees": 21.21,
+            "heightAngleDegrees": 0,
             "initialY": 22.25,
             "initialZ": -46.61
         },
@@ -124,6 +130,7 @@
             "scale": "30 30 1",
             "rotation": "0 0 0",
             "fixedAngleDegrees": 34.02,
+            "heightAngleDegrees": 0,
             "initialY": 22.25,
             "initialZ": -41.44
         },
@@ -144,6 +151,7 @@
             "scale": "30 30 1",
             "rotation": "0 0 0",
             "fixedAngleDegrees": 35.85,
+            "heightAngleDegrees": 0,
             "initialY": -10.14,
             "initialZ": -38.94
         },
@@ -164,6 +172,7 @@
             "scale": "30 30 1",
             "rotation": "0 0 0",
             "fixedAngleDegrees": 19.18,
+            "heightAngleDegrees": 0,
             "initialY": 42.38,
             "initialZ": -47.22
         },

@@ -3,7 +3,8 @@
         "common": {
             "scale": "30 30 1",
             "rotation": "0 0 0",
-            "fixedAngleDegrees": -25.0,
+            "fixedAngleDegrees": 0,
+            "heightAngleDegrees": 50,
             "initialY": 25.0,
             "initialZ": -42.0
         },
@@ -23,7 +24,8 @@
         "common": {
             "scale": "30 30 1",
             "rotation": "0 0 0",
-            "fixedAngleDegrees": -15.0,
+            "fixedAngleDegrees": 15.0,
+            "heightAngleDegrees": 81,
             "initialY": 22.0,
             "initialZ": -40.0
         },
@@ -43,7 +45,8 @@
         "common": {
             "scale": "30 30 1",
             "rotation": "0 0 0",
-            "fixedAngleDegrees": 5.0,
+            "fixedAngleDegrees": 6.93,
+            "heightAngleDegrees": 75,
             "initialY": 28.0,
             "initialZ": -45.0
         },
@@ -63,7 +66,8 @@
         "common": {
             "scale": "30 30 1",
             "rotation": "0 0 0",
-            "fixedAngleDegrees": 20.0,
+            "fixedAngleDegrees": 45.5,
+            "heightAngleDegrees": 87.55,
             "initialY": 30.0,
             "initialZ": -43.0
         },
@@ -83,7 +87,8 @@
         "common": {
             "scale": "30 30 1",
             "rotation": "0 0 0",
-            "fixedAngleDegrees": 35.0,
+            "fixedAngleDegrees": 72.94,
+            "heightAngleDegrees": 70.44,
             "initialY": 26.0,
             "initialZ": -41.0
         },

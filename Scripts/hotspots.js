@@ -5,7 +5,8 @@ let frameEntity = null;
 let lookImages = [];
 let mediaEntity = null;
 let fixedAngleDegrees = 0;
-let currentZoom = 25; // Initial distance from the user
+let heightAngleDegrees = 0; // Elevation angle for vertical positioning
+let currentZoom = 50; // Initial distance from the user (increased from 25 to 35)
 let currentY = 0; // Initial Y position
 let initialMediaState = {
     position: null,
@@ -31,7 +32,7 @@ const dragSpeedY = 0.005; // Adjust the drag speed for the y-axis
 
 // ===== GLOBAL SETTINGS =====
 // Global hotspot scale multiplier - adjust this to scale all hotspots uniformly
-const GLOBAL_HOTSPOT_SCALE = 0.2// 1.0 = normal size, 2.0 = double size, 0.5 = half size
+const GLOBAL_HOTSPOT_SCALE = 0.15// 1.0 = normal size, 2.0 = double size, 0.5 = half size
 
 // Pinch-to-zoom variables
 let initialPinchDistance = null;
@@ -52,6 +53,31 @@ let hasUserInteracted = false; // Track if user has interacted (for iOS audio)
 let currentFixedAngleDisplay;
 let currentYPositionDisplay;
 let currentZDepthDisplay;
+
+// New function to calculate position using spherical coordinates
+function calculateSphericalPosition(azimuthDegrees, elevationDegrees, radius) {
+    const azimuthRad = (azimuthDegrees * Math.PI) / 180;
+    const elevationRad = (elevationDegrees * Math.PI) / 180;
+    
+    return {
+        x: radius * Math.cos(elevationRad) * Math.sin(azimuthRad),
+        y: radius * Math.sin(elevationRad),
+        z: -radius * Math.cos(elevationRad) * Math.cos(azimuthRad)
+    };
+}
+
+// Function to calculate billboard rotation (always face the user)
+function calculateBillboardRotation(azimuthDegrees, elevationDegrees) {
+    // For billboard behavior, we want the hotspot to face the camera (origin)
+    // The Y rotation should be the negative of the azimuth angle to face the camera
+    // The X rotation should be the negative of the elevation angle to face the camera
+    // Add 180 degrees to Z rotation to flip from back to front (rotate around)
+    return {
+        x: -elevationDegrees + 180,
+        y: -azimuthDegrees + 180,
+        z: 180
+    };
+}
 
 // Map your hotspot ids to MindAR target indices
 const targetIndexById = {
@@ -88,16 +114,10 @@ function refreshHotspotPosition() {
         const mediaItem = mediaArray[hotspotIndex];
         const fixedAngleDegrees = mediaItem.fixedAngleDegrees || 0;
 
-        const radians = (fixedAngleDegrees * Math.PI) / 180;
-        currentZoom = 25;  // Reset zoom
-        currentY = 0;      // Reset Y position
-
-        const position = {
-            x: -currentZoom * Math.sin(radians),
-            y: currentY,
-            z: -currentZoom * Math.cos(radians)
-        };
-        const rotation = { x: 0, y: fixedAngleDegrees, z: 0 };
+        currentZoom = 50;
+        const heightAngleDegrees = mediaItem.heightAngleDegrees || 0;
+        const position = calculateSphericalPosition(fixedAngleDegrees, heightAngleDegrees, currentZoom);
+        const rotation = calculateBillboardRotation(fixedAngleDegrees, heightAngleDegrees);
 
         initialMediaState.position = { ...position };
         initialMediaState.rotation = { ...rotation };
@@ -313,21 +333,16 @@ function initializeHotspots() {
                 
                 const mediaArray = hotspotData.media;
 
-                // For each hotspot, use the provided fixedAngleDegrees, initialY, and initialZ
+                // For each hotspot, use the provided fixedAngleDegrees, heightAngleDegrees, and initialZ
                 let fixedAngleDegrees = commonValues.fixedAngleDegrees || 0;
-                let currentY = commonValues.initialY || 0;
+                let heightAngleDegrees = commonValues.heightAngleDegrees || 0;
                 let currentZoom = Math.abs(commonValues.initialZ) || 25;
 
-                // Calculate the position based on the fixedAngleDegrees and currentZoom (initialZ)
-                const radians = (fixedAngleDegrees * Math.PI) / 180;
-                const position = {
-                    x: -currentZoom * Math.sin(radians),
-                    y: currentY,
-                    z: -currentZoom * Math.cos(radians)
-                };
+                // Calculate the position using spherical coordinates
+                const position = calculateSphericalPosition(fixedAngleDegrees, heightAngleDegrees, currentZoom);
 
-                // FIXED: Use consistent rotation for all hotspots - NO fixedAngleDegrees in rotation
-                const rotation = { x: 0, y: 0, z: 0 }; // All icons face the same direction
+                // Calculate billboard rotation to always face the user
+                const rotation = calculateBillboardRotation(fixedAngleDegrees, heightAngleDegrees);
 
                 // Loop through each media item and only display 'image' media
                 mediaArray
@@ -355,18 +370,17 @@ function updateFixedAngleDegrees(newAngle) {
     fixedAngleDegrees = newAngle;
     saveAngle(hotspots[currentHotspotIndex], newAngle);
 
-    const radians = (fixedAngleDegrees * Math.PI) / 180;
-    const x = -currentZoom * Math.sin(radians);
-    const z = -currentZoom * Math.cos(radians);
+    const position = calculateSphericalPosition(fixedAngleDegrees, heightAngleDegrees, currentZoom);
+    const rotation = calculateBillboardRotation(fixedAngleDegrees, heightAngleDegrees);
 
     if (mediaEntity) {
-        mediaEntity.setAttribute('position', { x, y: currentY, z });
-        mediaEntity.setAttribute('rotation', `0 ${fixedAngleDegrees} 0`);
+        mediaEntity.setAttribute('position', position);
+        mediaEntity.setAttribute('rotation', rotation);
     }
 
     if (frameEntity) {
-        frameEntity.setAttribute('position', { x, y: currentY, z });
-        frameEntity.setAttribute('rotation', `0 ${fixedAngleDegrees} 0`);
+        frameEntity.setAttribute('position', position);
+        frameEntity.setAttribute('rotation', rotation);
     }
 
     updateLookImages();
@@ -574,15 +588,14 @@ function displayHotspotMedia(mediaItem, index, commonValues, currentPosition, cu
     entity.setAttribute("scale", `${scaledX} ${scaledY} ${scaledZ}`); 
 
     // Set the position based on the hotspotsConfig.json values
-    entity.setAttribute("position", currentPosition);
+            entity.setAttribute("position", currentPosition);
     entity.setAttribute("visible", "true");
     
-    // FIXED: Use the rotation passed from initializeHotspots (includes fixedAngleDegrees)
-    // This ensures position and rotation are consistent and eliminates jittering
-    entity.setAttribute("rotation", currentRotation);
-    
-    // REMOVED: No look-at effect - this was causing conflicts with fixed rotation
-    // The undefined yPosition variable was causing JavaScript errors
+    // Calculate billboard rotation to always face the user
+    const fixedAngleDegrees = commonValues.fixedAngleDegrees || 0;
+    const heightAngleDegrees = commonValues.heightAngleDegrees || 0;
+    const billboardRotation = calculateBillboardRotation(fixedAngleDegrees, heightAngleDegrees);
+    entity.setAttribute("rotation", billboardRotation);
 
     // Set initial material and visual state based on sequential activation
     entity.setAttribute("material", "color", "white");
@@ -595,7 +608,7 @@ function displayHotspotMedia(mediaItem, index, commonValues, currentPosition, cu
     updateHotspotVisualState(entity, hotspotId, hotspotIndex);
 
     // Add the entity to the scene
-    scene.appendChild(entity);
+        scene.appendChild(entity);
     // Add a raycaster event to show the hotspot modal when the image is hovered (intersected)
     entity.addEventListener('raycaster-intersected', function () {
         // Check if this hotspot can be activated (sequential order)
@@ -629,7 +642,7 @@ function displayHotspotMedia(mediaItem, index, commonValues, currentPosition, cu
         if (centerTarget) {
             centerTarget.classList.remove('hotspot-hover');
         }
-
+        
         // Reset badges/replay button back to badges mode
         updateBadgesReplayButton(false);
     });
@@ -890,6 +903,7 @@ function createHotspotRotatingRing(entity) {
     const scene = document.querySelector("a-scene");
     const entityPosition = entity.getAttribute('position');
     const entityScale = entity.getAttribute('scale');
+    const entityRotation = entity.getAttribute('rotation');
     
     // Calculate proper ring size based on hotspot scale
     const hotspotSize = Math.max(entityScale.x, entityScale.y);
@@ -901,6 +915,9 @@ function createHotspotRotatingRing(entity) {
         y: entityPosition.y,
         z: entityPosition.z + 0.1  // Closer to the hotspot for better visibility
     };
+    
+    // Use the same billboard rotation as the hotspot
+    const ringRotation = entityRotation;
     
     // Create gradient opacity effect using multiple ring segments
     const segmentCount = 20; // Number of segments for smooth gradient
@@ -921,14 +938,28 @@ function createHotspotRotatingRing(entity) {
         segment.setAttribute('material', 'color', 'white');
         segment.setAttribute('material', 'opacity', opacity);
         segment.setAttribute('material', 'transparent', 'true');
-        segment.setAttribute('rotation', `0 0 ${angleStart}`);
+        
+        // Apply the same billboard rotation as the hotspot, plus the segment angle
+        const segmentRotation = {
+            x: ringRotation.x,
+            y: ringRotation.y,
+            z: ringRotation.z + angleStart
+        };
+        segment.setAttribute('rotation', segmentRotation);
+        
         segment.setAttribute('theta-start', '0');
         segment.setAttribute('theta-length', `${angleEnd - angleStart}`);
         
         // Add rotation animation to the segment (counter-clockwise)
+        // The animation should maintain the billboard rotation while rotating around Z
+        const animationEndRotation = {
+            x: ringRotation.x,
+            y: ringRotation.y,
+            z: ringRotation.z + angleStart - 360
+        };
         segment.setAttribute('animation', {
             property: 'rotation',
-            to: `0 0 ${-360 + angleStart}`,
+            to: `${animationEndRotation.x} ${animationEndRotation.y} ${animationEndRotation.z}`,
             dur: 2000,
             easing: 'linear',
             loop: true
@@ -2345,7 +2376,7 @@ function showMindARScene(hotspotId) {
         mainScene.style.transition = 'opacity 0.5s ease-out';
         mainScene.style.opacity = '0';
         setTimeout(() => {
-        mainScene.style.display = 'none';
+            mainScene.style.display = 'none';
         }, 500);
     }
     
@@ -2784,7 +2815,7 @@ function handleMindarTargetFound(hotspotId) {
             if (isIOS) {
                 setTimeout(() => {
                     if (video.paused) {
-            addTapToPlayFallback(video, hotspotId);
+                        addTapToPlayFallback(video, hotspotId);
                     }
                 }, 1500); // Wait 1.5 seconds to see if video starts automatically
             }
