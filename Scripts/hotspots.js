@@ -1012,10 +1012,34 @@ let warningTimer = null;
 function initializeSafetyWarning() {
     const warningPopup = document.getElementById('safety-warning-popup');
     const okBtn = document.getElementById('warning-ok-btn');
+    const titleElement = warningPopup.querySelector('.warning-title');
+    const messageElement = warningPopup.querySelector('.warning-message');
     
     if (!warningPopup || !okBtn) {
         console.warn('Safety warning elements not found');
         return;
+    }
+    
+    // Check location and update text accordingly
+    const urlParams = new URLSearchParams(window.location.search);
+    const location = urlParams.get('location') || 'stairs';
+    
+    if (location === 'balcony') {
+        // Update text for balcony location
+        if (titleElement) {
+            titleElement.textContent = 'FIND A QUIET AREA';
+        }
+        if (messageElement) {
+            messageElement.textContent = 'Be careful of your surroundings on the landing and be mindful of the railing.';
+        }
+    } else {
+        // Default text for stairs location
+        if (titleElement) {
+            titleElement.textContent = 'PLEASE MIND THE STAIRS';
+        }
+        if (messageElement) {
+            messageElement.textContent = 'Be careful of your surroundings when interacting with this experience';
+        }
     }
     
     // Show the warning popup immediately
@@ -1089,20 +1113,8 @@ function closeSafetyWarning() {
     } catch (e) {
     }
     
-    // Check if we're on the balcony location - skip intro video for balcony
-    const urlParams = new URLSearchParams(window.location.search);
-    const location = urlParams.get('location') || 'stairs';
-    
-    if (location === 'balcony') {
-        // Skip intro video for balcony - go directly to tutorial
-        hasWatchedIntro = true; // Mark as watched so tutorial can proceed
-        if (typeof initializeTutorial === "function") {
-            initializeTutorial();
-        }
-    } else {
-        // Initialize intro video for stairs location
-        initializeIntroVideo();
-    }
+    // Initialize intro video (will skip for balcony location)
+    initializeIntroVideo();
 }
 
 // ===== STAIRS NAVIGATION POPUP FUNCTIONALITY =====
@@ -1164,6 +1176,23 @@ let hasWatchedIntro = false;
 let isVideoPlaying = false;
 
 function initializeIntroVideo() {
+    // Check if we're on the balcony location - skip intro video entirely for balcony
+    const urlParams = new URLSearchParams(window.location.search);
+    const location = urlParams.get('location') || 'stairs';
+    
+    if (location === 'balcony') {
+        // Hide intro overlay for balcony and go directly to tutorial
+        const introOverlay = document.getElementById('intro-overlay');
+        if (introOverlay) {
+            introOverlay.style.display = 'none';
+        }
+        hasWatchedIntro = true; // Mark as watched so tutorial can proceed
+        if (typeof initializeTutorial === "function") {
+            initializeTutorial();
+        }
+        return;
+    }
+    
     const introOverlay = document.getElementById('intro-overlay');
     const video = document.getElementById('intro-video');
     const playPauseBtn = document.getElementById('play-pause-btn');
