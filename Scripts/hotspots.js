@@ -92,6 +92,55 @@ function switchToImageTracking(imageName, hotspotId) {
         console.error('VIDEO PLANE NOT FOUND:', videoPlaneId);
     }
     
+    // Start playing the video
+    const videoId = `video-${hotspotId}`;
+    const video = document.getElementById(videoId);
+    if (video) {
+        console.log('STARTING VIDEO PLAYBACK for:', videoId);
+        
+        // Reset video to beginning
+        video.currentTime = 0;
+        
+        // Set video attributes for proper playback
+        video.setAttribute('playsinline', 'true');
+        video.setAttribute('webkit-playsinline', 'true');
+        video.muted = false;
+        
+        // Try to play the video
+        const playPromise = video.play();
+        if (playPromise !== undefined) {
+            playPromise.then(() => {
+                console.log('VIDEO PLAYBACK STARTED:', videoId);
+                
+                // Trigger fade-in animation for the video plane
+                const videoOverlay = document.getElementById(`videooverlay-${hotspotId}`);
+                if (videoOverlay) {
+                    videoOverlay.emit('fadein');
+                }
+            }).catch(error => {
+                console.error('Failed to play video:', error);
+                // Try fallback: play muted first, then unmute
+                video.muted = true;
+                video.play().then(() => {
+                    console.log('VIDEO PLAYBACK STARTED (muted):', videoId);
+                    // Trigger fade-in animation
+                    const videoOverlay = document.getElementById(`videooverlay-${hotspotId}`);
+                    if (videoOverlay) {
+                        videoOverlay.emit('fadein');
+                    }
+                    // Try to unmute after a short delay
+                    setTimeout(() => {
+                        video.muted = false;
+                    }, 1000);
+                }).catch(err => {
+                    console.error('Failed to play video even muted:', err);
+                });
+            });
+        }
+    } else {
+        console.error('VIDEO ELEMENT NOT FOUND:', videoId);
+    }
+    
     console.log('IMAGE TRACKING ENABLED:', imageName);
 }
 
