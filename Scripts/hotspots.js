@@ -104,9 +104,18 @@ function hideAllVideoPlanes() {
         const plane = document.getElementById(id);
         if (plane) {
             plane.setAttribute('visible', 'false');
-            const videoOverlay = plane.querySelector('[id^="videooverlay-"]');
+            const videoOverlay = plane.querySelector('a-plane');
             if (videoOverlay) {
+                // Reset opacity and pause any playing video
                 videoOverlay.setAttribute('material', 'opacity', '0');
+                
+                // Find and pause the corresponding video
+                const hotspotId = id.replace('video-plane-', '');
+                const video = document.getElementById(`video-${hotspotId}`);
+                if (video) {
+                    video.pause();
+                    video.currentTime = 0;
+                }
             }
         }
     });
@@ -3454,6 +3463,13 @@ function handleVideoEnded(hotspotId) {
         videoOverlay.emit(`fadeout-${hotspotId}`);
     }
     
+    // Stop and reset the video
+    const video = document.getElementById(`video-${hotspotId}`);
+    if (video) {
+        video.pause();
+        video.currentTime = 0;
+    }
+    
     // Wait for fade out, then switch back to wall tracking
     setTimeout(() => {
         switchToWallTracking();
@@ -3739,33 +3755,169 @@ function handleEncantarTargetFound(targetInfo) {
     if (currentTrackingMode === 'image' && currentImageTarget === targetName && currentActiveHotspotId) {
         console.log('Image target found for video:', targetName);
         
-        // Get video element
-        const videoId = `video-${currentActiveHotspotId}`;
-        const video = document.getElementById(videoId);
+        // Use the MindAR video playback system adapted for Encantar
+        handleEncantarVideoPlayback(currentActiveHotspotId);
+    }
+}
+
+// Handle Encantar video playback using the proven MindAR system
+function handleEncantarVideoPlayback(hotspotId) {
+    // Check if this hotspot has already been completed
+    if (activatedHotspots.has(hotspotId)) {
+        return;
+    }
+
+    // Get video element
+    const videoId = `video-${hotspotId}`;
+    const video = document.getElementById(videoId);
+    
+    if (video) {
+        console.log('Playing video for hotspot:', hotspotId);
         
-        if (video) {
-            // Get video overlay
-            const videoOverlayId = `videooverlay-${currentActiveHotspotId}`;
-            const videoOverlay = document.getElementById(videoOverlayId);
-            
-            // Fade in video
-            if (videoOverlay) {
-                videoOverlay.emit(`fadein-${currentActiveHotspotId}`);
+        // Check if we're on iOS
+        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+        console.log('Is iOS:', isIOS);
+        
+        // Reset video to beginning
+        video.currentTime = 0;
+        
+        // Check video plane visibility
+        const videoOverlay = document.getElementById(`videooverlay-${hotspotId}`);
+        if (videoOverlay) {
+            console.log('Video overlay found:', videoOverlay);
+            console.log('Video overlay opacity:', videoOverlay.getAttribute('material').opacity);
+        } else {
+            console.error('Video overlay not found for:', hotspotId);
+        }
+        
+        if (isIOS) {
+            // For iOS, try to play with sound if user has interacted, otherwise muted
+            if (hasUserInteracted) {
+                video.muted = false;
+                video.volume = 1.0;
+            } else {
+                video.muted = true;
+                video.volume = 0;
             }
             
-            // Play video with sound
-            video.muted = false;
-            video.play().catch(err => {
-                console.error('Video play failed:', err);
-                // Fallback to tap-to-play
-                showTapToPlayText();
-            });
-            
-            // Handle video end
-            video.addEventListener('ended', () => {
-                handleVideoEnded(currentActiveHotspotId);
-            }, { once: true });
+            // Ensure video has the right attributes for iOS
+            video.setAttribute('playsinline', 'true');
+            video.setAttribute('webkit-playsinline', 'true');
+        } else {
+            // For non-iOS, we can try to play with sound if user has interacted
+            if (hasUserInteracted) {
+                video.muted = false;
+                video.volume = 1.0;
+            } else {
+                video.muted = true;
+                video.volume = 0;
+            }
         }
+        
+        // Try to play the video
+        console.log('Attempting to play video...');
+        const playPromise = video.play();
+        
+        if (playPromise !== undefined) {
+            playPromise.then(() => {
+                console.log('Video play succeeded');
+                
+                // Hide loading ring when video starts playing
+                hideLoadingRing();
+                
+                // Hide tap-to-play text when video starts playing
+                hideTapToPlayText();
+                
+                // Show video playing state (hide crosshair)
+                showVideoPlaying();
+                
+                // Trigger fade-in animation
+                if (videoOverlay) {
+                    videoOverlay.emit(`fadein-${hotspotId}`);
+                }
+                
+                // If user has interacted, try to unmute after a short delay
+                if (hasUserInteracted) {
+                    setTimeout(() => {
+                        video.muted = false;
+                        video.volume = 1.0;
+                    }, 100);
+                }
+                
+                // Set up video end handler
+                video.addEventListener('ended', () => {
+                    console.log('Video ended');
+                    handleVideoEnded(hotspotId);
+                }, { once: true });
+                
+            }).catch(error => {
+                console.error(`Video play failed for ${hotspotId}:`, error);
+                
+                // Fallback: try muted play
+                video.muted = true;
+                video.play().then(() => {
+                    console.log('Fallback muted play succeeded');
+                    
+                    // Hide loading ring when fallback succeeds
+                    hideLoadingRing();
+                    
+                    // Hide tap-to-play text when video starts playing
+                    hideTapToPlayText();
+                    
+                    // Show video playing state (hide crosshair)
+                    showVideoPlaying();
+                    
+                    // Trigger fade-in animation
+                    if (videoOverlay) {
+                        videoOverlay.emit(`fadein-${hotspotId}`);
+                    }
+                    
+                    // If user has interacted, try to unmute after a short delay
+                    if (hasUserInteracted) {
+                        setTimeout(() => {
+                            video.muted = false;
+                            video.volume = 1.0;
+                        }, 100);
+                    }
+                    
+                    // Set up video end handler
+                    video.addEventListener('ended', () => {
+                        handleVideoEnded(hotspotId);
+                    }, { once: true });
+                    
+                }).catch(fallbackError => {
+                    console.error('Fallback play failed:', fallbackError);
+                    // Final fallback: show congratulations after a delay
+                    setTimeout(() => {
+                        handleVideoEnded(hotspotId);
+                    }, 3000);
+                });
+            });
+        } else {
+            console.error('Video.play() returned undefined - this should not happen');
+        }
+        
+        // Show loading ring while video is loading
+        showLoadingRing();
+        
+        // Show transcript button when hotspot is found (with a small delay to ensure it's visible)
+        setTimeout(() => {
+            showTranscriptButton(true);
+        }, 100);
+        
+        // Ensure video is loaded before playing
+        if (video.readyState < 2) {
+            video.load();
+            
+            // Wait for video to be loaded
+            video.addEventListener('loadeddata', () => {
+                // Re-trigger the play logic
+                handleEncantarVideoPlayback(hotspotId);
+            }, { once: true });
+            return;
+        }
+    } else {
+        console.error(`Video element not found for hotspot: ${hotspotId}`);
     }
 }
 

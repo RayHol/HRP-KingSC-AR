@@ -609,107 +609,252 @@
             <a-text value="ceiling" align="center" color="#00ff88" position="0 0.35 0" side="double"></a-text> -->
         </a-entity>
 
-        <!-- Video planes for individual painting targets -->
+        <!-- Video Assets for Encantar Video Players -->
+        <a-assets>
+            <!-- Video for target 0 (clouds) - Stairs -->
+            <video id="video-clouds" preload="none" response-type="arraybuffer" crossorigin="anonymous" webkit-playsinline playsinline muted>
+                <source src="./Assets/Videos/Clouds.mp4" type="video/mp4">
+            </video>
+            
+            <!-- Video for target 1 (banquet) - Stairs -->
+            <video id="video-banquet" preload="none" response-type="arraybuffer" crossorigin="anonymous" webkit-playsinline playsinline muted>
+                <source src="./Assets/Videos/Banquet.mp4" type="video/mp4">
+            </video>
+            
+            <!-- Video for target 2 (peacock) - Stairs -->
+            <video id="video-peacock" preload="none" response-type="arraybuffer" crossorigin="anonymous" webkit-playsinline playsinline muted>
+                <source src="./Assets/Videos/Peacock_a.mp4" type="video/mp4;codecs=hvc1">
+                <source src="./Assets/Videos/Peacock_a.webm" type="video/webm">
+            </video>
+            
+            <!-- Video for target 3 (graces) - Stairs -->
+            <video id="video-graces" preload="none" response-type="arraybuffer" crossorigin="anonymous" webkit-playsinline playsinline muted>
+                <source src="./Assets/Videos/Graces.mp4" type="video/mp4">
+            </video>
+            
+            <!-- Video for target 4 (trumpeter) - Stairs -->
+            <video id="video-trumpeter" preload="none" response-type="arraybuffer" crossorigin="anonymous" webkit-playsinline playsinline muted>
+                <source src="./Assets/Videos/Trumpeter_a.mp4" type="video/mp4;codecs=hvc1">
+                <source src="./Assets/Videos/Trumpeter_a.webm" type="video/webm">
+            </video>
+            
+            <!-- Video for target 5 (romulus) - Balcony -->
+            <video id="video-romulus" preload="none" response-type="arraybuffer" crossorigin="anonymous" webkit-playsinline playsinline muted>
+                <source src="./Assets/Videos/romulus_a.mp4" type="video/mp4;codecs=hvc1">
+                <source src="./Assets/Videos/romulus_a.webm" type="video/webm">
+            </video>
+            
+            <!-- Video for target 6 (caesar) - Balcony -->
+            <video id="video-caesar" preload="none" response-type="arraybuffer" crossorigin="anonymous" webkit-playsinline playsinline muted>
+                <source src="./Assets/Videos/Caesar_a.mp4" type="video/mp4;codecs=hvc1">
+                <source src="./Assets/Videos/Caesar_a.webm" type="video/webm">
+            </video>
+
+            <!-- Video for target 7 (nero) - Balcony -->
+            <video id="video-nero" preload="none" response-type="arraybuffer" crossorigin="anonymous" webkit-playsinline playsinline muted>
+                <source src="./Assets/Videos/Nero.mp4" type="video/mp4">
+            </video>
+        
+            <!-- Video for target 8 (silenus) - Balcony -->
+            <video id="video-silenus" preload="none" response-type="arraybuffer" crossorigin="anonymous" webkit-playsinline playsinline muted>
+                <source src="./Assets/Videos/Silenus_a.mp4" type="video/mp4;codecs=hvc1">
+                <source src="./Assets/Videos/Silenus_a.webm" type="video/webm">
+            </video>
+                    
+            <!-- Video for target 9 (furies) - Balcony -->
+            <video id="video-furies" preload="none" response-type="arraybuffer" crossorigin="anonymous" webkit-playsinline playsinline muted>
+                <source src="./Assets/Videos/Furies.mp4" type="video/mp4">
+            </video>
+
+            <!-- Video for target 10 (alexander) - Balcony -->
+            <video id="video-alexander" preload="none" response-type="arraybuffer" crossorigin="anonymous" webkit-playsinline playsinline muted>
+                <source src="./Assets/Videos/Alexander.mp4" type="video/mp4">
+            </video>
+            
+            <!-- Video for target 11 (herakles) - Balcony -->
+            <video id="video-herakles" preload="none" response-type="arraybuffer" crossorigin="anonymous" webkit-playsinline playsinline muted>
+                <source src="./Assets/Videos/Herakles.mp4" type="video/mp4">
+            </video>
+                    
+            <!-- Video for target 12 (diana) - Balcony -->
+            <video id="video-diana" preload="none" response-type="arraybuffer" crossorigin="anonymous" webkit-playsinline playsinline muted>
+                <source src="./Assets/Videos/Diana.mp4" type="video/mp4">
+            </video>
+            
+            <!-- Video for target 13 (harvest) - Balcony -->
+            <video id="video-harvest" preload="none" response-type="arraybuffer" crossorigin="anonymous" webkit-playsinline playsinline muted>
+                <source src="./Assets/Videos/Harvest.mp4" type="video/mp4">
+            </video>
+            
+            <!-- Video for target 14 (cherubs) - Balcony -->
+            <video id="video-cherubs" preload="none" response-type="arraybuffer" crossorigin="anonymous" webkit-playsinline playsinline muted>
+                <source src="./Assets/Videos/Cherub_a.mp4" type="video/mp4;codecs=hvc1">
+                <source src="./Assets/Videos/Cherub_a.webm" type="video/webm">
+            </video>
+            
+            <!-- Video for target 15 (musicians) - Balcony -->
+            <video id="video-musicians" preload="none" response-type="arraybuffer" crossorigin="anonymous" webkit-playsinline playsinline muted>
+                <source src="./Assets/Videos/Musicians.mp4" type="video/mp4">
+            </video>
+            
+            <!-- Video for target 16 (signature) - Balcony -->
+            <video id="video-signature" preload="none" response-type="arraybuffer" crossorigin="anonymous" webkit-playsinline playsinline muted>
+                <source src="./Assets/Videos/Signature.mp4" type="video/mp4">
+            </video>
+        </a-assets>
+
+        <!-- Video planes for individual painting targets using a-plane with transparent-video material -->
         <a-entity id="video-plane-clouds" ar-root="referenceImage: 1. Clouds" visible="false">
             <a-plane id="videooverlay-clouds" 
                 material="shader: transparent-video; src: #video-clouds; transparent: true; opacity: 0"
-                height="1.4" width="0.8" position="0 0 0"></a-plane>
+                height="1.4" width="0.8" position="0 0 0"
+                animation__fadein="startEvents: fadein-clouds; property: material.opacity; from: 0; to: 1; dur: 500;"
+                animation__fadeout="startEvents: fadeout-clouds; property: material.opacity; from: 1; to: 0; dur: 500;">
+            </a-plane>
         </a-entity>
 
         <a-entity id="video-plane-banquet" ar-root="referenceImage: 2.Banquet" visible="false">
             <a-plane id="videooverlay-banquet" 
                 material="shader: transparent-video; src: #video-banquet; transparent: true; opacity: 0"
-                height="1.4" width="0.8" position="0 0 0"></a-plane>
+                height="1.4" width="0.8" position="0 0 0"
+                animation__fadein="startEvents: fadein-banquet; property: material.opacity; from: 0; to: 1; dur: 500;"
+                animation__fadeout="startEvents: fadeout-banquet; property: material.opacity; from: 1; to: 0; dur: 500;">
+            </a-plane>
         </a-entity>
 
         <a-entity id="video-plane-peacock" ar-root="referenceImage: 3.Peacock" visible="false">
             <a-plane id="videooverlay-peacock" 
                 material="shader: transparent-video; src: #video-peacock; transparent: true; opacity: 0"
-                height="1.4" width="0.8" position="0 0 0"></a-plane>
+                height="0.8" width="0.8" position="0 0 0"
+                animation__fadein="startEvents: fadein-peacock; property: material.opacity; from: 0; to: 1; dur: 500;"
+                animation__fadeout="startEvents: fadeout-peacock; property: material.opacity; from: 1; to: 0; dur: 500;">
+            </a-plane>
         </a-entity>
 
         <a-entity id="video-plane-graces" ar-root="referenceImage: 4. Graces" visible="false">
             <a-plane id="videooverlay-graces" 
                 material="shader: transparent-video; src: #video-graces; transparent: true; opacity: 0"
-                height="1.4" width="0.8" position="0 0 0"></a-plane>
+                height="1.4" width="0.8" position="0 0 0"
+                animation__fadein="startEvents: fadein-graces; property: material.opacity; from: 0; to: 1; dur: 500;"
+                animation__fadeout="startEvents: fadeout-graces; property: material.opacity; from: 1; to: 0; dur: 500;">
+            </a-plane>
         </a-entity>
 
         <a-entity id="video-plane-trumpeter" ar-root="referenceImage: 5.Trumpeter" visible="false">
             <a-plane id="videooverlay-trumpeter" 
                 material="shader: transparent-video; src: #video-trumpeter; transparent: true; opacity: 0"
-                height="1.4" width="0.8" position="0 0 0"></a-plane>
+                height="0.8" width="0.8" position="0 0 0"
+                animation__fadein="startEvents: fadein-trumpeter; property: material.opacity; from: 0; to: 1; dur: 500;"
+                animation__fadeout="startEvents: fadeout-trumpeter; property: material.opacity; from: 1; to: 0; dur: 500;">
+            </a-plane>
         </a-entity>
 
         <a-entity id="video-plane-romulus" ar-root="referenceImage: 6. Romulus" visible="false">
             <a-plane id="videooverlay-romulus" 
                 material="shader: transparent-video; src: #video-romulus; transparent: true; opacity: 0"
-                height="1.4" width="0.8" position="0 0 0"></a-plane>
+                height="0.8" width="0.8" position="0 0 0"
+                animation__fadein="startEvents: fadein-romulus; property: material.opacity; from: 0; to: 1; dur: 500;"
+                animation__fadeout="startEvents: fadeout-romulus; property: material.opacity; from: 1; to: 0; dur: 500;">
+            </a-plane>
         </a-entity>
 
         <a-entity id="video-plane-caesar" ar-root="referenceImage: 7. Caeser" visible="false">
             <a-plane id="videooverlay-caesar" 
                 material="shader: transparent-video; src: #video-caesar; transparent: true; opacity: 0"
-                height="1.4" width="0.8" position="0 0 0"></a-plane>
+                height="1.5" width="1.5" position="0 0 0"
+                animation__fadein="startEvents: fadein-caesar; property: material.opacity; from: 0; to: 1; dur: 500;"
+                animation__fadeout="startEvents: fadeout-caesar; property: material.opacity; from: 1; to: 0; dur: 500;">
+            </a-plane>
         </a-entity>
 
         <a-entity id="video-plane-nero" ar-root="referenceImage: 8. Nero" visible="false">
             <a-plane id="videooverlay-nero" 
                 material="shader: transparent-video; src: #video-nero; transparent: true; opacity: 0"
-                height="1.4" width="0.8" position="0 0 0"></a-plane>
+                height="1.4" width="0.8" position="0 0 0"
+                animation__fadein="startEvents: fadein-nero; property: material.opacity; from: 0; to: 1; dur: 500;"
+                animation__fadeout="startEvents: fadeout-nero; property: material.opacity; from: 1; to: 0; dur: 500;">
+            </a-plane>
         </a-entity>
 
         <a-entity id="video-plane-silenus" ar-root="referenceImage: 9. Silenus" visible="false">
             <a-plane id="videooverlay-silenus" 
                 material="shader: transparent-video; src: #video-silenus; transparent: true; opacity: 0"
-                height="1.4" width="0.8" position="0 0 0"></a-plane>
+                height="1.5" width="1.5" position="0 0 0"
+                animation__fadein="startEvents: fadein-silenus; property: material.opacity; from: 0; to: 1; dur: 500;"
+                animation__fadeout="startEvents: fadeout-silenus; property: material.opacity; from: 1; to: 0; dur: 500;">
+            </a-plane>
         </a-entity>
 
         <a-entity id="video-plane-furies" ar-root="referenceImage: 10. Furies" visible="false">
             <a-plane id="videooverlay-furies" 
                 material="shader: transparent-video; src: #video-furies; transparent: true; opacity: 0"
-                height="1.4" width="0.8" position="0 0 0"></a-plane>
+                height="1.4" width="0.8" position="0 0 0"
+                animation__fadein="startEvents: fadein-furies; property: material.opacity; from: 0; to: 1; dur: 500;"
+                animation__fadeout="startEvents: fadeout-furies; property: material.opacity; from: 1; to: 0; dur: 500;">
+            </a-plane>
         </a-entity>
 
         <a-entity id="video-plane-alexander" ar-root="referenceImage: 11. Alexander" visible="false">
             <a-plane id="videooverlay-alexander" 
                 material="shader: transparent-video; src: #video-alexander; transparent: true; opacity: 0"
-                height="1.4" width="0.8" position="0 0 0"></a-plane>
+                height="1.4" width="0.8" position="0 0 0"
+                animation__fadein="startEvents: fadein-alexander; property: material.opacity; from: 0; to: 1; dur: 500;"
+                animation__fadeout="startEvents: fadeout-alexander; property: material.opacity; from: 1; to: 0; dur: 500;">
+            </a-plane>
         </a-entity>
 
         <a-entity id="video-plane-herakles" ar-root="referenceImage: 12. Herakles" visible="false">
             <a-plane id="videooverlay-herakles" 
                 material="shader: transparent-video; src: #video-herakles; transparent: true; opacity: 0"
-                height="1.4" width="0.8" position="0 0 0"></a-plane>
+                height="1.4" width="0.8" position="0 0 0"
+                animation__fadein="startEvents: fadein-herakles; property: material.opacity; from: 0; to: 1; dur: 500;"
+                animation__fadeout="startEvents: fadeout-herakles; property: material.opacity; from: 1; to: 0; dur: 500;">
+            </a-plane>
         </a-entity>
 
         <a-entity id="video-plane-diana" ar-root="referenceImage: 13.Diana" visible="false">
             <a-plane id="videooverlay-diana" 
                 material="shader: transparent-video; src: #video-diana; transparent: true; opacity: 0"
-                height="1.4" width="0.8" position="0 0 0"></a-plane>
+                height="1.4" width="0.8" position="0 0 0"
+                animation__fadein="startEvents: fadein-diana; property: material.opacity; from: 0; to: 1; dur: 500;"
+                animation__fadeout="startEvents: fadeout-diana; property: material.opacity; from: 1; to: 0; dur: 500;">
+            </a-plane>
         </a-entity>
 
         <a-entity id="video-plane-harvest" ar-root="referenceImage: 14.Harvest" visible="false">
             <a-plane id="videooverlay-harvest" 
                 material="shader: transparent-video; src: #video-harvest; transparent: true; opacity: 0"
-                height="1.4" width="0.8" position="0 0 0"></a-plane>
+                height="1.4" width="0.8" position="0 0 0"
+                animation__fadein="startEvents: fadein-harvest; property: material.opacity; from: 0; to: 1; dur: 500;"
+                animation__fadeout="startEvents: fadeout-harvest; property: material.opacity; from: 1; to: 0; dur: 500;">
+            </a-plane>
         </a-entity>
 
         <a-entity id="video-plane-cherubs" ar-root="referenceImage: 15.Cherubs" visible="false">
             <a-plane id="videooverlay-cherubs" 
                 material="shader: transparent-video; src: #video-cherubs; transparent: true; opacity: 0"
-                height="1.4" width="0.8" position="0 0 0"></a-plane>
+                height="0.8" width="0.8" position="0 0 0"
+                animation__fadein="startEvents: fadein-cherubs; property: material.opacity; from: 0; to: 1; dur: 500;"
+                animation__fadeout="startEvents: fadeout-cherubs; property: material.opacity; from: 1; to: 0; dur: 500;">
+            </a-plane>
         </a-entity>
 
         <a-entity id="video-plane-musicians" ar-root="referenceImage: 16.Musicians" visible="false">
             <a-plane id="videooverlay-musicians" 
                 material="shader: transparent-video; src: #video-musicians; transparent: true; opacity: 0"
-                height="1.4" width="0.8" position="0 0 0"></a-plane>
+                height="1.4" width="0.8" position="0 0 0"
+                animation__fadein="startEvents: fadein-musicians; property: material.opacity; from: 0; to: 1; dur: 500;"
+                animation__fadeout="startEvents: fadeout-musicians; property: material.opacity; from: 1; to: 0; dur: 500;">
+            </a-plane>
         </a-entity>
 
         <a-entity id="video-plane-signature" ar-root="referenceImage: 17.Signature" visible="false">
             <a-plane id="videooverlay-signature" 
                 material="shader: transparent-video; src: #video-signature; transparent: true; opacity: 0"
-                height="1.4" width="0.8" position="0 0 0"></a-plane>
+                height="1.4" width="0.8" position="0 0 0"
+                animation__fadein="startEvents: fadein-signature; property: material.opacity; from: 0; to: 1; dur: 500;"
+                animation__fadeout="startEvents: fadeout-signature; property: material.opacity; from: 1; to: 0; dur: 500;">
+            </a-plane>
         </a-entity>
     </a-scene>
 
