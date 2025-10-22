@@ -765,7 +765,7 @@ function displayHotspotMedia(mediaItem, index, commonValues, currentPosition, cu
 
     // Debug log for placement
     // Hotspot created successfully
-    // Hover feedback and automatic MindAR switching (like old version)
+    // Hover feedback and MindAR activation with proper timing
     let hoverTimeout = null;
     
     entity.addEventListener('raycaster-intersected', function () {
@@ -773,44 +773,34 @@ function displayHotspotMedia(mediaItem, index, commonValues, currentPosition, cu
         
         // Prevent multiple activations for the same hotspot
         if (hoverTimeout) {
-            // Hotspot already has pending timeout, ignoring new intersection
-            return;
+            return; // Already has pending activation
         }
         
-        // Add a very short delay to prevent immediate triggering when hotspot is first created
-        // Starting hover timeout for hotspot
+        // Check if this hotspot can be activated (sequential order)
+        if (!canActivateHotspot(hotspotId)) {
+            return; // Don't allow activation if not in sequence
+        }
+
+        // DON'T change opacity on hover - maintain original visual state
+        // Only change crosshair and button states
+
+        // Change crosshair to green when hovering over hotspot
+        const centerTarget = document.getElementById('center-target');
+        if (centerTarget) {
+            centerTarget.classList.add('hotspot-hover');
+        }
+
+        // Update badges/replay button based on whether hotspot has been triggered
+        const isAlreadyTriggered = activatedHotspots.has(hotspotId);
+        updateBadgesReplayButton(isAlreadyTriggered);
+
+        // Add a delay to prevent immediate triggering when hotspot is first created
+        // This gives time for the hotspot to settle before allowing MindAR activation
         hoverTimeout = setTimeout(() => {
-            // Hover timeout expired for hotspot
-            
-            // Check if this hotspot can be activated (sequential order)
-            if (!canActivateHotspot(hotspotId)) {
-                // Hotspot cannot be activated (sequence check failed)
-                hoverTimeout = null;
-                return; // Don't allow activation if not in sequence
-            }
-
-            // Activating hotspot with MindAR
-
-            // DON'T change opacity on hover - maintain original visual state
-            // Only change crosshair and button states
-
-            // Change crosshair to green when hovering over hotspot
-            const centerTarget = document.getElementById('center-target');
-            if (centerTarget) {
-                centerTarget.classList.add('hotspot-hover');
-            }
-
-            // Update badges/replay button based on whether hotspot has been triggered
-            const isAlreadyTriggered = activatedHotspots.has(hotspotId);
-            updateBadgesReplayButton(isAlreadyTriggered);
-
-            // Activate the hotspot with MindAR directly (like old version)
-            // Calling activateHotspotWithMindAR
+            // Activate MindAR for this hotspot
             activateHotspotWithMindAR(hotspotId, entity);
-            
-            // Clear the timeout
             hoverTimeout = null;
-        }, 20); // Very short delay - just enough to prevent immediate triggering
+        }, 500); // 500ms delay to prevent immediate activation
     });
 
     entity.addEventListener('raycaster-intersected-cleared', function () {
@@ -820,7 +810,6 @@ function displayHotspotMedia(mediaItem, index, commonValues, currentPosition, cu
         if (hoverTimeout) {
             clearTimeout(hoverTimeout);
             hoverTimeout = null;
-            // Hover timeout cleared for hotspot
         }
         
         // DON'T change opacity - maintain original visual state
@@ -831,13 +820,12 @@ function displayHotspotMedia(mediaItem, index, commonValues, currentPosition, cu
         if (centerTarget) {
             centerTarget.classList.remove('hotspot-hover');
         }
-
+        
         // Reset badges/replay button back to badges mode
         updateBadgesReplayButton(false);
         
         // Switch back to Encantar tracking when no longer hovering
         if (isMindarActive) {
-            // Switching back to Encantar tracking
             switchToEncantarTracking();
         }
     });
