@@ -453,7 +453,7 @@ function initializeHotspots() {
             setTimeout(() => {
                 refreshAllHotspotVisualStates();
                 
-                console.log('✅ Hotspots are now ready for user interaction');
+                // Hotspots are now ready for user interaction
             }, 100);
 
             hotspotsInitialized = true;
@@ -691,7 +691,7 @@ function displayHotspotMedia(mediaItem, index, commonValues, currentPosition, cu
     entity.classList.add('clickable');
     
     // Debug: Log when hotspot is created
-    console.log('Hotspot created:', hotspotId, 'with clickable class:', entity.classList.contains('clickable'));
+    // Hotspot created with clickable class
 
     // Set the scale exactly as defined in the hotspotsConfig.json, then apply global scale
     let scaleComponents = commonValues.scale.split(' ').map(Number);
@@ -769,27 +769,27 @@ function displayHotspotMedia(mediaItem, index, commonValues, currentPosition, cu
     let hoverTimeout = null;
     
     entity.addEventListener('raycaster-intersected', function () {
-        console.log('RAYCASTER-INTERSECTED fired for hotspot:', hotspotId, 'entity:', entity);
+        // Raycaster intersected with hotspot
         
         // Prevent multiple activations for the same hotspot
         if (hoverTimeout) {
-            console.log('Hotspot already has pending timeout, ignoring new intersection');
+            // Hotspot already has pending timeout, ignoring new intersection
             return;
         }
         
         // Add a very short delay to prevent immediate triggering when hotspot is first created
-        console.log('Starting hover timeout for hotspot:', hotspotId);
+        // Starting hover timeout for hotspot
         hoverTimeout = setTimeout(() => {
-            console.log('Hover timeout expired for hotspot:', hotspotId);
+            // Hover timeout expired for hotspot
             
             // Check if this hotspot can be activated (sequential order)
             if (!canActivateHotspot(hotspotId)) {
-                console.log('Hotspot cannot be activated (sequence check failed)');
+                // Hotspot cannot be activated (sequence check failed)
                 hoverTimeout = null;
                 return; // Don't allow activation if not in sequence
             }
 
-            console.log('Activating hotspot with MindAR:', hotspotId);
+            // Activating hotspot with MindAR
 
             // DON'T change opacity on hover - maintain original visual state
             // Only change crosshair and button states
@@ -805,7 +805,7 @@ function displayHotspotMedia(mediaItem, index, commonValues, currentPosition, cu
             updateBadgesReplayButton(isAlreadyTriggered);
 
             // Activate the hotspot with MindAR directly (like old version)
-            console.log('Calling activateHotspotWithMindAR for:', hotspotId);
+            // Calling activateHotspotWithMindAR
             activateHotspotWithMindAR(hotspotId, entity);
             
             // Clear the timeout
@@ -814,13 +814,13 @@ function displayHotspotMedia(mediaItem, index, commonValues, currentPosition, cu
     });
 
     entity.addEventListener('raycaster-intersected-cleared', function () {
-        console.log('RAYCASTER-INTERSECTED-CLEARED fired for hotspot:', hotspotId);
+        // Raycaster intersected cleared for hotspot
         
         // Clear any pending hover timeout
         if (hoverTimeout) {
             clearTimeout(hoverTimeout);
             hoverTimeout = null;
-            console.log('Hover timeout cleared for hotspot:', hotspotId);
+            // Hover timeout cleared for hotspot
         }
         
         // DON'T change opacity - maintain original visual state
@@ -837,16 +837,16 @@ function displayHotspotMedia(mediaItem, index, commonValues, currentPosition, cu
         
         // Switch back to Encantar tracking when no longer hovering
         if (isMindarActive) {
-            console.log('Switching back to Encantar tracking');
+            // Switching back to Encantar tracking
             switchToEncantarTracking();
         }
     });
 
     // Require explicit click/fuse to activate MindAR
     entity.addEventListener('click', async function () {
-        console.log('HOTSPOT CLICKED:', hotspotId);
+        // Hotspot clicked
         if (!canActivateHotspot(hotspotId)) {
-            console.log('Cannot activate hotspot (sequence check failed)');
+            // Cannot activate hotspot (sequence check failed)
             return;
         }
         
@@ -1970,7 +1970,7 @@ function restartCurrentVideo() {
         video.currentTime = 0;
         video.play().then(() => {
             }).catch(error => {
-            console.error('🔄 Failed to restart video:', error);
+            console.error('Failed to restart video:', error);
         });
     }
 }
@@ -2255,7 +2255,7 @@ window.addEventListener("load", function() {
         const existingHotspots = scene ? scene.querySelectorAll('[data-hotspot-id]') : [];
         
         if (existingHotspots.length === 0) {
-            console.log('No hotspots found on window load, reinitializing...');
+            // No hotspots found on window load, reinitializing
             initializeHotspots();
         }
     }, 500);
@@ -2322,7 +2322,7 @@ function startIntelligentVideoPreloading() {
     // Sort by priority (first hotspot has highest priority)
     preloadQueue.sort((a, b) => a.priority - b.priority);
     
-    console.log(`Preloading ${preloadQueue.length} videos for ${location} location:`, preloadQueue.map(q => q.hotspotId));
+    // Preloading videos for location
     
     if (isIOS) {
         // On iOS, we'll preload only metadata, not the full video
@@ -2358,7 +2358,7 @@ function startIOSPreloadProcess() {
         });
         
         video.addEventListener('error', (error) => {
-            console.warn(`📱 iOS video error: ${videoId}`, error);
+            console.warn(`iOS video error: ${videoId}`, error);
             videoPreloadStatus.set(videoId, 'error');
         });
     });
@@ -2396,7 +2396,7 @@ function preloadNextVideo() {
     };
     
     const onError = (error) => {
-        console.warn(`⚠️ Video preload failed: ${videoId}`, error);
+        console.warn(`Video preload failed: ${videoId}`, error);
         videoPreloadStatus.set(videoId, 'error');
         video.removeEventListener('canplaythrough', onCanPlayThrough);
         video.removeEventListener('error', onError);
@@ -2418,7 +2418,7 @@ function preloadNextVideo() {
     // Set a timeout to prevent hanging
     setTimeout(() => {
         if (videoPreloadStatus.get(videoId) !== 'ready') {
-            console.warn(`⏰ Preload timeout for ${videoId}, continuing...`);
+            console.warn(`Preload timeout for ${videoId}, continuing...`);
             videoPreloadStatus.set(videoId, 'timeout');
             video.removeEventListener('canplaythrough', onCanPlayThrough);
             video.removeEventListener('error', onError);
@@ -2507,7 +2507,7 @@ function initializeMindAR() {
     }
     
     // Ensure MindAR scene is properly initialized for iOS motion sensor permission
-    console.log('Initializing MindAR scene for location:', currentLocation);
+    // Initializing MindAR scene for location
     
     // Device orientation permission is now handled directly in HTML
     // No need for complex permission handling here
@@ -2563,7 +2563,7 @@ async function showMindARScene(hotspotId) {
         return;
     }
     
-    console.log('Switching to MindAR for hotspot:', hotspotId);
+    // Switching to MindAR for hotspot
     
     // Set user interaction flag for iOS video autoplay
     hasUserInteracted = true;
@@ -2577,14 +2577,14 @@ async function showMindARScene(hotspotId) {
     // Pause Encantar tracking
     try {
         await pauseEncantar();
-        console.log('Encantar paused');
+        // Encantar paused
     } catch (e) {
         console.error('Failed to pause Encantar:', e);
     }
     
     // Hide Encantar anchors/hotspots
     setEncantarAnchorsVisible(false);
-    console.log('Encantar anchors hidden');
+    // Encantar anchors hidden
     
     // Fade out main AR scene (Encantar)
     const mainScene = document.getElementById('ar-scene');
@@ -2593,7 +2593,7 @@ async function showMindARScene(hotspotId) {
         mainScene.style.opacity = '0';
         setTimeout(() => {
             mainScene.style.display = 'none';
-            console.log('Encantar scene hidden');
+            // Encantar scene hidden
         }, 500);
     }
     
@@ -2605,13 +2605,13 @@ async function showMindARScene(hotspotId) {
         try {
             if (typeof comp.startSession === 'function') {
                 await comp.startSession();
-                console.log('MINDAR STARTED (startSession)');
+                // MINDAR STARTED (startSession)
             } else if (typeof comp.start === 'function') {
                 comp.start();
-                console.log('MINDAR STARTED (start)');
+                // MINDAR STARTED (start)
             } else if (typeof comp.play === 'function') {
                 comp.play();
-                console.log('MINDAR STARTED (play)');
+                // MINDAR STARTED (play)
             } else {
                 console.error('No valid MindAR start method found');
             }
@@ -2660,7 +2660,7 @@ async function hideMindARScene() {
         return;
     }
     
-    console.log('Switching back to Encantar');
+    // Switching back to Encantar
     
     // Hide debug status (keep it hidden)
     const debugStatus = document.getElementById('mindar-debug-status');
@@ -2704,14 +2704,14 @@ async function hideMindARScene() {
     // Resume Encantar tracking
     try {
         await resumeEncantar();
-        console.log('Encantar resumed');
+        // Encantar resumed
     } catch (e) {
         console.error('Failed to resume Encantar:', e);
     }
     
     // Show Encantar anchors/hotspots
     setEncantarAnchorsVisible(true);
-    console.log('Encantar anchors shown');
+    // Encantar anchors shown
     
     // Fade in main AR scene (Encantar)
     const mainScene = document.getElementById('ar-scene');
@@ -2723,7 +2723,7 @@ async function hideMindARScene() {
         // Trigger fade in after a brief delay
         setTimeout(() => {
             mainScene.style.opacity = '1';
-            console.log('Encantar scene shown');
+            // Encantar scene shown
         }, 50);
     }
     
@@ -2815,7 +2815,7 @@ function showVideoPlaying() {
     if (centerTarget) {
         centerTarget.classList.add('video-playing');
         } else {
-        console.error('❌ Center target element not found!');
+        console.error('Center target element not found!');
     }
 }
 
@@ -2825,24 +2825,24 @@ function hideVideoPlaying() {
     if (centerTarget) {
         centerTarget.classList.remove('video-playing');
         } else {
-        console.error('❌ Center target element not found!');
+        console.error('Center target element not found!');
     }
 }
 
 // Switch from Encantar to MindAR tracking mode
 function switchToMindARTracking() {
-    console.log('🔄 Switching from Encantar to MindAR tracking mode...');
+    // Switching from Encantar to MindAR tracking mode
     
     // Set MindAR as active
     isMindarActive = true;
     
     // Pause Encantar session
     if (isEncantarEnabled()) {
-        console.log('⏸️ Pausing Encantar session...');
+        // Pausing Encantar session
         try {
             pauseEncantar();
             setEncantarAnchorsVisible(false);
-            console.log('✅ Encantar paused successfully');
+            // Encantar paused successfully
         } catch(e) {
             console.error('Failed to pause Encantar:', e);
         }
@@ -2853,7 +2853,7 @@ function switchToMindARTracking() {
     if (encantarScene) {
         encantarScene.style.display = 'none';
         encantarScene.style.pointerEvents = 'none';
-        console.log('✅ Encantar scene hidden');
+        // Encantar scene hidden
     }
     
     // Show MindAR scene
@@ -2863,7 +2863,7 @@ function switchToMindARTracking() {
         mindarScene.style.opacity = '1';
         mindarScene.style.pointerEvents = 'auto';
         mindarScene.style.zIndex = '10';
-        console.log('✅ MindAR scene shown');
+        // MindAR scene shown
         
         // Enable MindAR tracking
         try {
@@ -2872,27 +2872,27 @@ function switchToMindARTracking() {
             if (comp) {
                 if (typeof comp.startSession === 'function') {
                     comp.startSession().then(() => {
-                        console.log('✅ MindAR session started');
+                        // MindAR session started
                     }).catch(e => {
-                        console.error('❌ MindAR startSession failed:', e);
+                        console.error('MindAR startSession failed:', e);
                     });
                 } else if (typeof comp.start === 'function') {
                     comp.start();
-                    console.log('✅ MindAR started');
+                    // MindAR started
                 } else if (typeof comp.play === 'function') {
                     comp.play();
-                    console.log('✅ MindAR playing');
+                    // MindAR playing
                 } else {
-                    console.error('❌ No valid MindAR start method found');
+                    console.error('No valid MindAR start method found');
                 }
             } else {
-                console.error('❌ MindAR component not found');
+                console.error('MindAR component not found');
             }
         } catch(e) {
-            console.error('❌ MindAR start failed:', e);
+            console.error('MindAR start failed:', e);
         }
     } else {
-        console.error('❌ MindAR scene not found');
+        console.error('MindAR scene not found');
     }
     
     // Update UI to show MindAR mode
@@ -2901,7 +2901,7 @@ function switchToMindARTracking() {
 
 // Switch from MindAR back to Encantar tracking mode
 function switchToEncantarTracking() {
-    console.log('🔄 Switching from MindAR to Encantar tracking mode...');
+    // Switching from MindAR to Encantar tracking mode
     
     // Set MindAR as inactive
     isMindarActive = false;
@@ -2913,7 +2913,7 @@ function switchToEncantarTracking() {
         mindarScene.style.opacity = '0';
         mindarScene.style.pointerEvents = 'none';
         mindarScene.style.zIndex = '1';
-        console.log('✅ MindAR scene hidden');
+        // MindAR scene hidden
         
         // Disable MindAR tracking
         try {
@@ -2921,10 +2921,10 @@ function switchToEncantarTracking() {
             const comp = mindarScene.components['mindar-image'];
             if (comp && typeof comp.stop === 'function') {
                 comp.stop();
-                console.log('✅ MindAR session stopped');
+                // MindAR session stopped
             }
         } catch(e) {
-            console.warn('⚠️ MindAR stop failed:', e);
+            console.warn('MindAR stop failed:', e);
         }
     }
     
@@ -2934,14 +2934,14 @@ function switchToEncantarTracking() {
         encantarScene.style.display = 'block';
         encantarScene.style.pointerEvents = 'auto';
         encantarScene.style.zIndex = '10';
-        console.log('✅ Encantar scene shown');
+        // Encantar scene shown
         
         // Resume Encantar session
         if (isEncantarEnabled()) {
             try {
                 resumeEncantar();
                 setEncantarAnchorsVisible(true);
-                console.log('Encantar resumed');
+                // Encantar resumed
             } catch(e) {
                 console.error('Failed to resume Encantar:', e);
             }
@@ -2965,10 +2965,10 @@ function updateTrackingModeUI(mode) {
         // Add new mode class
         if (mode === 'MindAR') {
             centerTarget.classList.add('mindar-mode');
-            console.log('🎯 Crosshair now in MindAR mode (blue)');
+            // Crosshair now in MindAR mode (blue)
         } else if (mode === 'Encantar') {
             centerTarget.classList.add('encantar-mode');
-            console.log('🎯 Crosshair now in Encantar mode (green)');
+            // Crosshair now in Encantar mode (green)
         }
         
         // Remove switching animation after it completes
@@ -3091,7 +3091,7 @@ function handleMindarTargetFound(hotspotId) {
                     videoOverlay.emit('fadein-' + hotspotId);
                 }
             }).catch(error => {
-                console.error(`❌ Video resume failed for ${hotspotId}:`, error);
+                console.error(`Video resume failed for ${hotspotId}:`, error);
                 // Hide loading ring on error
                 hideLoadingRing();
             });
@@ -3264,7 +3264,7 @@ function handleMindarTargetFound(hotspotId) {
                     }, { once: true });
                     
                 }).catch(error => {
-                    console.error(`❌ Video play failed for ${hotspotId}:`, error);
+                    console.error(`Video play failed for ${hotspotId}:`, error);
                     console.error(`Error details:`, error.message);
                     updateMindarDebugUI(hotspotId, video, 'Play failed: ' + error.message);
                     
@@ -3423,9 +3423,9 @@ function hideTargetFoundIndicator() {
 
 // Modified activateHotspot function to trigger MindAR
 async function activateHotspotWithMindAR(hotspotId, entity) {
-    console.log('Activating hotspot with MindAR:', hotspotId);
+    // Activating hotspot with MindAR
     if (activatedHotspots.has(hotspotId)) {
-        console.log('Hotspot already activated, returning');
+        // Hotspot already activated, returning
         return; // Already activated - don't allow repeat detection
     }
     
@@ -3580,12 +3580,12 @@ document.addEventListener("DOMContentLoaded", function() {
             ms.style.display = 'none';
             ms.style.pointerEvents = 'none';
         }
-        console.log('AR SYSTEMS INITIALIZED - Encantar mode active');
+        // AR SYSTEMS INITIALIZED - Encantar mode active
         
         // Initialize center-target (like old version)
         const centerTarget = document.getElementById('center-target');
         if (centerTarget) {
-            console.log('Recticel initialized');
+            // Recticel initialized
         } else {
             console.warn('Center target element not found');
         }
@@ -3594,22 +3594,22 @@ document.addEventListener("DOMContentLoaded", function() {
         setTimeout(() => {
             const camera = document.querySelector('ar-camera');
             if (camera) {
-                console.log('Camera found:', camera);
-                console.log('Raycaster component:', camera.components.raycaster);
+                // Camera found
+                // Raycaster component check
                 
                 // Try to manually initialize raycaster if it's not working
                 if (!camera.components.raycaster) {
-                    console.log('Raycaster not found, trying to add it manually');
+                    // Raycaster not found, trying to add it manually
                     camera.setAttribute('raycaster', 'objects: .clickable; interval: 100; far: 1000; rayOrigin: mouse');
                 }
                 
                 // Add global raycaster debugging
                 camera.addEventListener('raycaster-intersected', function(event) {
-                    console.log('GLOBAL RAYCASTER-INTERSECTED:', event.detail);
+                    // Global raycaster intersected
                 });
                 
                 camera.addEventListener('raycaster-intersected-cleared', function(event) {
-                    console.log('GLOBAL RAYCASTER-INTERSECTED-CLEARED:', event.detail);
+                    // Global raycaster intersected cleared
                 });
             } else {
                 console.error('Camera not found');
