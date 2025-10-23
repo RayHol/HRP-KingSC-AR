@@ -3878,7 +3878,35 @@ function handleEncantarVideoPlayback(hotspotId) {
                 
                 // Trigger fade-in animation
                 if (videoOverlay) {
+                    console.log('Triggering fade-in animation for video overlay');
                     videoOverlay.emit(`fadein-${hotspotId}`);
+                    
+                    // Also set opacity directly as fallback
+                    setTimeout(() => {
+                        videoOverlay.setAttribute('material', 'opacity', '1');
+                        console.log('Set video overlay opacity to 1 directly');
+                    }, 100);
+                } else {
+                    console.error('Video overlay not found for fade-in animation');
+                }
+                
+                // Debug video state
+                console.log('Video currentTime:', video.currentTime);
+                console.log('Video duration:', video.duration);
+                console.log('Video paused:', video.paused);
+                console.log('Video muted:', video.muted);
+                console.log('Video volume:', video.volume);
+                
+                // Debug video plane state
+                const videoPlane = document.getElementById(`video-plane-${hotspotId}`);
+                if (videoPlane) {
+                    console.log('Video plane visible:', videoPlane.getAttribute('visible'));
+                    console.log('Video plane position:', videoPlane.getAttribute('position'));
+                }
+                
+                if (videoOverlay) {
+                    console.log('Video overlay material:', videoOverlay.getAttribute('material'));
+                    console.log('Video overlay opacity:', videoOverlay.getAttribute('material')?.opacity);
                 }
                 
                 // Set up video end handler
@@ -3909,7 +3937,57 @@ function handleEncantarVideoPlayback(hotspotId) {
                     
                     // Trigger fade-in animation
                     if (videoOverlay) {
+                        console.log('Triggering fade-in animation for video overlay (fallback)');
+                        console.log('Event name:', `fadein-${hotspotId}`);
                         videoOverlay.emit(`fadein-${hotspotId}`);
+                        
+                        // Check if animation component exists
+                        const animationComponent = videoOverlay.components.animation;
+                        console.log('Animation component exists:', !!animationComponent);
+                        if (animationComponent) {
+                            console.log('Animation component data:', animationComponent.data);
+                        }
+                        
+                        // Also set opacity directly as fallback
+                        setTimeout(() => {
+                            // Try multiple approaches to set opacity
+                            videoOverlay.setAttribute('material', 'opacity', '1');
+                            videoOverlay.setAttribute('material', 'transparent', 'true');
+                            videoOverlay.setAttribute('material', 'opacity', '1.0');
+                            
+                            console.log('Set video overlay opacity to 1 directly (fallback)');
+                            
+                            // Check opacity after setting
+                            const newOpacity = videoOverlay.getAttribute('material')?.opacity;
+                            console.log('Opacity after setting:', newOpacity);
+                            
+                            // Force update the material
+                            if (videoOverlay.components.material) {
+                                videoOverlay.components.material.update();
+                                console.log('Forced material update');
+                            }
+                        }, 100);
+                    } else {
+                        console.error('Video overlay not found for fade-in animation (fallback)');
+                    }
+                    
+                    // Debug video state (fallback)
+                    console.log('Video currentTime (fallback):', video.currentTime);
+                    console.log('Video duration (fallback):', video.duration);
+                    console.log('Video paused (fallback):', video.paused);
+                    console.log('Video muted (fallback):', video.muted);
+                    console.log('Video volume (fallback):', video.volume);
+                    
+                    // Debug video plane state (fallback)
+                    const videoPlane = document.getElementById(`video-plane-${hotspotId}`);
+                    if (videoPlane) {
+                        console.log('Video plane visible (fallback):', videoPlane.getAttribute('visible'));
+                        console.log('Video plane position (fallback):', videoPlane.getAttribute('position'));
+                    }
+                    
+                    if (videoOverlay) {
+                        console.log('Video overlay material (fallback):', videoOverlay.getAttribute('material'));
+                        console.log('Video overlay opacity (fallback):', videoOverlay.getAttribute('material')?.opacity);
                     }
                     
                     // Try to unmute after a short delay
