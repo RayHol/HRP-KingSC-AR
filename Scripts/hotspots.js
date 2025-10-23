@@ -3461,6 +3461,9 @@ function handleMindarTargetFound(hotspotId) {
 
 // Handle video ended
 function handleVideoEnded(hotspotId) {
+    // Clear current playing video
+    currentPlayingVideo = null;
+    
     // Hide tap-to-play text
     hideTapToPlayText();
     
@@ -3741,24 +3744,36 @@ function setupEncantarTrackingDetection() {
     console.log('SETTING UP ENCANTAR TRACKING DETECTION');
     
     const scene = document.getElementById('ar-scene');
-    if (!scene) return;
+    if (!scene) {
+        console.error('AR scene not found for Encantar tracking detection');
+        return;
+    }
     
-    // Listen for Encantar tracking events
-    scene.addEventListener('encantar-target-found', (event) => {
-        console.log('ENCANTAR TARGET FOUND:', event.detail);
+    console.log('AR scene found, setting up event listeners');
+    
+    // Listen for Encantar tracking events (using correct event names)
+    scene.addEventListener('artargetfound', (event) => {
+        console.log('ENCANTAR TARGET FOUND EVENT TRIGGERED:', event.detail);
         handleEncantarTargetFound(event.detail);
     });
     
-    scene.addEventListener('encantar-target-lost', (event) => {
-        console.log('ENCANTAR TARGET LOST:', event.detail);
+    scene.addEventListener('artargetlost', (event) => {
+        console.log('ENCANTAR TARGET LOST EVENT TRIGGERED:', event.detail);
         handleEncantarTargetLost(event.detail);
     });
+    
+    console.log('Encantar event listeners set up successfully');
 }
 
 // Handle when Encantar finds any target
 function handleEncantarTargetFound(targetInfo) {
-    const targetName = targetInfo.name || targetInfo;
+    // Extract target name from the event detail structure
+    const targetName = targetInfo && targetInfo.referenceImage && targetInfo.referenceImage.name || targetInfo.name || targetInfo;
     console.log('ENCANTAR TARGET FOUND:', targetName);
+    console.log('Event detail:', targetInfo);
+    console.log('Current tracking mode:', currentTrackingMode);
+    console.log('Current image target:', currentImageTarget);
+    console.log('Current active hotspot ID:', currentActiveHotspotId);
     
     // Check if this is a wall target (for hotspots)
     const wallTargets = ['central', 'north', 'south', 'ceiling'];
@@ -3770,23 +3785,51 @@ function handleEncantarTargetFound(targetInfo) {
     // Check if this is the current active image target (for videos)
     if (currentTrackingMode === 'image' && currentImageTarget === targetName && currentActiveHotspotId) {
         console.log('Image target found for video:', targetName);
+        console.log('Calling handleEncantarVideoPlayback for:', currentActiveHotspotId);
         
         // Use the MindAR video playback system adapted for Encantar
         handleEncantarVideoPlayback(currentActiveHotspotId);
+    } else {
+        console.log('Target found but not matching current image tracking mode');
+        console.log('Target name:', targetName);
+        console.log('Expected target:', currentImageTarget);
     }
 }
 
+// Track which video is currently playing to prevent conflicts
+let currentPlayingVideo = null;
+
 // Handle Encantar video playback using the proven MindAR system
 function handleEncantarVideoPlayback(hotspotId) {
+    console.log('=== HANDLE ENCANTAR VIDEO PLAYBACK CALLED ===');
+    console.log('Hotspot ID:', hotspotId);
+    console.log('Activated hotspots:', Array.from(activatedHotspots));
+    console.log('Current playing video:', currentPlayingVideo);
+    
     // Check if this hotspot has already been completed
     if (activatedHotspots.has(hotspotId)) {
         console.log('Hotspot already completed:', hotspotId);
+        return;
+    }
+    
+    // Check if another video is already playing
+    if (currentPlayingVideo && currentPlayingVideo !== hotspotId) {
+        console.log('Another video is already playing:', currentPlayingVideo);
+        return;
+    }
+    
+    // Check if this video is already playing
+    if (currentPlayingVideo === hotspotId) {
+        console.log('This video is already playing:', hotspotId);
         return;
     }
 
     // Get video element
     const videoId = `video-${hotspotId}`;
     const video = document.getElementById(videoId);
+    
+    console.log('Video ID:', videoId);
+    console.log('Video element found:', !!video);
     
     console.log('VIDEO PLAYBACK STARTING:', hotspotId);
     
@@ -3821,6 +3864,9 @@ function handleEncantarVideoPlayback(hotspotId) {
             playPromise.then(() => {
                 console.log('VIDEO PLAYING:', hotspotId);
                 
+                // Set current playing video to prevent conflicts
+                currentPlayingVideo = hotspotId;
+                
                 // Hide loading ring when video starts playing
                 hideLoadingRing();
                 
@@ -3848,6 +3894,9 @@ function handleEncantarVideoPlayback(hotspotId) {
                 video.muted = true;
                 video.play().then(() => {
                     console.log('VIDEO PLAYING (MUTED):', hotspotId);
+                    
+                    // Set current playing video to prevent conflicts
+                    currentPlayingVideo = hotspotId;
                     
                     // Hide loading ring when fallback succeeds
                     hideLoadingRing();
