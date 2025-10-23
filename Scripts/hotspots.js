@@ -115,7 +115,7 @@ function switchToImageTracking(imageName, hotspotId) {
                 // Trigger fade-in animation for the video plane
                 const videoOverlay = document.getElementById(`videooverlay-${hotspotId}`);
                 if (videoOverlay) {
-                    videoOverlay.emit('fadein');
+                    videoOverlay.emit(`fadein-${hotspotId}`);
                 }
             }).catch(error => {
                 console.error('Failed to play video:', error);
@@ -126,7 +126,7 @@ function switchToImageTracking(imageName, hotspotId) {
                     // Trigger fade-in animation
                     const videoOverlay = document.getElementById(`videooverlay-${hotspotId}`);
                     if (videoOverlay) {
-                        videoOverlay.emit('fadein');
+                        videoOverlay.emit(`fadein-${hotspotId}`);
                     }
                     // Try to unmute after a short delay
                     setTimeout(() => {
