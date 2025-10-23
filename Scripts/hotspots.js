@@ -1671,7 +1671,10 @@ function setupUIButtonListeners() {
     // Congratulations overlay collect button
     const collectBadgeBtn = document.getElementById('collect-badge-btn');
     if (collectBadgeBtn) {
+        console.log('Setting up collect badge button event listener');
         collectBadgeBtn.addEventListener('click', hideCongratulationsOverlay);
+    } else {
+        console.error('Collect badge button not found!');
     }
     
     // Badges/Replay button
@@ -2230,6 +2233,7 @@ function showCongratulationsOverlay(badgeId) {
 }
 
 function hideCongratulationsOverlay() {
+    console.log('COLLECT BADGE BUTTON CLICKED');
     const congratsOverlay = document.getElementById('congrats-overlay');
     if (congratsOverlay) {
         congratsOverlay.classList.remove('show');
@@ -3961,11 +3965,8 @@ function handleEncantarVideoPlayback(hotspotId) {
                             const newOpacity = videoOverlay.getAttribute('material')?.opacity;
                             console.log('Opacity after setting:', newOpacity);
                             
-                            // Force update the material
-                            if (videoOverlay.components.material) {
-                                videoOverlay.components.material.update();
-                                console.log('Forced material update');
-                            }
+                            // Note: Material update removed to prevent shader errors
+                            console.log('Material opacity set successfully');
                         }, 100);
                     } else {
                         console.error('Video overlay not found for fade-in animation (fallback)');
